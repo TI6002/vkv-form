@@ -8,10 +8,11 @@ import { CartProvider } from '@/context/CartContext';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { CartDrawer } from '@/components/CartDrawer';
+// @ts-ignore: side-effect global CSS import
 import '../globals.css';
 
 const display = Fraunces({
-  subsets: ['latin', 'latin-ext', 'cyrillic'],
+  subsets: ['latin', 'latin-ext'],
   variable: '--font-display',
   weight: ['300', '400', '500'],
   style: ['normal', 'italic'],
@@ -19,7 +20,7 @@ const display = Fraunces({
 });
 
 const body = Inter({
-  subsets: ['latin', 'latin-ext', 'cyrillic'],
+  subsets: ['latin', 'latin-ext'],
   variable: '--font-body',
   weight: ['400', '500'],
   display: 'swap',
