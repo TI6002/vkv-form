@@ -1,0 +1,141 @@
+{
+  "nav": {
+    "home": "Start",
+    "catalog": "Katalog",
+    "about": "Über uns",
+    "contact": "Kontakt",
+    "account": "Konto",
+    "cart": "Warenkorb",
+    "search": "Suche"
+  },
+  "home": {
+    "heroEyebrow": "vkv.form — Objekte aus Ton, Gips und Stein",
+    "heroTitle": "Form folgt\nder Stille.",
+    "heroSubtitle": "Handgefertigte, skulpturale Objekte für durchdachte Innenräume. Jedes Stück wird von Hand gegossen, geschnitzt und veredelt, eines nach dem anderen, in einem kleinen Atelier.",
+    "heroCta": "Zum Katalog",
+    "philosophyEyebrow": "Philosophie",
+    "philosophyTitle": "Ein Objekt sollte sich seinen Platz langsam verdienen.",
+    "philosophyBody": "Wir arbeiten mit rohen, ehrlichen Materialien — unglasiertem Ton, Gips, warmem Stein — und lassen ihre Textur sichtbar. Nichts wird bis zur Perfektion korrigiert. Die Spur der Hand ist der Sinn, nicht der Makel.",
+    "catalogEyebrow": "Die Kollektion",
+    "catalogTitle": "Neueste Formen",
+    "catalogCta": "Alle Objekte ansehen",
+    "featuredEyebrow": "01 — 03"
+  },
+  "about": {
+    "title": "Über uns",
+    "authorEyebrow": "Die Macherin",
+    "authorTitle": "Über die Autorin",
+    "authorBody1": "vkv.form begann als eine Reihe von Studien zum Gleichgewicht — kleine Tonformen, entstanden neben anderer Arbeit und auf einer Fensterbank aufbewahrt statt verkauft. Mit der Zeit wurden aus den Studien eine Praxis und aus der Praxis ein kleines Atelier, das Objekte in kurzen, durchdachten Serien fertigt.",
+    "authorBody2": "Jedes Stück, das das Atelier verlässt, ist durch dieselben Hände gegangen, die es geformt haben. Nichts wird ausgelagert, nichts wird massenproduziert — deshalb ist jede Serie begrenzt, und manche Formen kehren nach ihrem Verkauf nicht zurück.",
+    "philosophyEyebrow": "Philosophie",
+    "philosophyTitle": "Warum wir tun, was wir tun",
+    "philosophyBody1": "Moderne Räume sind voller Dinge, die Aufmerksamkeit verlangen. Wir wollten das Gegenteil schaffen — Objekte, die sich still in einen Raum einfügen und einen längeren Blick belohnen, nicht nur den ersten.",
+    "philosophyBody2": "Das bedeutet Zurückhaltung in der Farbe, Ehrlichkeit im Material und kein Stück, das einem anderen perfekt gleicht. Ein leicht unebener Vasenrand ist kein Fehler, den man verstecken muss — er ist der Beweis, dass ein Mensch die Arbeit vollendet hat, nicht allein eine Gussform.",
+    "philosophyBody3": "Wir arbeiten hauptsächlich mit drei Materialfamilien — unglasiertem Steinzeug, eingefärbtem Gips und weichem Naturstein — gewählt, weil sie gut altern und ihre Oberfläche sich über Jahre sanft mit Licht und Berührung verändert."
+  },
+  "catalog": {
+    "title": "Katalog",
+    "subtitle": "Alle Objekte, die derzeit im Atelier sind.",
+    "empty": "Noch keine Form passt zu diesem Filter.",
+    "priceLabel": "Preis",
+    "viewProduct": "Objekt ansehen",
+    "addToCart": "In den Warenkorb",
+    "filterAll": "Alle"
+  },
+  "product": {
+    "back": "Zurück zum Katalog",
+    "descriptionLabel": "Beschreibung",
+    "materialsLabel": "Materialien",
+    "dimensionsLabel": "Maße",
+    "careLabel": "Pflege",
+    "addToCart": "In den Warenkorb",
+    "adding": "Wird hinzugefügt…",
+    "added": "Hinzugefügt",
+    "outOfStock": "Derzeit nicht verfügbar",
+    "quantityLabel": "Menge",
+    "shippingNote": "Auf Bestellung in kleinen Serien gefertigt. Versand aus der EU innerhalb von 5–10 Werktagen."
+  },
+  "cart": {
+    "title": "Ihr Warenkorb",
+    "empty": "Ihr Warenkorb ist derzeit leer.",
+    "continue": "Weiter stöbern",
+    "subtotal": "Zwischensumme",
+    "checkout": "Zur Kasse",
+    "remove": "Entfernen",
+    "quantity": "Menge",
+    "taxNote": "Versand und anfallende Steuern werden an der Kasse berechnet."
+  },
+  "checkout": {
+    "title": "Kasse",
+    "redirecting": "Sie werden zur sicheren Kasse weitergeleitet…",
+    "error": "Bei der Vorbereitung Ihrer Bestellung ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
+  },
+  "contact": {
+    "title": "Kontakt",
+    "intro": "Für Atelierbesuche, Presse, Handelsanfragen oder alles andere — schreiben Sie uns direkt oder nutzen Sie das Formular unten.",
+    "formName": "Name",
+    "formEmail": "E-Mail",
+    "formMessage": "Nachricht",
+    "formSubmit": "Nachricht senden",
+    "formSuccess": "Danke — wir antworten innerhalb weniger Tage.",
+    "formError": "Die Nachricht konnte nicht gesendet werden. Bitte versuchen Sie es erneut oder schreiben Sie uns direkt eine E-Mail.",
+    "detailsTitle": "Atelier-Angaben",
+    "companyName": "Unternehmen",
+    "regNumber": "Registernummer",
+    "vatNumber": "USt-IdNr.",
+    "address": "Adresse",
+    "email": "E-Mail",
+    "follow": "Dem Atelier folgen"
+  },
+  "account": {
+    "signInTitle": "Anmelden",
+    "signUpTitle": "Konto erstellen",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "signIn": "Anmelden",
+    "signUp": "Konto erstellen",
+    "orSignUp": "Neu hier? Konto erstellen",
+    "orSignIn": "Schon ein Konto? Anmelden",
+    "signOut": "Abmelden",
+    "ordersTitle": "Bestellverlauf",
+    "noOrders": "Sie haben noch keine Bestellungen.",
+    "orderNumber": "Bestellung",
+    "orderStatus": "Status",
+    "orderTotal": "Summe",
+    "error": "Etwas ist schiefgelaufen. Bitte überprüfen Sie Ihre Angaben und versuchen Sie es erneut."
+  },
+  "admin": {
+    "title": "Atelier-Verwaltung",
+    "productsTab": "Objekte",
+    "ordersTab": "Bestellungen",
+    "newProduct": "Neues Objekt hinzufügen",
+    "name": "Name",
+    "slug": "URL-Slug",
+    "price": "Preis (EUR)",
+    "stock": "Bestand",
+    "description": "Beschreibung",
+    "materials": "Materialien",
+    "dimensions": "Maße",
+    "images": "Bilder",
+    "uploadImage": "Bild hochladen",
+    "save": "Objekt speichern",
+    "saving": "Wird gespeichert…",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "cancel": "Abbrechen",
+    "confirmDelete": "Dieses Objekt löschen? Das kann nicht rückgängig gemacht werden.",
+    "noProducts": "Noch keine Objekte. Fügen Sie oben das erste hinzu."
+  },
+  "footer": {
+    "newsletterTitle": "Neuigkeiten aus dem Atelier",
+    "newsletterBody": "Gelegentlich eine Nachricht, wenn eine neue kleine Serie bereit ist. Sonst nichts dazwischen.",
+    "newsletterPlaceholder": "Ihre E-Mail",
+    "newsletterCta": "Abonnieren",
+    "newsletterSuccess": "Abonniert — danke.",
+    "rights": "Alle Rechte vorbehalten."
+  },
+  "common": {
+    "loading": "Wird geladen…",
+    "currency": "€"
+  }
+}

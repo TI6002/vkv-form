@@ -1,0 +1,141 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "catalog": "Catálogo",
+    "about": "Sobre nosotros",
+    "contact": "Contacto",
+    "account": "Cuenta",
+    "cart": "Carrito",
+    "search": "Buscar"
+  },
+  "home": {
+    "heroEyebrow": "vkv.form — objetos en arcilla, yeso y piedra",
+    "heroTitle": "La forma\nsigue al silencio.",
+    "heroSubtitle": "Objetos escultóricos hechos a mano para interiores pensados con cuidado. Cada pieza se moldea, talla y termina a mano en un pequeño taller, una a una.",
+    "heroCta": "Entrar al catálogo",
+    "philosophyEyebrow": "Filosofía",
+    "philosophyTitle": "Un objeto debe ganarse su lugar, despacio.",
+    "philosophyBody": "Trabajamos con materiales honestos y sin pulir — arcilla sin esmaltar, yeso, piedra cálida — dejando visible su textura. Nada se corrige hasta la perfección. La huella de la mano es la esencia, no el defecto.",
+    "catalogEyebrow": "La colección",
+    "catalogTitle": "Formas recientes",
+    "catalogCta": "Ver todos los objetos",
+    "featuredEyebrow": "01 — 03"
+  },
+  "about": {
+    "title": "Sobre nosotros",
+    "authorEyebrow": "La autora",
+    "authorTitle": "Sobre la autora",
+    "authorBody1": "vkv.form comenzó como una serie de estudios sobre el equilibrio — pequeñas formas de arcilla hechas entre otros trabajos, guardadas en un alféizar en lugar de venderse. Con el tiempo, los estudios se convirtieron en una práctica, y la práctica en un pequeño taller que produce objetos en tiradas cortas y meditadas.",
+    "authorBody2": "Cada pieza que sale del taller ha pasado por las mismas manos que la moldearon. Nada se subcontrata, nada se produce en masa — por eso cada tirada es limitada, y algunas formas no vuelven una vez agotadas.",
+    "philosophyEyebrow": "Filosofía",
+    "philosophyTitle": "Por qué hacemos lo que hacemos",
+    "philosophyBody1": "Los interiores modernos están llenos de objetos que piden atención. Quisimos hacer lo contrario — objetos que se asientan en silencio en un espacio y recompensan una mirada larga en lugar de un primer vistazo.",
+    "philosophyBody2": "Eso significa contención en el color, honestidad en el material, y ninguna pieza perfectamente idéntica a otra. Un borde ligeramente irregular en un jarrón no es un error que ocultar; es la prueba de que una persona, y no solo un molde, terminó la obra.",
+    "philosophyBody3": "Trabajamos principalmente con tres familias de materiales — gres sin esmaltar, yeso teñido y piedra natural blanda — elegidos porque envejecen bien y su superficie cambia suavemente con la luz y el tacto a lo largo de los años."
+  },
+  "catalog": {
+    "title": "Catálogo",
+    "subtitle": "Todos los objetos que hay ahora mismo en el taller.",
+    "empty": "Ningún objeto coincide todavía con este filtro.",
+    "priceLabel": "Precio",
+    "viewProduct": "Ver objeto",
+    "addToCart": "Añadir al carrito",
+    "filterAll": "Todos"
+  },
+  "product": {
+    "back": "Volver al catálogo",
+    "descriptionLabel": "Descripción",
+    "materialsLabel": "Materiales",
+    "dimensionsLabel": "Dimensiones",
+    "careLabel": "Cuidado",
+    "addToCart": "Añadir al carrito",
+    "adding": "Añadiendo…",
+    "added": "Añadido",
+    "outOfStock": "No disponible por ahora",
+    "quantityLabel": "Cantidad",
+    "shippingNote": "Hecho por encargo en tiradas pequeñas. Se envía desde la UE en 5–10 días laborables."
+  },
+  "cart": {
+    "title": "Tu carrito",
+    "empty": "Tu carrito está vacío por ahora.",
+    "continue": "Seguir viendo",
+    "subtotal": "Subtotal",
+    "checkout": "Ir a pagar",
+    "remove": "Quitar",
+    "quantity": "Cant.",
+    "taxNote": "El envío y los impuestos aplicables se calculan al pagar."
+  },
+  "checkout": {
+    "title": "Pago",
+    "redirecting": "Te llevamos al pago seguro…",
+    "error": "Algo salió mal al preparar tu pedido. Inténtalo de nuevo."
+  },
+  "contact": {
+    "title": "Contacto",
+    "intro": "Para visitas al taller, prensa, consultas de distribución o cualquier otra cosa — escríbenos directamente o usa el formulario de abajo.",
+    "formName": "Nombre",
+    "formEmail": "Email",
+    "formMessage": "Mensaje",
+    "formSubmit": "Enviar mensaje",
+    "formSuccess": "Gracias — responderemos en unos días.",
+    "formError": "No se pudo enviar el mensaje. Inténtalo de nuevo o escríbenos por email.",
+    "detailsTitle": "Datos del taller",
+    "companyName": "Empresa",
+    "regNumber": "N.º de registro",
+    "vatNumber": "N.º de IVA",
+    "address": "Dirección",
+    "email": "Email",
+    "follow": "Sigue al taller"
+  },
+  "account": {
+    "signInTitle": "Iniciar sesión",
+    "signUpTitle": "Crear una cuenta",
+    "email": "Email",
+    "password": "Contraseña",
+    "signIn": "Iniciar sesión",
+    "signUp": "Crear cuenta",
+    "orSignUp": "¿Nuevo aquí? Crea una cuenta",
+    "orSignIn": "¿Ya tienes cuenta? Inicia sesión",
+    "signOut": "Cerrar sesión",
+    "ordersTitle": "Historial de pedidos",
+    "noOrders": "Todavía no tienes pedidos.",
+    "orderNumber": "Pedido",
+    "orderStatus": "Estado",
+    "orderTotal": "Total",
+    "error": "Algo salió mal. Revisa tus datos e inténtalo de nuevo."
+  },
+  "admin": {
+    "title": "Administración del taller",
+    "productsTab": "Objetos",
+    "ordersTab": "Pedidos",
+    "newProduct": "Añadir nuevo objeto",
+    "name": "Nombre",
+    "slug": "Slug de URL",
+    "price": "Precio (EUR)",
+    "stock": "Existencias",
+    "description": "Descripción",
+    "materials": "Materiales",
+    "dimensions": "Dimensiones",
+    "images": "Imágenes",
+    "uploadImage": "Subir imagen",
+    "save": "Guardar objeto",
+    "saving": "Guardando…",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "cancel": "Cancelar",
+    "confirmDelete": "¿Eliminar este objeto? Esta acción no se puede deshacer.",
+    "noProducts": "Todavía no hay objetos. Añade el primero arriba."
+  },
+  "footer": {
+    "newsletterTitle": "Noticias del taller",
+    "newsletterBody": "Un mensaje ocasional cuando una nueva tirada pequeña está lista. Nada más entre medias.",
+    "newsletterPlaceholder": "Tu email",
+    "newsletterCta": "Suscribirse",
+    "newsletterSuccess": "Suscrito — gracias.",
+    "rights": "Todos los derechos reservados."
+  },
+  "common": {
+    "loading": "Cargando…",
+    "currency": "€"
+  }
+}

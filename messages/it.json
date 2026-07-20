@@ -1,0 +1,141 @@
+{
+  "nav": {
+    "home": "Home",
+    "catalog": "Catalogo",
+    "about": "Chi siamo",
+    "contact": "Contatti",
+    "account": "Account",
+    "cart": "Carrello",
+    "search": "Cerca"
+  },
+  "home": {
+    "heroEyebrow": "vkv.form — oggetti in argilla, gesso e pietra",
+    "heroTitle": "La forma\nsegue il silenzio.",
+    "heroSubtitle": "Oggetti scultorei fatti a mano per interni curati. Ogni pezzo viene colato, scolpito e rifinito a mano in un piccolo studio, uno alla volta.",
+    "heroCta": "Entra nel catalogo",
+    "philosophyEyebrow": "Filosofia",
+    "philosophyTitle": "Un oggetto deve guadagnarsi il suo posto, lentamente.",
+    "philosophyBody": "Lavoriamo materiali grezzi e onesti — argilla non smaltata, gesso, pietra calda — lasciandone visibile la texture. Nulla viene corretto fino alla perfezione. Il segno della mano è il punto, non il difetto.",
+    "catalogEyebrow": "La collezione",
+    "catalogTitle": "Forme recenti",
+    "catalogCta": "Vedi tutti gli oggetti",
+    "featuredEyebrow": "01 — 03"
+  },
+  "about": {
+    "title": "Chi siamo",
+    "authorEyebrow": "L'autrice",
+    "authorTitle": "Chi è l'autrice",
+    "authorBody1": "vkv.form è nato come una serie di studi sull'equilibrio — piccole forme in argilla realizzate tra un lavoro e l'altro, tenute su un davanzale invece che vendute. Col tempo gli studi sono diventati una pratica, e la pratica un piccolo studio che produce oggetti in serie brevi e ponderate.",
+    "authorBody2": "Ogni pezzo che lascia lo studio è passato tra le stesse mani che lo hanno modellato. Nulla è esternalizzato, nulla è prodotto in serie — per questo ogni serie è limitata, e alcune forme non tornano una volta esaurite.",
+    "philosophyEyebrow": "Filosofia",
+    "philosophyTitle": "Perché facciamo ciò che facciamo",
+    "philosophyBody1": "Gli interni moderni sono pieni di oggetti che chiedono attenzione. Abbiamo voluto fare l'opposto — oggetti che si posano in silenzio in uno spazio e premiano uno sguardo prolungato più di una prima occhiata.",
+    "philosophyBody2": "Questo significa sobrietà nel colore, onestà nel materiale, e nessun pezzo perfettamente identico a un altro. Un bordo leggermente irregolare di un vaso non è un errore da nascondere; è la prova che a finire il lavoro è stata una persona, non solo uno stampo.",
+    "philosophyBody3": "Lavoriamo principalmente con tre famiglie di materiali — grès non smaltato, gesso colorato e pietra naturale tenera — scelti perché invecchiano bene e la loro superficie cambia dolcemente con la luce e il tocco nel corso degli anni."
+  },
+  "catalog": {
+    "title": "Catalogo",
+    "subtitle": "Tutti gli oggetti attualmente in studio.",
+    "empty": "Nessuna forma corrisponde ancora a questo filtro.",
+    "priceLabel": "Prezzo",
+    "viewProduct": "Vedi l'oggetto",
+    "addToCart": "Aggiungi al carrello",
+    "filterAll": "Tutti"
+  },
+  "product": {
+    "back": "Torna al catalogo",
+    "descriptionLabel": "Descrizione",
+    "materialsLabel": "Materiali",
+    "dimensionsLabel": "Dimensioni",
+    "careLabel": "Manutenzione",
+    "addToCart": "Aggiungi al carrello",
+    "adding": "Aggiunta…",
+    "added": "Aggiunto",
+    "outOfStock": "Non disponibile al momento",
+    "quantityLabel": "Quantità",
+    "shippingNote": "Realizzato su ordinazione in piccole serie. Spedizione dall'UE in 5–10 giorni lavorativi."
+  },
+  "cart": {
+    "title": "Il tuo carrello",
+    "empty": "Il tuo carrello è vuoto.",
+    "continue": "Continua a guardare",
+    "subtotal": "Subtotale",
+    "checkout": "Vai al checkout",
+    "remove": "Rimuovi",
+    "quantity": "Qtà",
+    "taxNote": "Spedizione e tasse applicabili calcolate al checkout."
+  },
+  "checkout": {
+    "title": "Checkout",
+    "redirecting": "Reindirizzamento al pagamento sicuro…",
+    "error": "Qualcosa è andato storto nella preparazione dell'ordine. Riprova."
+  },
+  "contact": {
+    "title": "Contatti",
+    "intro": "Per visite allo studio, stampa, richieste di rivendita o altro — scrivici direttamente o usa il modulo qui sotto.",
+    "formName": "Nome",
+    "formEmail": "Email",
+    "formMessage": "Messaggio",
+    "formSubmit": "Invia messaggio",
+    "formSuccess": "Grazie — risponderemo entro pochi giorni.",
+    "formError": "Impossibile inviare il messaggio. Riprova o scrivici via email.",
+    "detailsTitle": "Dati dello studio",
+    "companyName": "Azienda",
+    "regNumber": "N. di registrazione",
+    "vatNumber": "P. IVA",
+    "address": "Indirizzo",
+    "email": "Email",
+    "follow": "Segui lo studio"
+  },
+  "account": {
+    "signInTitle": "Accedi",
+    "signUpTitle": "Crea un account",
+    "email": "Email",
+    "password": "Password",
+    "signIn": "Accedi",
+    "signUp": "Crea account",
+    "orSignUp": "Nuovo qui? Crea un account",
+    "orSignIn": "Hai già un account? Accedi",
+    "signOut": "Esci",
+    "ordersTitle": "Storico ordini",
+    "noOrders": "Non hai ancora nessun ordine.",
+    "orderNumber": "Ordine",
+    "orderStatus": "Stato",
+    "orderTotal": "Totale",
+    "error": "Qualcosa è andato storto. Controlla i dati e riprova."
+  },
+  "admin": {
+    "title": "Amministrazione dello studio",
+    "productsTab": "Oggetti",
+    "ordersTab": "Ordini",
+    "newProduct": "Aggiungi nuovo oggetto",
+    "name": "Nome",
+    "slug": "Slug URL",
+    "price": "Prezzo (EUR)",
+    "stock": "Scorte",
+    "description": "Descrizione",
+    "materials": "Materiali",
+    "dimensions": "Dimensioni",
+    "images": "Immagini",
+    "uploadImage": "Carica immagine",
+    "save": "Salva oggetto",
+    "saving": "Salvataggio…",
+    "delete": "Elimina",
+    "edit": "Modifica",
+    "cancel": "Annulla",
+    "confirmDelete": "Eliminare questo oggetto? L'azione è irreversibile.",
+    "noProducts": "Ancora nessun oggetto. Aggiungi il primo qui sopra."
+  },
+  "footer": {
+    "newsletterTitle": "Notizie dallo studio",
+    "newsletterBody": "Una parola occasionale quando una nuova piccola serie è pronta. Nient'altro nel frattempo.",
+    "newsletterPlaceholder": "La tua email",
+    "newsletterCta": "Iscriviti",
+    "newsletterSuccess": "Iscritto — grazie.",
+    "rights": "Tutti i diritti riservati."
+  },
+  "common": {
+    "loading": "Caricamento…",
+    "currency": "€"
+  }
+}

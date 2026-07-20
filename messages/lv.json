@@ -1,0 +1,141 @@
+{
+  "nav": {
+    "home": "Sākums",
+    "catalog": "Katalogs",
+    "about": "Par mums",
+    "contact": "Kontakti",
+    "account": "Konts",
+    "cart": "Grozs",
+    "search": "Meklēt"
+  },
+  "home": {
+    "heroEyebrow": "vkv.form — priekšmeti no māla, ģipša un akmens",
+    "heroTitle": "Forma\nseko klusumam.",
+    "heroSubtitle": "Rokdarbā veidoti skulpturāli priekšmeti pārdomātām interjera telpām. Katrs darbs tiek liets, tēsts un apdarināts ar rokām nelielā darbnīcā, pa vienam.",
+    "heroCta": "Skatīt katalogu",
+    "philosophyEyebrow": "Filozofija",
+    "philosophyTitle": "Priekšmetam sava vieta jāizpelnās lēni.",
+    "philosophyBody": "Mēs strādājam ar godīgiem, neapstrādātiem materiāliem — negleznotu mālu, ģipsi, siltu akmeni — un ļaujam to faktūrai palikt redzamai. Nekas netiek pilnveidots līdz perfekcijai. Rokas nospiedums ir jēga, nevis defekts.",
+    "catalogEyebrow": "Kolekcija",
+    "catalogTitle": "Jaunākās formas",
+    "catalogCta": "Skatīt visus priekšmetus",
+    "featuredEyebrow": "01 — 03"
+  },
+  "about": {
+    "title": "Par mums",
+    "authorEyebrow": "Autore",
+    "authorTitle": "Par autori",
+    "authorBody1": "vkv.form aizsākās kā virkne pētījumu par līdzsvaru — mazas māla formas, kas tapa starp citu darbu un tika glabātas uz palodzes, nevis pārdotas. Laika gaitā šie pētījumi kļuva par praksi, bet prakse — par nelielu darbnīcu, kas ražo priekšmetus īsās, pārdomātās sērijās.",
+    "authorBody2": "Katrs priekšmets, kas atstāj darbnīcu, ir gājis cauri tām pašām rokām, kas to veidoja. Nekas netiek nodots ārpakalpojumā, nekas netiek ražots masveidā — tāpēc katra sērija ir ierobežota, un dažas formas pēc izpārdošanas vairs neatgriežas.",
+    "philosophyEyebrow": "Filozofija",
+    "philosophyTitle": "Kāpēc mēs darām to, ko darām",
+    "philosophyBody1": "Mūsdienu telpas ir pilnas ar lietām, kas prasa uzmanību. Mēs gribējām radīt pretējo — priekšmetus, kas telpā iekļaujas klusi un atalgo ilgāku skatienu, nevis pirmo ieskatu.",
+    "philosophyBody2": "Tas nozīmē atturību krāsā, godīgumu materiālā un to, ka nav divu pilnīgi vienādu darbu. Vāzes nedaudz nelīdzenā mala nav kļūda, ko slēpt — tā ir pierādījums, ka darbu pabeidza cilvēks, nevis tikai forma.",
+    "philosophyBody3": "Mēs galvenokārt strādājam ar trim materiālu grupām — negleznotu akmens masu, tonētu ģipsi un mīkstu dabisko akmeni — izvēlētiem tāpēc, ka tie skaisti noveco, un to virsma gadu gaitā maigi mainās gaismā un pieskārienā."
+  },
+  "catalog": {
+    "title": "Katalogs",
+    "subtitle": "Visi priekšmeti, kas šobrīd ir darbnīcā.",
+    "empty": "Šim filtram pagaidām nekas neatbilst.",
+    "priceLabel": "Cena",
+    "viewProduct": "Skatīt priekšmetu",
+    "addToCart": "Pievienot grozam",
+    "filterAll": "Visi"
+  },
+  "product": {
+    "back": "Atpakaļ uz katalogu",
+    "descriptionLabel": "Apraksts",
+    "materialsLabel": "Materiāli",
+    "dimensionsLabel": "Izmēri",
+    "careLabel": "Kopšana",
+    "addToCart": "Pievienot grozam",
+    "adding": "Pievieno…",
+    "added": "Pievienots",
+    "outOfStock": "Šobrīd nav pieejams",
+    "quantityLabel": "Daudzums",
+    "shippingNote": "Izgatavots pēc pasūtījuma nelielās sērijās. Piegāde no ES 5–10 darba dienu laikā."
+  },
+  "cart": {
+    "title": "Jūsu grozs",
+    "empty": "Jūsu grozs pašlaik ir tukšs.",
+    "continue": "Turpināt iepirkties",
+    "subtotal": "Starpsumma",
+    "checkout": "Doties uz apmaksu",
+    "remove": "Noņemt",
+    "quantity": "Daudz.",
+    "taxNote": "Piegāde un piemērojamie nodokļi tiek aprēķināti apmaksas brīdī."
+  },
+  "checkout": {
+    "title": "Apmaksa",
+    "redirecting": "Novirzām jūs uz drošu apmaksu…",
+    "error": "Sagatavojot jūsu pasūtījumu, radās kļūda. Lūdzu, mēģiniet vēlreiz."
+  },
+  "contact": {
+    "title": "Kontakti",
+    "intro": "Lai apmeklētu darbnīcu, presei, vairumtirdzniecības jautājumiem vai jebkam citam — rakstiet mums tieši vai izmantojiet formu zemāk.",
+    "formName": "Vārds",
+    "formEmail": "E-pasts",
+    "formMessage": "Ziņa",
+    "formSubmit": "Sūtīt ziņu",
+    "formSuccess": "Paldies — atbildēsim dažu dienu laikā.",
+    "formError": "Ziņu neizdevās nosūtīt. Mēģiniet vēlreiz vai rakstiet mums tieši uz e-pastu.",
+    "detailsTitle": "Darbnīcas rekvizīti",
+    "companyName": "Uzņēmums",
+    "regNumber": "Reģ. Nr.",
+    "vatNumber": "PVN Nr.",
+    "address": "Adrese",
+    "email": "E-pasts",
+    "follow": "Sekojiet darbnīcai"
+  },
+  "account": {
+    "signInTitle": "Pieslēgties",
+    "signUpTitle": "Izveidot kontu",
+    "email": "E-pasts",
+    "password": "Parole",
+    "signIn": "Pieslēgties",
+    "signUp": "Izveidot kontu",
+    "orSignUp": "Pirmo reizi šeit? Izveidot kontu",
+    "orSignIn": "Jau ir konts? Pieslēgties",
+    "signOut": "Izrakstīties",
+    "ordersTitle": "Pasūtījumu vēsture",
+    "noOrders": "Jums vēl nav neviena pasūtījuma.",
+    "orderNumber": "Pasūtījums",
+    "orderStatus": "Statuss",
+    "orderTotal": "Summa",
+    "error": "Kaut kas nogāja greizi. Pārbaudiet datus un mēģiniet vēlreiz."
+  },
+  "admin": {
+    "title": "Darbnīcas administrēšana",
+    "productsTab": "Priekšmeti",
+    "ordersTab": "Pasūtījumi",
+    "newProduct": "Pievienot jaunu priekšmetu",
+    "name": "Nosaukums",
+    "slug": "URL slug",
+    "price": "Cena (EUR)",
+    "stock": "Krājums",
+    "description": "Apraksts",
+    "materials": "Materiāli",
+    "dimensions": "Izmēri",
+    "images": "Attēli",
+    "uploadImage": "Augšupielādēt attēlu",
+    "save": "Saglabāt priekšmetu",
+    "saving": "Saglabā…",
+    "delete": "Dzēst",
+    "edit": "Rediģēt",
+    "cancel": "Atcelt",
+    "confirmDelete": "Dzēst šo priekšmetu? To nevar atsaukt.",
+    "noProducts": "Vēl nav priekšmetu. Pievienojiet pirmo augstāk."
+  },
+  "footer": {
+    "newsletterTitle": "Ziņas no darbnīcas",
+    "newsletterBody": "Reizumis kāds vārds, kad gatava jauna neliela sērija. Nekā vairāk pa vidu.",
+    "newsletterPlaceholder": "Jūsu e-pasts",
+    "newsletterCta": "Abonēt",
+    "newsletterSuccess": "Abonēts — paldies.",
+    "rights": "Visas tiesības aizsargātas."
+  },
+  "common": {
+    "loading": "Ielādē…",
+    "currency": "€"
+  }
+}

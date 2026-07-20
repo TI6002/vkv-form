@@ -1,0 +1,141 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "catalog": "Catalogue",
+    "about": "À propos",
+    "contact": "Contact",
+    "account": "Compte",
+    "cart": "Panier",
+    "search": "Recherche"
+  },
+  "home": {
+    "heroEyebrow": "vkv.form — objets en argile, plâtre et pierre",
+    "heroTitle": "La forme\nsuit le silence.",
+    "heroSubtitle": "Objets sculpturaux faits main pour des intérieurs pensés. Chaque pièce est coulée, sculptée et finie à la main dans un petit atelier, une à une.",
+    "heroCta": "Découvrir le catalogue",
+    "philosophyEyebrow": "Philosophie",
+    "philosophyTitle": "Un objet doit mériter sa place, lentement.",
+    "philosophyBody": "Nous travaillons des matières brutes et honnêtes — argile non émaillée, plâtre, pierre chaude — et laissons leur texture visible. Rien n'est corrigé jusqu'à la perfection. La trace de la main est le propos, non le défaut.",
+    "catalogEyebrow": "La collection",
+    "catalogTitle": "Formes récentes",
+    "catalogCta": "Voir tous les objets",
+    "featuredEyebrow": "01 — 03"
+  },
+  "about": {
+    "title": "À propos",
+    "authorEyebrow": "La créatrice",
+    "authorTitle": "À propos de l'auteure",
+    "authorBody1": "vkv.form a commencé comme une série d'études sur l'équilibre — de petites formes en argile faites entre deux travaux, gardées sur un rebord de fenêtre plutôt que vendues. Avec le temps, ces études sont devenues une pratique, et la pratique un petit atelier produisant des objets en séries courtes et réfléchies.",
+    "authorBody2": "Chaque pièce qui quitte l'atelier est passée entre les mêmes mains qui l'ont façonnée. Rien n'est sous-traité, rien n'est produit en série — c'est pourquoi chaque série est limitée, et certaines formes ne reviennent pas une fois épuisées.",
+    "philosophyEyebrow": "Philosophie",
+    "philosophyTitle": "Pourquoi nous faisons ce que nous faisons",
+    "philosophyBody1": "Les intérieurs modernes regorgent d'objets qui réclament de l'attention. Nous avons voulu faire l'inverse — des objets qui s'installent tranquillement dans un espace et récompensent un regard prolongé plutôt qu'un premier coup d'œil.",
+    "philosophyBody2": "Cela signifie de la sobriété dans la couleur, de l'honnêteté dans la matière, et jamais deux pièces parfaitement identiques. Un bord de vase légèrement irrégulier n'est pas une erreur à cacher ; c'est la preuve qu'une personne, et non un simple moule, a terminé l'ouvrage.",
+    "philosophyBody3": "Nous travaillons principalement trois familles de matériaux — grès non émaillé, plâtre teinté et pierre naturelle tendre — choisis parce qu'ils vieillissent bien et que leur surface évolue doucement avec la lumière et le toucher au fil des années."
+  },
+  "catalog": {
+    "title": "Catalogue",
+    "subtitle": "Tous les objets actuellement en atelier.",
+    "empty": "Aucune forme ne correspond encore à ce filtre.",
+    "priceLabel": "Prix",
+    "viewProduct": "Voir l'objet",
+    "addToCart": "Ajouter au panier",
+    "filterAll": "Tout"
+  },
+  "product": {
+    "back": "Retour au catalogue",
+    "descriptionLabel": "Description",
+    "materialsLabel": "Matériaux",
+    "dimensionsLabel": "Dimensions",
+    "careLabel": "Entretien",
+    "addToCart": "Ajouter au panier",
+    "adding": "Ajout…",
+    "added": "Ajouté",
+    "outOfStock": "Actuellement indisponible",
+    "quantityLabel": "Quantité",
+    "shippingNote": "Fabriqué sur commande en petites séries. Expédié depuis l'UE sous 5 à 10 jours ouvrés."
+  },
+  "cart": {
+    "title": "Votre panier",
+    "empty": "Votre panier est actuellement vide.",
+    "continue": "Continuer la visite",
+    "subtotal": "Sous-total",
+    "checkout": "Passer à la caisse",
+    "remove": "Retirer",
+    "quantity": "Qté",
+    "taxNote": "Les frais de livraison et taxes applicables sont calculés à la caisse."
+  },
+  "checkout": {
+    "title": "Commande",
+    "redirecting": "Redirection vers le paiement sécurisé…",
+    "error": "Une erreur est survenue lors de la préparation de votre commande. Veuillez réessayer."
+  },
+  "contact": {
+    "title": "Contact",
+    "intro": "Pour une visite de l'atelier, la presse, une demande de revente ou toute autre question — écrivez-nous directement ou utilisez le formulaire ci-dessous.",
+    "formName": "Nom",
+    "formEmail": "Email",
+    "formMessage": "Message",
+    "formSubmit": "Envoyer le message",
+    "formSuccess": "Merci — nous répondrons sous quelques jours.",
+    "formError": "Le message n'a pas pu être envoyé. Réessayez ou écrivez-nous directement.",
+    "detailsTitle": "Coordonnées de l'atelier",
+    "companyName": "Société",
+    "regNumber": "N° d'immatriculation",
+    "vatNumber": "N° de TVA",
+    "address": "Adresse",
+    "email": "Email",
+    "follow": "Suivre l'atelier"
+  },
+  "account": {
+    "signInTitle": "Se connecter",
+    "signUpTitle": "Créer un compte",
+    "email": "Email",
+    "password": "Mot de passe",
+    "signIn": "Se connecter",
+    "signUp": "Créer un compte",
+    "orSignUp": "Nouveau ici ? Créer un compte",
+    "orSignIn": "Déjà un compte ? Se connecter",
+    "signOut": "Se déconnecter",
+    "ordersTitle": "Historique des commandes",
+    "noOrders": "Vous n'avez pas encore de commande.",
+    "orderNumber": "Commande",
+    "orderStatus": "Statut",
+    "orderTotal": "Total",
+    "error": "Une erreur est survenue. Vérifiez vos informations et réessayez."
+  },
+  "admin": {
+    "title": "Administration de l'atelier",
+    "productsTab": "Objets",
+    "ordersTab": "Commandes",
+    "newProduct": "Ajouter un nouvel objet",
+    "name": "Nom",
+    "slug": "Slug d'URL",
+    "price": "Prix (EUR)",
+    "stock": "Stock",
+    "description": "Description",
+    "materials": "Matériaux",
+    "dimensions": "Dimensions",
+    "images": "Images",
+    "uploadImage": "Téléverser une image",
+    "save": "Enregistrer l'objet",
+    "saving": "Enregistrement…",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "cancel": "Annuler",
+    "confirmDelete": "Supprimer cet objet ? Action irréversible.",
+    "noProducts": "Aucun objet pour l'instant. Ajoutez le premier ci-dessus."
+  },
+  "footer": {
+    "newsletterTitle": "Nouvelles de l'atelier",
+    "newsletterBody": "Un mot occasionnel lorsqu'une nouvelle petite série est prête. Rien d'autre entre-temps.",
+    "newsletterPlaceholder": "Votre email",
+    "newsletterCta": "S'abonner",
+    "newsletterSuccess": "Abonné — merci.",
+    "rights": "Tous droits réservés."
+  },
+  "common": {
+    "loading": "Chargement…",
+    "currency": "€"
+  }
+}

@@ -1,0 +1,141 @@
+{
+  "nav": {
+    "home": "Home",
+    "catalog": "Catalogue",
+    "about": "About",
+    "contact": "Contact",
+    "account": "Account",
+    "cart": "Cart",
+    "search": "Search"
+  },
+  "home": {
+    "heroEyebrow": "vkv.form — objects in clay, plaster and stone",
+    "heroTitle": "Form follows\nquiet.",
+    "heroSubtitle": "Handmade sculptural objects for considered interiors. Each piece is cast, carved and finished by hand in a small studio, one at a time.",
+    "heroCta": "Enter the catalogue",
+    "philosophyEyebrow": "Philosophy",
+    "philosophyTitle": "An object should earn its place slowly.",
+    "philosophyBody": "We work with raw, honest materials — unglazed clay, plaster, warm stone — and let their texture stay visible. Nothing is corrected into perfection. The imprint of the hand is the point, not the flaw.",
+    "catalogEyebrow": "The Collection",
+    "catalogTitle": "Recent forms",
+    "catalogCta": "View all objects",
+    "featuredEyebrow": "01 — 03"
+  },
+  "about": {
+    "title": "About",
+    "authorEyebrow": "The maker",
+    "authorTitle": "About the author",
+    "authorBody1": "vkv.form began as a series of studies in balance — small clay forms made between other work, kept on a windowsill rather than sold. Over time the studies became a practice, and the practice became a small studio producing objects in short, considered runs.",
+    "authorBody2": "Every piece that leaves the studio has passed through the same hands that shaped it. Nothing is outsourced, nothing is mass-produced — which is also why each run is limited, and why some forms do not return once they are gone.",
+    "philosophyEyebrow": "Philosophy",
+    "philosophyTitle": "Why we make what we make",
+    "philosophyBody1": "Modern rooms are full of things that ask for attention. We wanted to make the opposite — objects that settle into a space quietly and reward a longer look rather than a first glance.",
+    "philosophyBody2": "That means restraint in colour, honesty in material, and no two pieces that are perfectly identical. A vase with a slightly uneven rim is not a mistake to hide; it is proof that a person, not a mould alone, finished the work.",
+    "philosophyBody3": "We work primarily in three families of material — unglazed stoneware, tinted plaster, and soft natural stone — chosen because they age well and because their surface changes gently with light and touch over years of use."
+  },
+  "catalog": {
+    "title": "Catalogue",
+    "subtitle": "Every object currently in the studio.",
+    "empty": "No forms match this filter yet.",
+    "priceLabel": "Price",
+    "viewProduct": "View object",
+    "addToCart": "Add to cart",
+    "filterAll": "All"
+  },
+  "product": {
+    "back": "Back to catalogue",
+    "descriptionLabel": "Description",
+    "materialsLabel": "Materials",
+    "dimensionsLabel": "Dimensions",
+    "careLabel": "Care",
+    "addToCart": "Add to cart",
+    "adding": "Adding…",
+    "added": "Added",
+    "outOfStock": "Currently unavailable",
+    "quantityLabel": "Quantity",
+    "shippingNote": "Made to order in small batches. Ships from the EU within 5–10 working days."
+  },
+  "cart": {
+    "title": "Your cart",
+    "empty": "Your cart is currently empty.",
+    "continue": "Continue browsing",
+    "subtotal": "Subtotal",
+    "checkout": "Proceed to checkout",
+    "remove": "Remove",
+    "quantity": "Qty",
+    "taxNote": "Shipping and any applicable taxes are calculated at checkout."
+  },
+  "checkout": {
+    "title": "Checkout",
+    "redirecting": "Taking you to secure checkout…",
+    "error": "Something went wrong preparing your order. Please try again."
+  },
+  "contact": {
+    "title": "Contact",
+    "intro": "For studio visits, press, stockist enquiries or anything else — write to us directly or use the form below.",
+    "formName": "Name",
+    "formEmail": "Email",
+    "formMessage": "Message",
+    "formSubmit": "Send message",
+    "formSuccess": "Thank you — we will reply within a few days.",
+    "formError": "The message could not be sent. Please try again or email us directly.",
+    "detailsTitle": "Studio details",
+    "companyName": "Company",
+    "regNumber": "Registration No.",
+    "vatNumber": "VAT No.",
+    "address": "Address",
+    "email": "Email",
+    "follow": "Follow the studio"
+  },
+  "account": {
+    "signInTitle": "Sign in",
+    "signUpTitle": "Create an account",
+    "email": "Email",
+    "password": "Password",
+    "signIn": "Sign in",
+    "signUp": "Create account",
+    "orSignUp": "New here? Create an account",
+    "orSignIn": "Already have an account? Sign in",
+    "signOut": "Sign out",
+    "ordersTitle": "Order history",
+    "noOrders": "You have no orders yet.",
+    "orderNumber": "Order",
+    "orderStatus": "Status",
+    "orderTotal": "Total",
+    "error": "Something went wrong. Please check your details and try again."
+  },
+  "admin": {
+    "title": "Studio admin",
+    "productsTab": "Objects",
+    "ordersTab": "Orders",
+    "newProduct": "Add new object",
+    "name": "Name",
+    "slug": "URL slug",
+    "price": "Price (EUR)",
+    "stock": "Stock",
+    "description": "Description",
+    "materials": "Materials",
+    "dimensions": "Dimensions",
+    "images": "Images",
+    "uploadImage": "Upload image",
+    "save": "Save object",
+    "saving": "Saving…",
+    "delete": "Delete",
+    "edit": "Edit",
+    "cancel": "Cancel",
+    "confirmDelete": "Delete this object? This cannot be undone.",
+    "noProducts": "No objects yet. Add the first one above."
+  },
+  "footer": {
+    "newsletterTitle": "Notes from the studio",
+    "newsletterBody": "Occasional word when a new small batch is ready. No noise in between.",
+    "newsletterPlaceholder": "Your email",
+    "newsletterCta": "Subscribe",
+    "newsletterSuccess": "Subscribed — thank you.",
+    "rights": "All rights reserved."
+  },
+  "common": {
+    "loading": "Loading…",
+    "currency": "€"
+  }
+}
