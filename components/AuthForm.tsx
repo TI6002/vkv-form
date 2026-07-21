@@ -20,16 +20,30 @@ export function AuthForm() {
     setError(null);
     const supabase = createClient();
 
-    const { error } =
-      mode === 'signIn'
-        ? await supabase.auth.signInWithPassword({ email, password })
-        : await supabase.auth.signUp({ email, password });
+    let result;
+
+if (mode === 'signIn') {
+  result = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+} else {
+  result = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      emailRedirectTo: window.location.origin,
+    },
+  });
+}
+
+if (result.error) {
+  console.log(result.error);
+  setError(result.error.message);
+  return;
+}
 
     setLoading(false);
-    if (error) {
-      setError(error.message || t('error'));
-      return;
-    }
     router.refresh();
   }
 
