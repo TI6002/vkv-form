@@ -1,14 +1,17 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { Link } from '@/lib/navigation';
 import type { Product } from '@/lib/types';
 import { formatPrice } from '@/lib/format';
+import { pickLocalized } from '@/lib/localized';
 
 export function ProductCard({ product, index }: { product: Product; index: number }) {
   const t = useTranslations('catalog');
+  const locale = useLocale();
   const image = product.images?.[0];
+  const name = pickLocalized(product.name, locale);
 
   return (
     <Link href={`/catalog/${product.slug}`} className="group block">
@@ -16,7 +19,7 @@ export function ProductCard({ product, index }: { product: Product; index: numbe
         {image ? (
           <Image
             src={image}
-            alt={product.name}
+            alt={name}
             fill
             sizes="(min-width: 768px) 33vw, 50vw"
             className="object-cover transition-transform duration-[1400ms] ease-signature group-hover:scale-[1.045]"
@@ -31,7 +34,7 @@ export function ProductCard({ product, index }: { product: Product; index: numbe
         </span>
       </div>
       <div className="mt-4 flex items-baseline justify-between">
-        <h3 className="font-display text-lg text-ink">{product.name}</h3>
+        <h3 className="font-display text-lg text-ink">{name}</h3>
         <span className="font-mono text-sm text-stone">
           {formatPrice(product.price_cents, product.currency)}
         </span>

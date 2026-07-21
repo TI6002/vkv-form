@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Fraunces, Inter, IBM_Plex_Mono } from 'next/font/google';
+import { Playfair_Display, Inter, IBM_Plex_Mono } from 'next/font/google';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, unstable_setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
@@ -8,19 +8,18 @@ import { CartProvider } from '@/context/CartContext';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { CartDrawer } from '@/components/CartDrawer';
-// @ts-ignore: side-effect global CSS import
 import '../globals.css';
 
-const display = Fraunces({
-  subsets: ['latin', 'latin-ext'],
+const display = Playfair_Display({
+  subsets: ['latin', 'latin-ext', 'cyrillic'],
   variable: '--font-display',
-  weight: ['300', '400', '500'],
+  weight: ['400', '500', '600', '700'],
   style: ['normal', 'italic'],
   display: 'swap',
 });
 
 const body = Inter({
-  subsets: ['latin', 'latin-ext'],
+  subsets: ['latin', 'latin-ext', 'cyrillic'],
   variable: '--font-body',
   weight: ['400', '500'],
   display: 'swap',

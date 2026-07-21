@@ -40,15 +40,19 @@ create trigger on_auth_user_created
   for each row execute procedure public.handle_new_user();
 
 -- ---------- products ----------
+-- name/description/materials/dimensions are jsonb so each can hold one
+-- translation per language, e.g. {"en": "Vase", "ru": "Ваза"}. Filled in
+-- automatically by the admin dashboard's translate-on-save — see
+-- lib/translate-server.ts and app/api/admin/translate-product/route.ts.
 create table if not exists public.products (
   id uuid primary key default gen_random_uuid(),
   slug text not null unique,
-  name text not null,
+  name jsonb not null default '{}'::jsonb,
   price_cents integer not null check (price_cents >= 0),
   currency text not null default 'EUR',
-  description text not null default '',
-  materials text,
-  dimensions text,
+  description jsonb not null default '{}'::jsonb,
+  materials jsonb,
+  dimensions jsonb,
   stock integer not null default 0,
   images text[] not null default '{}',
   created_at timestamptz not null default now()

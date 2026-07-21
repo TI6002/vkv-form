@@ -35,17 +35,17 @@ export default async function HomePage({
         />
         <div className="absolute inset-0 bg-gradient-to-t from-ink/55 via-ink/10 to-transparent" />
         <div className="relative z-10 mx-auto w-full max-w-[1400px] px-6 pb-16 md:px-10 md:pb-24">
-          <p className="font-mono text-[11px] uppercase tracking-widest2 text-cream/80">
-            {t('heroEyebrow')}
-          </p>
-          <h1 className="mt-5 max-w-2xl font-display text-[13vw] leading-[0.95] text-cream md:text-[6.2vw]">
+          <p className="font-mono text-sm uppercase tracking-[0.25em] font-medium text-cream drop-shadow-[0_2px_4px_rgba(0,0,0,0.35)]">
+  {t('heroEyebrow')}
+</p>
+          <h1 className="mt-5 max-w-2xl font-display text-[13vw] leading-[0.95] text-cream drop-shadow-[0_3px_8px_rgba(0,0,0,0.25)] md:text-[6.2vw]">
             {heroLines.map((line, i) => (
               <span key={i} className="block">
                 {i === heroLines.length - 1 ? <em className="not-italic italic">{line}</em> : line}
               </span>
             ))}
           </h1>
-          <p className="mt-7 max-w-md font-body text-base leading-relaxed text-cream/90">
+          <p className="mt-7 max-w-md font-body text-base leading-relaxed text-cream/95 drop-shadow-[0_2px_5px_rgba(0,0,0,0.3)]">
             {t('heroSubtitle')}
           </p>
           <Link

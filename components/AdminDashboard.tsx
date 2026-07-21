@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { createClient } from '@/lib/supabase/client';
+import { pickLocalized } from '@/lib/localized';
 import type { Product } from '@/lib/types';
 
 const emptyForm = {
@@ -19,6 +20,7 @@ const emptyForm = {
 
 export function AdminDashboard() {
   const t = useTranslations('admin');
+  const locale = useLocale();
   const supabase = createClient();
 
   const [products, setProducts] = useState<Product[]>([]);
@@ -49,13 +51,16 @@ export function AdminDashboard() {
     setEditingId(p.id);
     setForm({
       id: p.id,
-      name: p.name,
+      // Show the version matching whatever language the admin is
+      // currently browsing in — saving will re-translate from this
+      // into every language, overwriting the old translations.
+      name: pickLocalized(p.name, locale),
       slug: p.slug,
       price: (p.price_cents / 100).toString(),
       stock: p.stock.toString(),
-      description: p.description,
-      materials: p.materials ?? '',
-      dimensions: p.dimensions ?? '',
+      description: pickLocalized(p.description, locale),
+      materials: pickLocalized(p.materials, locale),
+      dimensions: pickLocalized(p.dimensions, locale),
       images: p.images ?? [],
     });
   }
@@ -80,27 +85,50 @@ export function AdminDashboard() {
     e.preventDefault();
     setSaving(true);
 
-    const payload = {
-      name: form.name,
-      slug: form.slug || form.name.toLowerCase().trim().replace(/\s+/g, '-'),
-      price_cents: Math.round(parseFloat(form.price || '0') * 100),
-      stock: parseInt(form.stock || '0', 10),
-      description: form.description,
-      materials: form.materials || null,
-      dimensions: form.dimensions || null,
-      images: form.images,
-      currency: 'EUR',
-    };
+    try {
+      // Translate whatever the admin typed (any language) into every
+      // language configured in i18n.ts, via the free Google Translate
+      // wrapper running server-side in this API route.
+      const res = await fetch('/api/admin/translate-product', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: form.name,
+          description: form.description,
+          materials: form.materials || null,
+          dimensions: form.dimensions || null,
+        }),
+      });
 
-    if (editingId) {
-      await supabase.from('products').update(payload).eq('id', editingId);
-    } else {
-      await supabase.from('products').insert(payload);
+      if (!res.ok) throw new Error('Translation request failed');
+      const translated = await res.json();
+
+      const payload = {
+        name: translated.name,
+        slug: form.slug || form.name.toLowerCase().trim().replace(/\s+/g, '-'),
+        price_cents: Math.round(parseFloat(form.price || '0') * 100),
+        stock: parseInt(form.stock || '0', 10),
+        description: translated.description,
+        materials: translated.materials,
+        dimensions: translated.dimensions,
+        images: form.images,
+        currency: 'EUR',
+      };
+
+      if (editingId) {
+        await supabase.from('products').update(payload).eq('id', editingId);
+      } else {
+        await supabase.from('products').insert(payload);
+      }
+
+      resetForm();
+      await loadProducts();
+    } catch (err) {
+      console.error('Save product error:', err);
+      alert('Could not save this object — check the browser console for details.');
+    } finally {
+      setSaving(false);
     }
-
-    setSaving(false);
-    resetForm();
-    loadProducts();
   }
 
   async function handleDelete(id: string) {
@@ -130,7 +158,7 @@ export function AdminDashboard() {
                     )}
                   </div>
                   <div>
-                    <p className="font-body text-sm text-ink">{p.name}</p>
+                    <p className="font-body text-sm text-ink">{pickLocalized(p.name, locale)}</p>
                     <p className="font-mono text-[11px] text-taupe">
                       {(p.price_cents / 100).toFixed(2)} € · stock {p.stock}
                     </p>
@@ -161,6 +189,10 @@ export function AdminDashboard() {
         <h2 className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
           {editingId ? t('edit') : t('newProduct')}
         </h2>
+        <p className="mt-2 max-w-sm font-body text-xs leading-relaxed text-taupe">
+          Type in any language below — saving automatically translates it into
+          every language the site supports (currently shown in {locale.toUpperCase()}).
+        </p>
         <form onSubmit={handleSave} className="mt-6 flex flex-col gap-5">
           <Field label={t('name')}>
             <input
@@ -244,7 +276,7 @@ export function AdminDashboard() {
               disabled={saving}
               className="bg-ink px-8 py-3.5 font-mono text-[11px] uppercase tracking-widest2 text-cream transition-opacity hover:opacity-90 disabled:opacity-50"
             >
-              {saving ? t('saving') : t('save')}
+              {saving ? 'Translating & saving…' : t('save')}
             </button>
             {editingId && (
               <button

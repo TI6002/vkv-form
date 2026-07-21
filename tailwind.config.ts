@@ -14,6 +14,7 @@ const config: Config = {
         taupe: '#A5967F',
         stone: '#726657',
         ink: '#211E1A',
+        cocoa: '#3D2A1B',
         line: '#DCD0BC',
         white: '#FFFFFF',
       },

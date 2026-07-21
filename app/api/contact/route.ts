@@ -1,8 +1,13 @@
 import { NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let resend: any;
+try {
+  const { Resend } = require('resend');
+  resend = new Resend(process.env.RESEND_API_KEY);
+} catch (e) {
+  console.warn('Resend module not available');
+}
 
 console.log(
   'RESEND KEY EXISTS:',

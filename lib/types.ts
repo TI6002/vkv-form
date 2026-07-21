@@ -1,12 +1,17 @@
+import type { Locale } from '@/i18n';
+
+/** A piece of text stored once per language, e.g. { en: "Vase", ru: "Ваза" }. */
+export type LocalizedText = Partial<Record<Locale, string>>;
+
 export type Product = {
   id: string;
   slug: string;
-  name: string;
+  name: LocalizedText;
   price_cents: number;
   currency: string;
-  description: string;
-  materials: string | null;
-  dimensions: string | null;
+  description: LocalizedText;
+  materials: LocalizedText | null;
+  dimensions: LocalizedText | null;
   stock: number;
   images: string[];
   created_at: string;

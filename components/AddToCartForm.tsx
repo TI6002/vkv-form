@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useCart } from '@/context/CartContext';
 import type { Product } from '@/lib/types';
 
-export function AddToCartForm({ product }: { product: Product }) {
+export function AddToCartForm({ product, name }: { product: Product; name: string }) {
   const t = useTranslations('product');
   const { addItem } = useCart();
   const [quantity, setQuantity] = useState(1);
@@ -17,7 +17,7 @@ export function AddToCartForm({ product }: { product: Product }) {
       {
         productId: product.id,
         slug: product.slug,
-        name: product.name,
+        name,
         priceCents: product.price_cents,
         image: product.images?.[0] ?? null,
       },

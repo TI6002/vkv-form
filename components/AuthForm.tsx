@@ -18,24 +18,18 @@ export function AuthForm() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    console.log('Creating supabase client');
     const supabase = createClient();
 
-    const result =
-  mode === 'signIn'
-    ? await supabase.auth.signInWithPassword({ email, password })
-    : await supabase.auth.signUp({ email, password });
-
-  console.log(result);
-
-  const { error } = result;
+    const { error } =
+      mode === 'signIn'
+        ? await supabase.auth.signInWithPassword({ email, password })
+        : await supabase.auth.signUp({ email, password });
 
     setLoading(false);
     if (error) {
-  console.log('SUPABASE ERROR:', error);
-  setError(error.message);
-  return;
-}
+      setError(error.message || t('error'));
+      return;
+    }
     router.refresh();
   }
 

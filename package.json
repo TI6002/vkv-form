@@ -13,6 +13,7 @@
     "@stripe/stripe-js": "^4.7.0",
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.45.4",
+    "@vitalets/google-translate-api": "^9.2.0",
     "clsx": "^2.1.1",
     "framer-motion": "^11.11.17",
     "lucide-react": "^0.454.0",
@@ -20,7 +21,6 @@
     "next-intl": "3.26.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "resend": "^6.17.2",
     "stripe": "^17.1.0",
     "zod": "^3.23.8"
   },
@@ -28,7 +28,6 @@
     "@types/node": "^20.14.2",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
-    "@vitalets/google-translate-api": "^9.2.0",
     "autoprefixer": "^10.4.19",
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.4",
