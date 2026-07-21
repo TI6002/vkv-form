@@ -1,3 +1,33 @@
+#!/usr/bin/env bash
+set -e
+echo "Applying vkv.form updates (round 5 — slug fix)..."
+
+mkdir -p "lib"
+cat > "lib/slugify.ts" << '__VKV_PATCH_EOF__'
+/**
+ * Turns any text — Latvian, Russian, whatever — into a clean, ASCII-only
+ * URL slug. Diacritics (ā, š, ģ, ...) are stripped down to their base
+ * Latin letter; anything else that isn't a-z/0-9 becomes a hyphen.
+ *
+ * This matters because raw accented characters in a URL (e.g. /catalog/vāze)
+ * are fragile: some caching layers, browser history entries, and copy-paste
+ * flows re-encode them inconsistently, which is what caused product pages
+ * to 404 intermittently.
+ */
+export function slugify(input: string): string {
+  return input
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // strip combining diacritical marks
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+__VKV_PATCH_EOF__
+echo "  updated: lib/slugify.ts"
+
+mkdir -p "components"
+cat > "components/AdminDashboard.tsx" << '__VKV_PATCH_EOF__'
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -345,3 +375,8 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
     </label>
   );
 }
+__VKV_PATCH_EOF__
+echo "  updated: components/AdminDashboard.tsx"
+
+echo
+echo "Done."

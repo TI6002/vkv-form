@@ -11,13 +11,14 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { name, description, materials, dimensions } = await req.json();
+    const { name, description, materials, dimensions, sourceLocale } = await req.json();
+    const source = sourceLocale || 'en';
 
     const [nameT, descriptionT, materialsT, dimensionsT] = await Promise.all([
-      translateToAllLocales(name ?? ''),
-      translateToAllLocales(description ?? ''),
-      materials ? translateToAllLocales(materials) : Promise.resolve(null),
-      dimensions ? translateToAllLocales(dimensions) : Promise.resolve(null),
+      translateToAllLocales(name ?? '', source),
+      translateToAllLocales(description ?? '', source),
+      materials ? translateToAllLocales(materials, source) : Promise.resolve(null),
+      dimensions ? translateToAllLocales(dimensions, source) : Promise.resolve(null),
     ]);
 
     return NextResponse.json({

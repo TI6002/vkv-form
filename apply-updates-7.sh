@@ -1,3 +1,9 @@
+#!/usr/bin/env bash
+set -e
+echo "Applying vkv.form updates (round 7 — remove AnimatePresence)..."
+
+mkdir -p "components"
+cat > "components/CartDrawer.tsx" << '__VKV_PATCH_EOF__'
 'use client';
 
 import { useTranslations } from 'next-intl';
@@ -147,3 +153,8 @@ export function CartDrawer() {
     </>
   );
 }
+__VKV_PATCH_EOF__
+echo "  updated: components/CartDrawer.tsx"
+
+echo
+echo "Done. Restart npm run dev after this."

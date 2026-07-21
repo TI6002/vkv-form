@@ -36,6 +36,9 @@ export const metadata: Metadata = {
   title: 'vkv.form',
   description:
     'Handmade sculptural objects in clay, plaster and stone — cast, carved and finished by hand, one at a time.',
+  other: {
+    google: 'notranslate',
+  },
 };
 
 export function generateStaticParams() {
@@ -54,7 +57,11 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className={`${display.variable} ${body.variable} ${mono.variable}`}>
+    <html
+      lang={locale}
+      translate="no"
+      className={`notranslate ${display.variable} ${body.variable} ${mono.variable}`}
+    >
       <body className="font-body bg-cream text-ink antialiased">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <CartProvider>

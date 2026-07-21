@@ -1,10 +1,97 @@
+#!/usr/bin/env bash
+set -e
+echo "Applying vkv.form updates (round 4)..."
+
+mkdir -p "app/[locale]"
+cat > "app/[locale]/layout.tsx" << '__VKV_PATCH_EOF__'
+import type { Metadata } from 'next';
+import { Playfair_Display, Inter, IBM_Plex_Mono } from 'next/font/google';
+import { NextIntlClientProvider } from 'next-intl';
+import { getMessages, unstable_setRequestLocale } from 'next-intl/server';
+import { notFound } from 'next/navigation';
+import { locales, type Locale } from '@/i18n';
+import { CartProvider } from '@/context/CartContext';
+import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
+import { CartDrawer } from '@/components/CartDrawer';
+import '../globals.css';
+
+const display = Playfair_Display({
+  subsets: ['latin', 'latin-ext', 'cyrillic'],
+  variable: '--font-display',
+  weight: ['400', '500', '600', '700'],
+  style: ['normal', 'italic'],
+  display: 'swap',
+});
+
+const body = Inter({
+  subsets: ['latin', 'latin-ext', 'cyrillic'],
+  variable: '--font-body',
+  weight: ['400', '500'],
+  display: 'swap',
+});
+
+const mono = IBM_Plex_Mono({
+  subsets: ['latin', 'latin-ext'],
+  variable: '--font-mono',
+  weight: ['400', '500'],
+  display: 'swap',
+});
+
+export const metadata: Metadata = {
+  title: 'vkv.form',
+  description:
+    'Handmade sculptural objects in clay, plaster and stone — cast, carved and finished by hand, one at a time.',
+  other: {
+    google: 'notranslate',
+  },
+};
+
+export function generateStaticParams() {
+  return locales.map((locale) => ({ locale }));
+}
+
+export default async function LocaleLayout({
+  children,
+  params: { locale },
+}: {
+  children: React.ReactNode;
+  params: { locale: string };
+}) {
+  if (!locales.includes(locale as Locale)) notFound();
+  unstable_setRequestLocale(locale);
+  const messages = await getMessages();
+
+  return (
+    <html
+      lang={locale}
+      translate="no"
+      className={`notranslate ${display.variable} ${body.variable} ${mono.variable}`}
+    >
+      <body className="font-body bg-cream text-ink antialiased">
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <CartProvider>
+            <Header />
+            <main>{children}</main>
+            <Footer />
+            <CartDrawer />
+          </CartProvider>
+        </NextIntlClientProvider>
+      </body>
+    </html>
+  );
+}
+__VKV_PATCH_EOF__
+echo "  updated: app/[locale]/layout.tsx"
+
+mkdir -p "components"
+cat > "components/AdminDashboard.tsx" << '__VKV_PATCH_EOF__'
 'use client';
 
 import { useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { createClient } from '@/lib/supabase/client';
 import { pickLocalized } from '@/lib/localized';
-import { slugify } from '@/lib/slugify';
 import { locales, localeNames, type Locale } from '@/i18n';
 import type { Product } from '@/lib/types';
 
@@ -114,10 +201,7 @@ export function AdminDashboard() {
 
       const payload = {
         name: translated.name,
-        slug:
-          slugify(form.slug) ||
-          slugify(translated.name?.en || form.name) ||
-          `object-${Date.now()}`,
+        slug: form.slug || form.name.toLowerCase().trim().replace(/\s+/g, '-'),
         price_cents: Math.round(parseFloat(form.price || '0') * 100),
         stock: parseInt(form.stock || '0', 10),
         description: translated.description,
@@ -345,3 +429,8 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
     </label>
   );
 }
+__VKV_PATCH_EOF__
+echo "  updated: components/AdminDashboard.tsx"
+
+echo
+echo "Done."

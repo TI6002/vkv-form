@@ -1,3 +1,8 @@
+#!/usr/bin/env bash
+set -e
+echo "Applying vkv.form updates (round 6 — Next.js version bump)..."
+
+cat > "package.json" << '__VKV_PATCH_EOF__'
 {
   "name": "vkv-form",
   "version": "0.1.0",
@@ -13,10 +18,8 @@
     "@stripe/stripe-js": "^4.7.0",
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.45.4",
-    "client-only": "^0.0.1",
     "clsx": "^2.1.1",
     "framer-motion": "^11.11.17",
-    "is-number": "^7.0.0",
     "lucide-react": "^0.454.0",
     "next": "14.2.35",
     "next-intl": "3.26.3",
@@ -36,3 +39,11 @@
     "typescript": "^5.5.2"
   }
 }
+__VKV_PATCH_EOF__
+echo "  updated: package.json"
+
+echo
+echo "Now run:"
+echo "  rm -rf node_modules package-lock.json"
+echo "  npm install"
+echo "  npm run dev"
