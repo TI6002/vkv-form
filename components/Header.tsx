@@ -14,7 +14,6 @@ export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const links = [
-    { href: '/', label: t('home') },
     { href: '/catalog', label: t('catalog') },
     { href: '/about', label: t('about') },
     { href: '/contact', label: t('contact') },

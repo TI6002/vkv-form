@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import Image from 'next/image';
 import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
 import { Link } from '@/lib/navigation';
 import { Reveal } from '@/components/Reveal';
@@ -27,13 +28,15 @@ export default async function ProductPage({
 
       <div className="mt-8 grid gap-14 md:grid-cols-2 md:gap-20">
         <Reveal>
-          <div className="aspect-[4/5] bg-sand">
+          <div className="relative aspect-[4/5] bg-sand">
             {product.images?.[0] && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
+              <Image
                 src={product.images[0]}
                 alt={product.name}
-                className="h-full w-full object-cover"
+                fill
+                priority
+                sizes="(min-width: 768px) 50vw, 100vw"
+                className="object-cover"
               />
             )}
           </div>

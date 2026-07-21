@@ -12,7 +12,7 @@ export const demoProducts: Product[] = [
     materials: 'Unglazed stoneware, sealed interior',
     dimensions: 'H 32 cm · Ø 16 cm',
     stock: 4,
-    images: ['https://picsum.photos/seed/vkv-volta/1000/1250'],
+    images: ['/images/product-1.png'],
     created_at: new Date().toISOString(),
   },
   {
@@ -26,7 +26,7 @@ export const demoProducts: Product[] = [
     materials: 'Tinted plaster, wax-sealed',
     dimensions: 'H 6 cm · Ø 24 cm',
     stock: 7,
-    images: ['https://picsum.photos/seed/vkv-bowl/1000/1250'],
+    images: ['/images/product-2.png'],
     created_at: new Date().toISOString(),
   },
   {
@@ -40,7 +40,7 @@ export const demoProducts: Product[] = [
     materials: 'Soft natural stone',
     dimensions: 'H 38 cm · W 8 cm · D 8 cm',
     stock: 2,
-    images: ['https://picsum.photos/seed/vkv-obelisk/1000/1250'],
+    images: ['/images/product-3.png'],
     created_at: new Date().toISOString(),
   },
 ];

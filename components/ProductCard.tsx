@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import Image from 'next/image';
 import { Link } from '@/lib/navigation';
 import type { Product } from '@/lib/types';
 import { formatPrice } from '@/lib/format';
@@ -13,11 +14,12 @@ export function ProductCard({ product, index }: { product: Product; index: numbe
     <Link href={`/catalog/${product.slug}`} className="group block">
       <div className="relative aspect-[4/5] overflow-hidden bg-sand">
         {image ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={image}
             alt={product.name}
-            className="h-full w-full object-cover transition-transform duration-[1400ms] ease-signature group-hover:scale-[1.045]"
+            fill
+            sizes="(min-width: 768px) 33vw, 50vw"
+            className="object-cover transition-transform duration-[1400ms] ease-signature group-hover:scale-[1.045]"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center font-mono text-xs text-taupe">

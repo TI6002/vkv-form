@@ -1,5 +1,4 @@
 import { getRequestConfig } from 'next-intl/server';
-import { notFound } from 'next/navigation';
 
 // The base language we write copy in. All other files under /messages
 // are generated automatically — see scripts/translate-missing.mjs and README.md.
@@ -19,10 +18,19 @@ export const localeNames: Record<Locale, string> = {
   lv: 'Latviešu',
 };
 
-export default getRequestConfig(async ({ locale }) => {
-  if (!locales.includes(locale as Locale)) notFound();
+export default getRequestConfig(async ({ requestLocale }) => {
+  // requestLocale reflects the actual /xx segment in the URL. Awaiting it
+  // (instead of the old, now-deprecated synchronous `locale` param) is what
+  // fixes the "switches to the wrong language" bug — the old API could
+  // resolve locale from a stale cookie instead of the URL you're on.
+  let locale = await requestLocale;
+
+  if (!locale || !locales.includes(locale as Locale)) {
+    locale = defaultLocale;
+  }
 
   return {
+    locale,
     messages: (await import(`./messages/${locale}.json`)).default,
   };
 });

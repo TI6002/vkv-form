@@ -1,4 +1,5 @@
 import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
+import Image from 'next/image';
 import { Reveal } from '@/components/Reveal';
 
 export default async function AboutPage({
@@ -21,12 +22,17 @@ export default async function AboutPage({
       <section className="mx-auto max-w-[1400px] px-6 py-16 md:px-10 md:py-24">
         <div className="grid gap-12 md:grid-cols-[0.9fr_1.1fr] md:gap-20">
           <Reveal>
-            <div className="aspect-[3/4] bg-sand">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="https://picsum.photos/seed/vkv-author/900/1200"
+            {/*
+              Drop your own photo in as public/images/about-author.png
+              (portrait orientation works best) to replace this.
+            */}
+            <div className="relative aspect-[3/4] bg-sand">
+              <Image
+                src="/images/about-author.png"
                 alt=""
-                className="h-full w-full object-cover"
+                fill
+                sizes="(min-width: 768px) 45vw, 100vw"
+                className="object-cover"
               />
             </div>
           </Reveal>

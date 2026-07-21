@@ -5,6 +5,7 @@ export default createMiddleware({
   locales,
   defaultLocale,
   localePrefix: 'as-needed', // English lives at "/", other locales at "/fr", "/ru", etc.
+  localeDetection: false, // don't guess from Accept-Language/cookie — always trust the URL
 });
 
 export const config = {

@@ -1,4 +1,5 @@
 import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
+import Image from 'next/image';
 import { Link } from '@/lib/navigation';
 import { Reveal } from '@/components/Reveal';
 import { ProductCard } from '@/components/ProductCard';
@@ -19,11 +20,18 @@ export default async function HomePage({
     <div>
       {/* Hero */}
       <section className="relative flex min-h-[92vh] items-end overflow-hidden">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="https://picsum.photos/seed/vkv-hero/1800/1400"
+        {/*
+          Drop your own photo in as public/images/hero.png (landscape,
+          ideally 1800px+ wide) and it replaces this automatically — no
+          code change needed. Falls back to a placeholder until then.
+        */}
+        <Image
+          src="/images/hero.png"
           alt=""
-          className="absolute inset-0 h-full w-full object-cover"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-ink/55 via-ink/10 to-transparent" />
         <div className="relative z-10 mx-auto w-full max-w-[1400px] px-6 pb-16 md:px-10 md:pb-24">

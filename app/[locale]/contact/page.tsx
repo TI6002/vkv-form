@@ -16,7 +16,7 @@ export default async function ContactPage({
     reg: process.env.NEXT_PUBLIC_STUDIO_REG_NUMBER || 'add your registration number',
     vat: process.env.NEXT_PUBLIC_STUDIO_VAT_NUMBER || 'add your VAT number',
     address: process.env.NEXT_PUBLIC_STUDIO_ADDRESS || 'add your studio address',
-    email: process.env.NEXT_PUBLIC_STUDIO_EMAIL || 'hello@vkv.form',
+    email: process.env.NEXT_PUBLIC_STUDIO_EMAIL || 'taisailjina12@inbox.lv',
   };
 
   return (
