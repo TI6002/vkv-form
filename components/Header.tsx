@@ -14,7 +14,6 @@ export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const links = [
-    
     { href: '/catalog', label: t('catalog') },
     { href: '/about', label: t('about') },
     { href: '/contact', label: t('contact') },
@@ -24,11 +23,11 @@ export function Header() {
     <header className="sticky top-0 z-40 border-b border-line bg-cream/90 backdrop-blur-sm">
       <div className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-5 md:px-10">
         <Link
-  href="/"
-  className="font-display text-4xl md:text-3xl font-medium italic tracking-tight text-ink leading-none"
->
-  VKV.FORM
-</Link>
+          href="/"
+          className="font-display text-[22px] font-medium italic tracking-tight text-cocoa"
+        >
+          VKV.FORM
+        </Link>
 
         <nav className="hidden md:flex items-center gap-9">
           {links.map((l) => {

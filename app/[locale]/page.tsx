@@ -57,63 +57,67 @@ export default async function HomePage({
         </div>
       </section>
 
-      {/* Philosophy */}
-      <section className="mx-auto max-w-[1400px] px-6 py-28 md:px-10 md:py-36">
-        <Reveal>
-          <p className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
-            {t('philosophyEyebrow')}
-          </p>
-        </Reveal>
-        <div className="mt-6 grid gap-10 md:grid-cols-2 md:gap-20">
+      {/* Philosophy — white panel */}
+      <section className="bg-white">
+        <div className="mx-auto max-w-[1400px] px-6 py-28 md:px-10 md:py-36">
           <Reveal>
-            <h2 className="font-display text-4xl leading-[1.1] text-ink md:text-5xl">
-              {t('philosophyTitle')}
-            </h2>
-          </Reveal>
-          <Reveal delay={0.1}>
-            <p className="font-body text-lg leading-relaxed text-stone">
-              {t('philosophyBody')}
+            <p className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
+              {t('philosophyEyebrow')}
             </p>
           </Reveal>
+          <div className="mt-6 grid gap-10 md:grid-cols-2 md:gap-20">
+            <Reveal>
+              <h2 className="font-display text-4xl leading-[1.1] text-ink md:text-5xl">
+                {t('philosophyTitle')}
+              </h2>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <p className="font-body text-lg leading-relaxed text-stone">
+                {t('philosophyBody')}
+              </p>
+            </Reveal>
+          </div>
         </div>
       </section>
 
-      {/* Featured catalogue */}
-      <section className="mx-auto max-w-[1400px] px-6 pb-28 md:px-10 md:pb-36">
-        <Reveal>
-          <div className="flex items-end justify-between border-b border-line pb-6">
-            <div>
-              <p className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
-                {t('catalogEyebrow')}
-              </p>
-              <h2 className="mt-3 font-display text-3xl text-ink md:text-4xl">
-                {t('catalogTitle')}
-              </h2>
+      {/* Featured catalogue — beige panel, alternating with the white one above */}
+      <section className="bg-cream">
+        <div className="mx-auto max-w-[1400px] px-6 py-28 md:px-10 md:py-36">
+          <Reveal>
+            <div className="flex items-end justify-between border-b border-line pb-6">
+              <div>
+                <p className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
+                  {t('catalogEyebrow')}
+                </p>
+                <h2 className="mt-3 font-display text-3xl text-ink md:text-4xl">
+                  {t('catalogTitle')}
+                </h2>
+              </div>
+              <span className="hidden font-mono text-[11px] uppercase tracking-widest2 text-taupe md:block">
+                {t('featuredEyebrow')}
+              </span>
             </div>
-            <span className="hidden font-mono text-[11px] uppercase tracking-widest2 text-taupe md:block">
-              {t('featuredEyebrow')}
-            </span>
-          </div>
-        </Reveal>
+          </Reveal>
 
-        <div className="mt-12 grid grid-cols-1 gap-x-8 gap-y-14 sm:grid-cols-2 md:grid-cols-3">
-          {products.map((p, i) => (
-            <Reveal key={p.id} delay={i * 0.08}>
-              <ProductCard product={p} index={i} />
-            </Reveal>
-          ))}
+          <div className="mt-12 grid grid-cols-1 gap-x-8 gap-y-14 sm:grid-cols-2 md:grid-cols-3">
+            {products.map((p, i) => (
+              <Reveal key={p.id} delay={i * 0.08}>
+                <ProductCard product={p} index={i} />
+              </Reveal>
+            ))}
+          </div>
+
+          <Reveal delay={0.15}>
+            <div className="mt-16 text-center">
+              <Link
+                href="/catalog"
+                className="font-mono text-[11px] uppercase tracking-widest2 text-ink underline underline-offset-4"
+              >
+                {t('catalogCta')}
+              </Link>
+            </div>
+          </Reveal>
         </div>
-
-        <Reveal delay={0.15}>
-          <div className="mt-16 text-center">
-            <Link
-              href="/catalog"
-              className="font-mono text-[11px] uppercase tracking-widest2 text-ink underline underline-offset-4"
-            >
-              {t('catalogCta')}
-            </Link>
-          </div>
-        </Reveal>
       </section>
     </div>
   );
