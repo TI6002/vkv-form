@@ -9,11 +9,7 @@ export async function POST(req: Request) {
 
   let event: Stripe.Event;
   try {
-    event = stripe.webhooks.constructEvent(
-      body,
-      signature!,
-      process.env.STRIPE_WEBHOOK_SECRET!
-    );
+    event = stripe.webhooks.constructEvent(body, signature!, process.env.STRIPE_WEBHOOK_SECRET!);
   } catch (err) {
     console.error('Webhook signature verification failed:', err);
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
@@ -21,17 +17,18 @@ export async function POST(req: Request) {
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session;
-    const supabase = createAdminClient();
+    const orderId = session.metadata?.order_id;
+    const admin = createAdminClient();
 
-    await supabase.from('orders').insert({
-      email: session.customer_details?.email ?? 'unknown',
-      status: 'paid',
-      total_cents: session.amount_total ?? 0,
-      currency: (session.currency ?? 'eur').toUpperCase(),
-      stripe_session_id: session.id,
-    });
-
-    // Optionally decrement stock here by parsing session.metadata.cart.
+    if (orderId) {
+      await admin
+        .from('orders')
+        .update({
+          status: 'paid',
+          email: session.customer_details?.email ?? undefined,
+        })
+        .eq('id', orderId);
+    }
   }
 
   return NextResponse.json({ received: true });

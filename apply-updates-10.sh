@@ -1,3 +1,15 @@
+#!/usr/bin/env bash
+set -e
+
+if [ ! -f package.json ]; then
+  echo "ERROR: no package.json here. cd into the project root first."
+  exit 1
+fi
+
+echo "Applying vkv.form updates (round 10 — profile page layout)..."
+
+mkdir -p "app/[locale]/account"
+cat > "app/[locale]/account/page.tsx" << '__VKV_PATCH_EOF__'
 import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase/server';
@@ -202,3 +214,7 @@ export default async function AccountPage({
     </div>
   );
 }
+__VKV_PATCH_EOF__
+echo "  updated: app/[locale]/account/page.tsx"
+
+echo "Done. Restart npm run dev after this."

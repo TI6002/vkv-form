@@ -7,6 +7,7 @@ import { AddToCartForm } from '@/components/AddToCartForm';
 import { getProductBySlug } from '@/lib/products';
 import { formatPrice } from '@/lib/format';
 import { pickLocalized } from '@/lib/localized';
+import { FavoriteButton } from '@/components/FavoriteButton';
 
 export default async function ProductPage({
   params: { locale, slug },
@@ -52,7 +53,13 @@ export default async function ProductPage({
           <h1 className="font-display text-4xl text-ink md:text-5xl">{name}</h1>
           <p className="mt-3 font-mono text-xl text-stone">
             {formatPrice(product.price_cents, product.currency)}
+            <p className={`mt-2 font-mono text-[11px] uppercase tracking-widest2 ${
+  product.available && product.stock > 0 ? 'text-stone' : 'text-red-800'
+}`}>
+  {product.available && product.stock > 0 ? t('inStock') : t('outOfStock')}
+</p>
           </p>
+          
 
           <p className="mt-8 font-body text-base leading-relaxed text-stone">
             {description}
@@ -78,6 +85,9 @@ export default async function ProductPage({
           </dl>
 
           <AddToCartForm product={product} name={name} />
+          <div className="mt-4">
+  <FavoriteButton productId={product.id} />
+</div>
 
           <p className="mt-6 font-body text-xs leading-relaxed text-taupe">
             {t('shippingNote')}

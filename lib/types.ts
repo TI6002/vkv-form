@@ -1,6 +1,5 @@
 import type { Locale } from '@/i18n';
 
-/** A piece of text stored once per language, e.g. { en: "Vase", ru: "Ваза" }. */
 export type LocalizedText = Partial<Record<Locale, string>>;
 
 export type Product = {
@@ -13,6 +12,7 @@ export type Product = {
   materials: LocalizedText | null;
   dimensions: LocalizedText | null;
   stock: number;
+  available: boolean;
   images: string[];
   created_at: string;
 };
@@ -26,8 +26,19 @@ export type CartLine = {
   quantity: number;
 };
 
+export type OrderItem = {
+  id: string;
+  order_id: string;
+  product_id: string | null;
+  product_name: string;
+  quantity: number;
+  unit_price_cents: number;
+  created_at: string;
+};
+
 export type Order = {
   id: string;
+  order_number: number;
   user_id: string | null;
   email: string;
   status: 'pending' | 'paid' | 'shipped' | 'cancelled';
@@ -35,4 +46,13 @@ export type Order = {
   currency: string;
   stripe_session_id: string | null;
   created_at: string;
+  order_items?: OrderItem[];
+};
+
+export type Favorite = {
+  id: string;
+  user_id: string;
+  product_id: string;
+  created_at: string;
+  products?: Product;
 };

@@ -53,7 +53,13 @@
     "added": "Pievienots",
     "outOfStock": "Šobrīd nav pieejams",
     "quantityLabel": "Daudzums",
-    "shippingNote": "Izgatavots pēc pasūtījuma nelielās sērijās. Piegāde no ES 5–10 darba dienu laikā."
+    "shippingNote": "Izgatavots pēc pasūtījuma nelielās sērijās. Piegāde no ES 5–10 darba dienu laikā.",
+    "inStock": "Ir noliktavā",
+    "like": "Saglabāt",
+    "liked": "Saglabāts",
+    "orderNow": "Pasūtīt tagad",
+    "save": "Saglabāt",
+    "saved": "Saglabāts"
   },
   "cart": {
     "title": "Jūsu grozs",
@@ -68,7 +74,9 @@
   "checkout": {
     "title": "Apmaksa",
     "redirecting": "Novirzām jūs uz drošu apmaksu…",
-    "error": "Sagatavojot jūsu pasūtījumu, radās kļūda. Lūdzu, mēģiniet vēlreiz."
+    "error": "Sagatavojot jūsu pasūtījumu, radās kļūda. Lūdzu, mēģiniet vēlreiz.",
+    "emailLabel": "E-pasts",
+    "payButton": "Apmaksāt tagad"
   },
   "contact": {
     "title": "Kontakti",
@@ -102,7 +110,20 @@
     "orderNumber": "Pasūtījums",
     "orderStatus": "Statuss",
     "orderTotal": "Summa",
-    "error": "Kaut kas nogāja greizi. Pārbaudiet datus un mēģiniet vēlreiz."
+    "error": "Kaut kas nogāja greizi. Pārbaudiet datus un mēģiniet vēlreiz.",
+    "activeOrdersTitle": "Aktīvie pasūtījumi",
+    "noActiveOrders": "Jums šobrīd nav aktīvu pasūtījumu.",
+    "pastOrdersTitle": "Pasūtījumu vēsture",
+    "savedTitle": "Saglabātais",
+    "noSaved": "Jūs vēl neko neesat saglabājis.",
+    "errors": {
+      "invalidCredentials": "Nepareizs e-pasts vai parole.",
+      "emailNotConfirmed": "Lūdzu, apstipriniet e-pastu pirms pieslēgšanās.",
+      "alreadyRegistered": "Konts ar šo e-pastu jau pastāv — mēģiniet pieslēgties.",
+      "weakPassword": "Parolei jābūt vismaz 6 rakstzīmes garai.",
+      "rateLimited": "Pārāk daudz mēģinājumu — lūdzu, uzgaidiet dažas minūtes un mēģiniet vēlreiz.",
+      "generic": "Kaut kas nogāja greizi. Pārbaudiet datus un mēģiniet vēlreiz."
+    }
   },
   "admin": {
     "title": "Darbnīcas administrēšana",
@@ -124,7 +145,8 @@
     "edit": "Rediģēt",
     "cancel": "Atcelt",
     "confirmDelete": "Dzēst šo priekšmetu? To nevar atsaukt.",
-    "noProducts": "Vēl nav priekšmetu. Pievienojiet pirmo augstāk."
+    "noProducts": "Vēl nav priekšmetu. Pievienojiet pirmo augstāk.",
+    "available": "Pieejams pārdošanai"
   },
   "footer": {
     "newsletterTitle": "Ziņas no darbnīcas",

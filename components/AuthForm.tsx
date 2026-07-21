@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { mapAuthError } from '@/lib/auth-errors';
 
 export function AuthForm() {
   const t = useTranslations('account');
@@ -20,30 +21,16 @@ export function AuthForm() {
     setError(null);
     const supabase = createClient();
 
-    let result;
-
-if (mode === 'signIn') {
-  result = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
-} else {
-  result = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      emailRedirectTo: window.location.origin,
-    },
-  });
-}
-
-if (result.error) {
-  console.log(result.error);
-  setError(result.error.message);
-  return;
-}
+    const { error } =
+      mode === 'signIn'
+        ? await supabase.auth.signInWithPassword({ email, password })
+        : await supabase.auth.signUp({ email, password });
 
     setLoading(false);
+    if (error) {
+      setError(t(`errors.${mapAuthError(error.message)}`));
+      return;
+    }
     router.refresh();
   }
 
