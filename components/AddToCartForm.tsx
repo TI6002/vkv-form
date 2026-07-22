@@ -15,7 +15,7 @@ export function AddToCartForm({ product, name }: { product: Product; name: strin
   const { addItem } = useCart();
   const router = useRouter();
   const [justAdded, setJustAdded] = useState(false);
-  const available = product.is_available && product.stock > 0;
+  const available = product.available;
 
   function currentLine() {
     return {

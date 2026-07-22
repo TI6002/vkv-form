@@ -13,7 +13,7 @@ export type Product = {
   materials: LocalizedText | null;
   dimensions: LocalizedText | null;
   stock: number;
-  is_available: boolean;
+  available: boolean;
   images: string[];
   created_at: string;
 };

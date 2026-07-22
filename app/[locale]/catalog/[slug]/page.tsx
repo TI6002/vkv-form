@@ -3,11 +3,17 @@ import Image from 'next/image';
 import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
 import { Link } from '@/lib/navigation';
 import { Reveal } from '@/components/Reveal';
+
+// Without this, Next.js can cache this page's rendered output (and the
+// Supabase fetch behind it) and keep showing stale product data — e.g.
+// availability toggled in /admin not showing up here without a rebuild.
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 import { AddToCartForm } from '@/components/AddToCartForm';
+import { LikeButton } from '@/components/LikeButton';
 import { getProductBySlug } from '@/lib/products';
 import { formatPrice } from '@/lib/format';
 import { pickLocalized } from '@/lib/localized';
-import { FavoriteButton } from '@/components/FavoriteButton';
 
 export default async function ProductPage({
   params: { locale, slug },
@@ -23,6 +29,7 @@ export default async function ProductPage({
   const description = pickLocalized(product.description, locale);
   const materials = pickLocalized(product.materials, locale);
   const dimensions = pickLocalized(product.dimensions, locale);
+  const available = product.available;
 
   return (
     <div className="mx-auto max-w-[1400px] px-6 py-16 md:px-10 md:py-24">
@@ -50,16 +57,17 @@ export default async function ProductPage({
         </Reveal>
 
         <Reveal delay={0.1}>
-          <h1 className="font-display text-4xl text-ink md:text-5xl">{name}</h1>
+          <div className="flex items-start justify-between gap-4">
+            <h1 className="font-display text-4xl text-ink md:text-5xl">{name}</h1>
+          </div>
           <p className="mt-3 font-mono text-xl text-stone">
             {formatPrice(product.price_cents, product.currency)}
           </p>
-          <p
-            className={`mt-2 font-mono text-[11px] uppercase tracking-widest2 ${
-              product.is_available && product.stock > 0 ? 'text-stone' : 'text-red-800'
-            }`}
-          >
-            {product.is_available && product.stock > 0 ? t('inStock') : t('outOfStock')}
+
+          <p className="mt-3 font-mono text-[11px] uppercase tracking-widest2">
+            <span className={available ? 'text-stone' : 'text-red-800'}>
+              {available ? t('inStock') : t('outOfStock')}
+            </span>
           </p>
 
           <p className="mt-8 font-body text-base leading-relaxed text-stone">
@@ -86,9 +94,10 @@ export default async function ProductPage({
           </dl>
 
           <AddToCartForm product={product} name={name} />
-          <div className="mt-4">
-  <FavoriteButton productId={product.id} />
-</div>
+
+          <div className="mt-3">
+            <LikeButton productId={product.id} />
+          </div>
 
           <p className="mt-6 font-body text-xs leading-relaxed text-taupe">
             {t('shippingNote')}

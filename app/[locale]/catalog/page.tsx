@@ -3,6 +3,9 @@ import { Reveal } from '@/components/Reveal';
 import { ProductCard } from '@/components/ProductCard';
 import { getProducts } from '@/lib/products';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function CatalogPage({
   params: { locale },
 }: {

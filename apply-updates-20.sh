@@ -1,3 +1,77 @@
+#!/usr/bin/env bash
+set -e
+
+if [ ! -f package.json ]; then
+  echo "ERROR: no package.json here. cd into the project root first."
+  exit 1
+fi
+
+echo "Applying vkv.form updates (round 20 — fix field name: available, not is_available)..."
+
+mkdir -p "components"
+cat > "components/ProductCard.tsx" << '__VKV_PATCH_EOF__'
+'use client';
+
+import { useLocale, useTranslations } from 'next-intl';
+import Image from 'next/image';
+import { Link } from '@/lib/navigation';
+import type { Product } from '@/lib/types';
+import { formatPrice } from '@/lib/format';
+import { pickLocalized } from '@/lib/localized';
+import { LikeButton } from './LikeButton';
+
+export function ProductCard({ product, index }: { product: Product; index: number }) {
+  const t = useTranslations('catalog');
+  const tp = useTranslations('product');
+  const locale = useLocale();
+  const image = product.images?.[0];
+  const name = pickLocalized(product.name, locale);
+  const available = product.available;
+
+  return (
+    <Link href={`/catalog/${product.slug}`} className="group block">
+      <div className="relative aspect-[4/5] overflow-hidden bg-sand">
+        {image ? (
+          <Image
+            src={image}
+            alt={name}
+            fill
+            sizes="(min-width: 768px) 33vw, 50vw"
+            className={`object-cover transition-transform duration-[1400ms] ease-signature group-hover:scale-[1.045] ${
+              available ? '' : 'opacity-60'
+            }`}
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center font-mono text-xs text-taupe">
+            No image
+          </div>
+        )}
+        <span className="absolute left-4 top-4 font-mono text-[10px] uppercase tracking-widest2 text-stone/80">
+          {String(index + 1).padStart(2, '0')}
+        </span>
+        <div className="absolute right-3 top-3">
+          <LikeButton productId={product.id} variant="icon" />
+        </div>
+        {!available && (
+          <span className="absolute bottom-3 left-3 bg-ink/85 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest2 text-cream">
+            {tp('outOfStock')}
+          </span>
+        )}
+      </div>
+      <div className="mt-4 flex items-baseline justify-between">
+        <h3 className="font-display text-lg text-ink">{name}</h3>
+        <span className="font-mono text-sm text-stone">
+          {formatPrice(product.price_cents, product.currency)}
+        </span>
+      </div>
+    </Link>
+  );
+}
+__VKV_PATCH_EOF__
+echo "  updated: components/ProductCard.tsx"
+
+mkdir -p "components"
+cat > "components/AdminDashboard.tsx" << '__VKV_PATCH_EOF__'
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -420,3 +494,326 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
     </label>
   );
 }
+__VKV_PATCH_EOF__
+echo "  updated: components/AdminDashboard.tsx"
+
+mkdir -p "components"
+cat > "components/AddToCartForm.tsx" << '__VKV_PATCH_EOF__'
+'use client';
+
+import { useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { useCart } from '@/context/CartContext';
+import { useRouter } from '@/lib/navigation';
+import type { Product } from '@/lib/types';
+
+/**
+ * Each object is a one-of-a-kind, handmade piece — there's only ever one
+ * in stock, so there's no quantity to choose. Quantity is always 1.
+ */
+export function AddToCartForm({ product, name }: { product: Product; name: string }) {
+  const t = useTranslations('product');
+  const { addItem } = useCart();
+  const router = useRouter();
+  const [justAdded, setJustAdded] = useState(false);
+  const available = product.available;
+
+  function currentLine() {
+    return {
+      productId: product.id,
+      slug: product.slug,
+      name,
+      priceCents: product.price_cents,
+      image: product.images?.[0] ?? null,
+    };
+  }
+
+  function handleAdd() {
+    addItem(currentLine(), 1);
+    setJustAdded(true);
+    setTimeout(() => setJustAdded(false), 1800);
+  }
+
+  function handleOrderNow() {
+    addItem(currentLine(), 1);
+    router.push('/checkout');
+  }
+
+  if (!available) {
+    return (
+      <p className="mt-8 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
+        {t('outOfStock')}
+      </p>
+    );
+  }
+
+  return (
+    <div className="mt-8 flex flex-col gap-3">
+      <button
+        onClick={handleAdd}
+        className="w-full border border-ink py-3.5 font-mono text-[11px] uppercase tracking-widest2 text-ink transition-colors hover:bg-ink hover:text-cream"
+      >
+        {justAdded ? t('added') : t('addToCart')}
+      </button>
+      <button
+        onClick={handleOrderNow}
+        className="w-full bg-ink py-3.5 font-mono text-[11px] uppercase tracking-widest2 text-cream transition-opacity hover:opacity-90"
+      >
+        {t('orderNow')}
+      </button>
+    </div>
+  );
+}
+__VKV_PATCH_EOF__
+echo "  updated: components/AddToCartForm.tsx"
+
+mkdir -p "app/[locale]/catalog/[slug]"
+cat > "app/[locale]/catalog/[slug]/page.tsx" << '__VKV_PATCH_EOF__'
+import { notFound } from 'next/navigation';
+import Image from 'next/image';
+import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
+import { Link } from '@/lib/navigation';
+import { Reveal } from '@/components/Reveal';
+
+// Without this, Next.js can cache this page's rendered output (and the
+// Supabase fetch behind it) and keep showing stale product data — e.g.
+// availability toggled in /admin not showing up here without a rebuild.
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+import { AddToCartForm } from '@/components/AddToCartForm';
+import { LikeButton } from '@/components/LikeButton';
+import { getProductBySlug } from '@/lib/products';
+import { formatPrice } from '@/lib/format';
+import { pickLocalized } from '@/lib/localized';
+
+export default async function ProductPage({
+  params: { locale, slug },
+}: {
+  params: { locale: string; slug: string };
+}) {
+  unstable_setRequestLocale(locale);
+  const t = await getTranslations('product');
+  const product = await getProductBySlug(slug);
+  if (!product) notFound();
+
+  const name = pickLocalized(product.name, locale);
+  const description = pickLocalized(product.description, locale);
+  const materials = pickLocalized(product.materials, locale);
+  const dimensions = pickLocalized(product.dimensions, locale);
+  const available = product.available;
+
+  return (
+    <div className="mx-auto max-w-[1400px] px-6 py-16 md:px-10 md:py-24">
+      <Link
+        href="/catalog"
+        className="font-mono text-[11px] uppercase tracking-widest2 text-stone hover:text-ink"
+      >
+        ← {t('back')}
+      </Link>
+
+      <div className="mt-8 grid gap-14 md:grid-cols-2 md:gap-20">
+        <Reveal>
+          <div className="relative aspect-[4/5] bg-sand">
+            {product.images?.[0] && (
+              <Image
+                src={product.images[0]}
+                alt={name}
+                fill
+                priority
+                sizes="(min-width: 768px) 50vw, 100vw"
+                className="object-cover"
+              />
+            )}
+          </div>
+        </Reveal>
+
+        <Reveal delay={0.1}>
+          <div className="flex items-start justify-between gap-4">
+            <h1 className="font-display text-4xl text-ink md:text-5xl">{name}</h1>
+          </div>
+          <p className="mt-3 font-mono text-xl text-stone">
+            {formatPrice(product.price_cents, product.currency)}
+          </p>
+
+          <p className="mt-3 font-mono text-[11px] uppercase tracking-widest2">
+            <span className={available ? 'text-stone' : 'text-red-800'}>
+              {available ? t('inStock') : t('outOfStock')}
+            </span>
+          </p>
+
+          <p className="mt-8 font-body text-base leading-relaxed text-stone">
+            {description}
+          </p>
+
+          <dl className="mt-8 space-y-3 border-t border-line pt-6">
+            {materials && (
+              <div className="flex gap-4">
+                <dt className="w-32 shrink-0 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
+                  {t('materialsLabel')}
+                </dt>
+                <dd className="font-body text-sm text-ink">{materials}</dd>
+              </div>
+            )}
+            {dimensions && (
+              <div className="flex gap-4">
+                <dt className="w-32 shrink-0 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
+                  {t('dimensionsLabel')}
+                </dt>
+                <dd className="font-body text-sm text-ink">{dimensions}</dd>
+              </div>
+            )}
+          </dl>
+
+          <AddToCartForm product={product} name={name} />
+
+          <div className="mt-3">
+            <LikeButton productId={product.id} />
+          </div>
+
+          <p className="mt-6 font-body text-xs leading-relaxed text-taupe">
+            {t('shippingNote')}
+          </p>
+        </Reveal>
+      </div>
+    </div>
+  );
+}
+__VKV_PATCH_EOF__
+echo "  updated: app/[locale]/catalog/[slug]/page.tsx"
+
+mkdir -p "lib"
+cat > "lib/demo-products.ts" << '__VKV_PATCH_EOF__'
+import type { Product } from './types';
+
+export const demoProducts: Product[] = [
+  {
+    id: 'demo-1',
+    slug: 'volta-vase',
+    name: { en: 'Volta Vase' },
+    price_cents: 18800,
+    currency: 'EUR',
+    description: {
+      en: 'A hand-built stoneware vase with a soft asymmetric lean, left unglazed to show the raw clay body. Each one is thrown and altered by hand, so the exact curve varies slightly from piece to piece.',
+    },
+    materials: { en: 'Unglazed stoneware, sealed interior' },
+    dimensions: { en: 'H 32 cm · Ø 16 cm' },
+    stock: 4,
+    available: true,
+    images: ['/images/product-1.png'],
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: 'demo-2',
+    slug: 'muted-bowl-no-2',
+    name: { en: 'Muted Bowl No. 2' },
+    price_cents: 9400,
+    currency: 'EUR',
+    description: {
+      en: 'A shallow bowl in tinted plaster with a soft, chalky surface. Suited to a single piece of fruit or a scatter of keys — it is meant to be used, not shelved.',
+    },
+    materials: { en: 'Tinted plaster, wax-sealed' },
+    dimensions: { en: 'H 6 cm · Ø 24 cm' },
+    stock: 7,
+    available: true,
+    images: ['/images/product-2.png'],
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: 'demo-3',
+    slug: 'still-form-obelisk',
+    name: { en: 'Still Form Obelisk' },
+    price_cents: 24200,
+    currency: 'EUR',
+    description: {
+      en: 'A carved soft-stone obelisk, hand-finished with a matte, slightly porous surface. Reads as sculpture on its own, or as a quiet anchor on a shelf of smaller objects.',
+    },
+    materials: { en: 'Soft natural stone' },
+    dimensions: { en: 'H 38 cm · W 8 cm · D 8 cm' },
+    stock: 2,
+    available: true,
+    images: ['/images/product-3.png'],
+    created_at: new Date().toISOString(),
+  },
+];
+__VKV_PATCH_EOF__
+echo "  updated: lib/demo-products.ts"
+
+mkdir -p "lib"
+cat > "lib/types.ts" << '__VKV_PATCH_EOF__'
+import type { Locale } from '@/i18n';
+
+/** A piece of text stored once per language, e.g. { en: "Vase", ru: "Ваза" }. */
+export type LocalizedText = Partial<Record<Locale, string>>;
+
+export type Product = {
+  id: string;
+  slug: string;
+  name: LocalizedText;
+  price_cents: number;
+  currency: string;
+  description: LocalizedText;
+  materials: LocalizedText | null;
+  dimensions: LocalizedText | null;
+  stock: number;
+  available: boolean;
+  images: string[];
+  created_at: string;
+};
+
+export type CartLine = {
+  productId: string;
+  slug: string;
+  name: string;
+  priceCents: number;
+  image: string | null;
+  quantity: number;
+};
+
+/** One line of what was actually bought, captured from the Stripe session
+ * by the webhook — stored as part of the `items` jsonb column on `orders`. */
+export type OrderLineItem = {
+  name: string;
+  quantity: number;
+  amount_total: number;
+};
+
+export type CustomerAddress = {
+  line1?: string | null;
+  line2?: string | null;
+  city?: string | null;
+  postal_code?: string | null;
+  country?: string | null;
+};
+
+export type CustomerDetails = {
+  name?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  address?: CustomerAddress | null;
+};
+
+export type Order = {
+  id: string;
+  order_number: number;
+  user_id: string | null;
+  email: string;
+  status: 'pending' | 'paid' | 'shipped' | 'cancelled';
+  total_cents: number;
+  currency: string;
+  stripe_session_id: string | null;
+  created_at: string;
+  items: OrderLineItem[];
+  customer_details: CustomerDetails | null;
+};
+
+export type Favorite = {
+  id: string;
+  user_id: string;
+  product_id: string;
+  created_at: string;
+  products?: Product;
+};
+__VKV_PATCH_EOF__
+echo "  updated: lib/types.ts"
+
+echo "Done. Restart npm run dev after this."
