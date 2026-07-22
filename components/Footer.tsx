@@ -12,13 +12,9 @@ export function Footer() {
       <div className="mx-auto max-w-[1400px] px-6 py-10 md:px-10 md:py-12">
         <div className="grid gap-10 md:grid-cols-[1.3fr_1fr_1fr]">
           <div>
-            <p className="font-display text-lg italic text-cocoa">vkv.form</p>
-            <p className="mt-3 max-w-xs font-body text-xs leading-relaxed text-stone">
-              {t('newsletterBody')}
-            </p>
-            <div className="mt-4">
-              <NewsletterForm />
-            </div>
+            <p className="font-display text-lg italic text-cocoa">VKV.FORM</p>
+            
+            
           </div>
 
           <div>
@@ -44,7 +40,7 @@ export function Footer() {
             </p>
             <div className="mt-3 flex gap-4">
               <a
-                href="https://www.instagram.com/vkv.form"
+                href="https://www.instagram.com/vkv.form?igsh=NzZxdWQ1dTFjNWF6"
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Instagram"
@@ -53,7 +49,7 @@ export function Footer() {
                 <Instagram size={16} strokeWidth={1.5} />
               </a>
               <a
-                href="https://www.facebook.com"
+                href="https://www.facebook.com/share/181miuZz4t/?mibextid=wwXIfr"
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Facebook"

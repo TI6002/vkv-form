@@ -53,7 +53,11 @@
     "added": "Añadido",
     "outOfStock": "No disponible por ahora",
     "quantityLabel": "Cantidad",
-    "shippingNote": "Hecho por encargo en tiradas pequeñas. Se envía desde la UE en 5–10 días laborables."
+    "shippingNote": "Hecho por encargo en tiradas pequeñas. Se envía desde la UE en 5–10 días laborables.",
+    "inStock": "En stock",
+    "save": "Guardar",
+    "saved": "Guardado",
+    "orderNow": "Pedir ahora"
   },
   "cart": {
     "title": "Tu carrito",
@@ -102,7 +106,12 @@
     "orderNumber": "Pedido",
     "orderStatus": "Estado",
     "orderTotal": "Total",
-    "error": "Algo salió mal. Revisa tus datos e inténtalo de nuevo."
+    "error": "Algo salió mal. Revisa tus datos e inténtalo de nuevo.",
+    "activeOrdersTitle": "Pedidos activos",
+    "noActiveOrders": "No tienes pedidos activos por ahora.",
+    "pastOrdersTitle": "Historial de pedidos",
+    "savedTitle": "Guardados",
+    "noSaved": "Todavía no has guardado nada."
   },
   "admin": {
     "title": "Administración del taller",

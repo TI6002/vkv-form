@@ -1,5 +1,6 @@
 import type { Locale } from '@/i18n';
 
+/** A piece of text stored once per language, e.g. { en: "Vase", ru: "Ваза" }. */
 export type LocalizedText = Partial<Record<Locale, string>>;
 
 export type Product = {
@@ -12,7 +13,7 @@ export type Product = {
   materials: LocalizedText | null;
   dimensions: LocalizedText | null;
   stock: number;
-  available: boolean;
+  is_available: boolean;
   images: string[];
   created_at: string;
 };
@@ -26,14 +27,27 @@ export type CartLine = {
   quantity: number;
 };
 
-export type OrderItem = {
-  id: string;
-  order_id: string;
-  product_id: string | null;
-  product_name: string;
+/** One line of what was actually bought, captured from the Stripe session
+ * by the webhook — stored as part of the `items` jsonb column on `orders`. */
+export type OrderLineItem = {
+  name: string;
   quantity: number;
-  unit_price_cents: number;
-  created_at: string;
+  amount_total: number;
+};
+
+export type CustomerAddress = {
+  line1?: string | null;
+  line2?: string | null;
+  city?: string | null;
+  postal_code?: string | null;
+  country?: string | null;
+};
+
+export type CustomerDetails = {
+  name?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  address?: CustomerAddress | null;
 };
 
 export type Order = {
@@ -46,7 +60,8 @@ export type Order = {
   currency: string;
   stripe_session_id: string | null;
   created_at: string;
-  order_items?: OrderItem[];
+  items: OrderLineItem[];
+  customer_details: CustomerDetails | null;
 };
 
 export type Favorite = {

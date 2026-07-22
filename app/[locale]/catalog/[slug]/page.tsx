@@ -53,13 +53,14 @@ export default async function ProductPage({
           <h1 className="font-display text-4xl text-ink md:text-5xl">{name}</h1>
           <p className="mt-3 font-mono text-xl text-stone">
             {formatPrice(product.price_cents, product.currency)}
-            <p className={`mt-2 font-mono text-[11px] uppercase tracking-widest2 ${
-  product.available && product.stock > 0 ? 'text-stone' : 'text-red-800'
-}`}>
-  {product.available && product.stock > 0 ? t('inStock') : t('outOfStock')}
-</p>
           </p>
-          
+          <p
+            className={`mt-2 font-mono text-[11px] uppercase tracking-widest2 ${
+              product.is_available && product.stock > 0 ? 'text-stone' : 'text-red-800'
+            }`}
+          >
+            {product.is_available && product.stock > 0 ? t('inStock') : t('outOfStock')}
+          </p>
 
           <p className="mt-8 font-body text-base leading-relaxed text-stone">
             {description}

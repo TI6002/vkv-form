@@ -114,13 +114,14 @@
     "savedTitle": "Saved items",
     "noSaved": "You haven't saved anything yet.",
     "errors": {
-  "invalidCredentials": "Incorrect email or password.",
-  "emailNotConfirmed": "Please confirm your email before signing in.",
-  "alreadyRegistered": "An account with this email already exists — try signing in instead.",
-  "weakPassword": "Password should be at least 6 characters.",
-  "rateLimited": "Too many attempts — please wait a few minutes and try again.",
-  "generic": "Something went wrong. Please check your details and try again."
-}
+      "invalidCredentials": "Incorrect email or password.",
+      "emailNotConfirmed": "Please confirm your email before signing in.",
+      "alreadyRegistered": "An account with this email already exists — try signing in instead.",
+      "weakPassword": "Password should be at least 6 characters.",
+      "rateLimited": "Too many attempts — please wait a few minutes and try again.",
+      "generic": "Something went wrong. Please check your details and try again."
+    },
+    "pastOrdersTitle": "Order history"
   },
   "admin": {
     "title": "Studio admin",

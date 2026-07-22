@@ -53,7 +53,11 @@
     "added": "Aggiunto",
     "outOfStock": "Non disponibile al momento",
     "quantityLabel": "Quantità",
-    "shippingNote": "Realizzato su ordinazione in piccole serie. Spedizione dall'UE in 5–10 giorni lavorativi."
+    "shippingNote": "Realizzato su ordinazione in piccole serie. Spedizione dall'UE in 5–10 giorni lavorativi.",
+    "inStock": "Disponibile",
+    "save": "Salva",
+    "saved": "Salvato",
+    "orderNow": "Ordina ora"
   },
   "cart": {
     "title": "Il tuo carrello",
@@ -102,7 +106,12 @@
     "orderNumber": "Ordine",
     "orderStatus": "Stato",
     "orderTotal": "Totale",
-    "error": "Qualcosa è andato storto. Controlla i dati e riprova."
+    "error": "Qualcosa è andato storto. Controlla i dati e riprova.",
+    "activeOrdersTitle": "Ordini attivi",
+    "noActiveOrders": "Non hai ordini attivi al momento.",
+    "pastOrdersTitle": "Storico ordini",
+    "savedTitle": "Salvati",
+    "noSaved": "Non hai ancora salvato nulla."
   },
   "admin": {
     "title": "Amministrazione dello studio",

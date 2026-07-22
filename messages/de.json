@@ -53,7 +53,11 @@
     "added": "Hinzugefügt",
     "outOfStock": "Derzeit nicht verfügbar",
     "quantityLabel": "Menge",
-    "shippingNote": "Auf Bestellung in kleinen Serien gefertigt. Versand aus der EU innerhalb von 5–10 Werktagen."
+    "shippingNote": "Auf Bestellung in kleinen Serien gefertigt. Versand aus der EU innerhalb von 5–10 Werktagen.",
+    "inStock": "Auf Lager",
+    "save": "Merken",
+    "saved": "Gemerkt",
+    "orderNow": "Jetzt bestellen"
   },
   "cart": {
     "title": "Ihr Warenkorb",
@@ -102,7 +106,12 @@
     "orderNumber": "Bestellung",
     "orderStatus": "Status",
     "orderTotal": "Summe",
-    "error": "Etwas ist schiefgelaufen. Bitte überprüfen Sie Ihre Angaben und versuchen Sie es erneut."
+    "error": "Etwas ist schiefgelaufen. Bitte überprüfen Sie Ihre Angaben und versuchen Sie es erneut.",
+    "activeOrdersTitle": "Aktive Bestellungen",
+    "noActiveOrders": "Sie haben derzeit keine aktiven Bestellungen.",
+    "pastOrdersTitle": "Bestellverlauf",
+    "savedTitle": "Gemerkte Objekte",
+    "noSaved": "Sie haben noch nichts gemerkt."
   },
   "admin": {
     "title": "Atelier-Verwaltung",

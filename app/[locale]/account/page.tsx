@@ -33,7 +33,7 @@ export default async function AccountPage({
       const [{ data: orderData }, { data: profile }, { data: favData }] = await Promise.all([
         supabase
           .from('orders')
-          .select('*, order_items(*)')
+          .select('*')
           .eq('user_id', user.id)
           .order('created_at', { ascending: false }),
         supabase.from('profiles').select('role').eq('id', user.id).single(),
@@ -103,11 +103,11 @@ export default async function AccountPage({
                       <p className="mt-1 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
                         {t('orderStatus')}: {order.status}
                       </p>
-                      {order.order_items && order.order_items.length > 0 && (
+                      {order.items && order.items.length > 0 && (
                         <ul className="mt-2 space-y-0.5">
-                          {order.order_items.map((item) => (
-                            <li key={item.id} className="font-body text-xs text-stone">
-                              {item.quantity}× {item.product_name}
+                          {order.items.map((item, i) => (
+                            <li key={i} className="font-body text-xs text-stone">
+                              {item.quantity}× {item.name}
                             </li>
                           ))}
                         </ul>

@@ -3,10 +3,9 @@
 import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
 import { useCart } from '@/context/CartContext';
-import { Link } from '@/lib/navigation';
+import { Link, useRouter } from '@/lib/navigation';
 import { formatPrice } from '@/lib/format';
 import { X } from 'lucide-react';
-import { useState } from 'react';
 
 /**
  * No AnimatePresence here on purpose. AnimatePresence + Next.js App Router
@@ -19,22 +18,12 @@ import { useState } from 'react';
  */
 export function CartDrawer() {
   const t = useTranslations('cart');
-  const { isOpen, closeCart, lines, removeItem, setQuantity, subtotalCents } = useCart();
-  const [checkingOut, setCheckingOut] = useState(false);
+  const router = useRouter();
+  const { isOpen, closeCart, lines, removeItem, subtotalCents } = useCart();
 
-  async function handleCheckout() {
-    setCheckingOut(true);
-    try {
-      const res = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ lines }),
-      });
-      const data = await res.json();
-      if (data.url) window.location.href = data.url;
-    } finally {
-      setCheckingOut(false);
-    }
+  function handleGoToCheckout() {
+    closeCart();
+    router.push('/checkout');
   }
 
   return (
@@ -92,23 +81,7 @@ export function CartDrawer() {
                         {formatPrice(line.priceCents * line.quantity)}
                       </p>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3 font-mono text-xs text-stone">
-                        <span>{t('quantity')}</span>
-                        <select
-                          value={line.quantity}
-                          onChange={(e) =>
-                            setQuantity(line.productId, Number(e.target.value))
-                          }
-                          className="border border-line bg-transparent px-2 py-1"
-                        >
-                          {Array.from({ length: 9 }, (_, i) => i + 1).map((n) => (
-                            <option key={n} value={n}>
-                              {n}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
+                    <div className="flex items-center justify-end">
                       <button
                         onClick={() => removeItem(line.productId)}
                         className="font-mono text-[11px] uppercase tracking-widest2 text-stone underline underline-offset-4 hover:text-ink"
@@ -135,9 +108,8 @@ export function CartDrawer() {
             </div>
             <p className="mt-2 font-body text-xs text-stone">{t('taxNote')}</p>
             <button
-              onClick={handleCheckout}
-              disabled={checkingOut}
-              className="mt-5 w-full bg-ink py-4 font-mono text-[11px] uppercase tracking-widest2 text-cream transition-opacity hover:opacity-90 disabled:opacity-50"
+              onClick={handleGoToCheckout}
+              className="mt-5 w-full bg-ink py-4 font-mono text-[11px] uppercase tracking-widest2 text-cream transition-opacity hover:opacity-90"
             >
               {t('checkout')}
             </button>
