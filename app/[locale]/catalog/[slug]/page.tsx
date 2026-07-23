@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation';
-import Image from 'next/image';
 import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
 import { Link } from '@/lib/navigation';
 import { Reveal } from '@/components/Reveal';
@@ -11,6 +10,7 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 import { AddToCartForm } from '@/components/AddToCartForm';
 import { LikeButton } from '@/components/LikeButton';
+import { ProductGallery } from '@/components/ProductGallery';
 import { getProductBySlug } from '@/lib/products';
 import { formatPrice } from '@/lib/format';
 import { pickLocalized } from '@/lib/localized';
@@ -42,18 +42,7 @@ export default async function ProductPage({
 
       <div className="mt-8 grid gap-14 md:grid-cols-2 md:gap-20">
         <Reveal>
-          <div className="relative aspect-[4/5] bg-sand">
-            {product.images?.[0] && (
-              <Image
-                src={product.images[0]}
-                alt={name}
-                fill
-                priority
-                sizes="(min-width: 768px) 50vw, 100vw"
-                className="object-cover"
-              />
-            )}
-          </div>
+          <ProductGallery images={product.images ?? []} name={name} />
         </Reveal>
 
         <Reveal delay={0.1}>

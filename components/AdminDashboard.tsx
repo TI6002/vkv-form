@@ -79,19 +79,29 @@ export function AdminDashboard() {
   }
 
   async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(e.target.files ?? []);
+    if (files.length === 0) return;
     setUploading(true);
-    const path = `${Date.now()}-${file.name}`;
-    const { error } = await supabase.storage
-      .from('product-images')
-      .upload(path, file, { cacheControl: '3600', upsert: false });
 
-    if (!error) {
-      const { data } = supabase.storage.from('product-images').getPublicUrl(path);
-      setForm((f) => ({ ...f, images: [...f.images, data.publicUrl] }));
+    const uploadedUrls: string[] = [];
+    for (const file of files) {
+      const path = `${Date.now()}-${file.name}`;
+      const { error } = await supabase.storage
+        .from('product-images')
+        .upload(path, file, { cacheControl: '3600', upsert: false });
+      if (!error) {
+        const { data } = supabase.storage.from('product-images').getPublicUrl(path);
+        uploadedUrls.push(data.publicUrl);
+      }
     }
+
+    setForm((f) => ({ ...f, images: [...f.images, ...uploadedUrls] }));
     setUploading(false);
+    e.target.value = ''; // lets you pick the same file(s) again later if needed
+  }
+
+  function removeImage(index: number) {
+    setForm((f) => ({ ...f, images: f.images.filter((_, i) => i !== index) }));
   }
 
   async function handleSave(e: React.FormEvent) {
@@ -319,16 +329,34 @@ export function AdminDashboard() {
           <Field label={t('images')}>
             <div className="flex flex-wrap gap-3">
               {form.images.map((src, i) => (
-                <div key={i} className="h-20 w-16 bg-sand">
+                <div key={i} className="group relative h-20 w-16 bg-sand">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={src} alt="" className="h-full w-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => removeImage(i)}
+                    aria-label="Remove photo"
+                    className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-ink text-[10px] text-cream opacity-0 transition-opacity group-hover:opacity-100"
+                  >
+                    ×
+                  </button>
                 </div>
               ))}
             </div>
             <label className="mt-3 inline-block cursor-pointer font-mono text-[11px] uppercase tracking-widest2 text-ink underline underline-offset-4">
               {uploading ? t('saving') : t('uploadImage')}
-              <input type="file" accept="image/*" onChange={handleUpload} className="hidden" />
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleUpload}
+                className="hidden"
+              />
             </label>
+            <p className="mt-2 font-body text-xs text-taupe">
+              Photos upload right away, but you still need to click &quot;{t('save')}&quot;
+              below afterwards for them to actually attach to this object.
+            </p>
           </Field>
 
           <div className="mt-2 flex gap-4">
