@@ -6,7 +6,8 @@
     "contact": "Kontakti",
     "account": "Konts",
     "cart": "Grozs",
-    "search": "Meklēt"
+    "search": "Meklēt",
+    "collection": "Kolekcijas grāmata"
   },
   "home": {
     "heroEyebrow": "vkv.form — priekšmeti no māla, ģipša un akmens",
@@ -17,7 +18,7 @@
     "philosophyTitle": "Priekšmetam sava vieta jāizpelnās lēni.",
     "philosophyBody": "Mēs strādājam ar godīgiem, neapstrādātiem materiāliem — negleznotu mālu, ģipsi, siltu akmeni — un ļaujam to faktūrai palikt redzamai. Nekas netiek pilnveidots līdz perfekcijai. Rokas nospiedums ir jēga, nevis defekts.",
     "catalogEyebrow": "Kolekcija",
-    "catalogTitle": "Jaunākās izstrādājumi",
+    "catalogTitle": "Jaunākās formas",
     "catalogCta": "Skatīt visus priekšmetus",
     "featuredEyebrow": "01 — 03"
   },
@@ -31,7 +32,10 @@
     "philosophyTitle": "Kāpēc mēs darām to, ko darām",
     "philosophyBody1": "Mūsdienu telpas ir pilnas ar lietām, kas prasa uzmanību. Mēs gribējām radīt pretējo — priekšmetus, kas telpā iekļaujas klusi un atalgo ilgāku skatienu, nevis pirmo ieskatu.",
     "philosophyBody2": "Tas nozīmē atturību krāsā, godīgumu materiālā un to, ka nav divu pilnīgi vienādu darbu. Vāzes nedaudz nelīdzenā mala nav kļūda, ko slēpt — tā ir pierādījums, ka darbu pabeidza cilvēks, nevis tikai forma.",
-    "philosophyBody3": "Mēs galvenokārt strādājam ar trim materiālu grupām — negleznotu akmens masu, tonētu ģipsi un mīkstu dabisko akmeni — izvēlētiem tāpēc, ka tie skaisti noveco, un to virsma gadu gaitā maigi mainās gaismā un pieskārienā."
+    "philosophyBody3": "Mēs galvenokārt strādājam ar trim materiālu grupām — negleznotu akmens masu, tonētu ģipsi un mīkstu dabisko akmeni — izvēlētiem tāpēc, ka tie skaisti noveco, un to virsma gadu gaitā maigi mainās gaismā un pieskārienā.",
+    "journalEyebrow": "Žurnāls",
+    "journalTitle": "Piezīmes no darbnīcas",
+    "readMore": "Lasīt vairāk"
   },
   "catalog": {
     "title": "Katalogs",
@@ -59,7 +63,8 @@
     "liked": "Saglabāts",
     "orderNow": "Pasūtīt tagad",
     "save": "Saglabāt",
-    "saved": "Saglabāts"
+    "saved": "Saglabāts",
+    "weightLabel": "Svars"
   },
   "cart": {
     "title": "Jūsu grozs",
@@ -159,5 +164,12 @@
   "common": {
     "loading": "Ielādē…",
     "currency": "€"
+  },
+  "collection": {
+    "eyebrow": "Arhīvs",
+    "title": "Kolekcijas grāmata",
+    "intro": "Pieraksts par priekšmetiem, kas jau atraduši savas mājas — glabāts šeit kā arhīvs, nevis atkārtotai pārdošanai.",
+    "empty": "Kolekcijas grāmata pagaidām ir tukša.",
+    "soldIn": "Pārdots"
   }
 }

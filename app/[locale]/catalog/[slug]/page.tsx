@@ -11,6 +11,7 @@ export const revalidate = 0;
 import { AddToCartForm } from '@/components/AddToCartForm';
 import { LikeButton } from '@/components/LikeButton';
 import { ProductGallery } from '@/components/ProductGallery';
+import { AvailabilityBadge } from '@/components/AvailabilityBadge';
 import { getProductBySlug } from '@/lib/products';
 import { formatPrice } from '@/lib/format';
 import { pickLocalized } from '@/lib/localized';
@@ -29,6 +30,7 @@ export default async function ProductPage({
   const description = pickLocalized(product.description, locale);
   const materials = pickLocalized(product.materials, locale);
   const dimensions = pickLocalized(product.dimensions, locale);
+  const weight = pickLocalized(product.weight, locale);
   const available = product.available;
 
   return (
@@ -53,11 +55,7 @@ export default async function ProductPage({
             {formatPrice(product.price_cents, product.currency)}
           </p>
 
-          <p className="mt-3 font-mono text-[11px] uppercase tracking-widest2">
-            <span className={available ? 'text-stone' : 'text-red-800'}>
-              {available ? t('inStock') : t('outOfStock')}
-            </span>
-          </p>
+          <AvailabilityBadge productId={product.id} initialAvailable={available} />
 
           <p className="mt-8 font-body text-base leading-relaxed text-stone">
             {description}
@@ -78,6 +76,14 @@ export default async function ProductPage({
                   {t('dimensionsLabel')}
                 </dt>
                 <dd className="font-body text-sm text-ink">{dimensions}</dd>
+              </div>
+            )}
+            {weight && (
+              <div className="flex gap-4">
+                <dt className="w-32 shrink-0 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
+                  {t('weightLabel')}
+                </dt>
+                <dd className="font-body text-sm text-ink">{weight}</dd>
               </div>
             )}
           </dl>

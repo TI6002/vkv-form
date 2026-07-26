@@ -1,21 +1,50 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useCart } from '@/context/CartContext';
 import { useRouter } from '@/lib/navigation';
+import { createClient } from '@/lib/supabase/client';
 import type { Product } from '@/lib/types';
 
 /**
  * Each object is a one-of-a-kind, handmade piece — there's only ever one
  * in stock, so there's no quantity to choose. Quantity is always 1.
+ *
+ * Availability is also kept live via Supabase Realtime: if an admin
+ * toggles it off in /admin while someone has this page open, the button
+ * disables itself immediately instead of waiting for a refresh.
  */
 export function AddToCartForm({ product, name }: { product: Product; name: string }) {
   const t = useTranslations('product');
   const { addItem } = useCart();
   const router = useRouter();
   const [justAdded, setJustAdded] = useState(false);
-  const available = product.available;
+  const [available, setAvailable] = useState(product.available);
+
+  useEffect(() => {
+    const supabase = createClient();
+    const channel = supabase
+      .channel(`product-cart-availability-${product.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'products',
+          filter: `id=eq.${product.id}`,
+        },
+        (payload) => {
+          const next = (payload.new as { available?: boolean }).available;
+          if (typeof next === 'boolean') setAvailable(next);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [product.id]);
 
   function currentLine() {
     return {

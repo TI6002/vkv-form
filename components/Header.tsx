@@ -15,6 +15,7 @@ export function Header() {
 
   const links = [
     { href: '/catalog', label: t('catalog') },
+    { href: '/collection', label: t('collection') },
     { href: '/about', label: t('about') },
     { href: '/contact', label: t('contact') },
   ];
@@ -24,15 +25,14 @@ export function Header() {
       <div className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-5 md:px-10">
         <Link
           href="/"
-          className="font-display text-[22px] font-medium italic tracking-tight text-cocoa"
+          className="font-display text-[22px] font-medium uppercase italic tracking-tight text-cocoa"
         >
-          VKV.FORM
+          vkv.form
         </Link>
 
         <nav className="hidden md:flex items-center gap-9">
           {links.map((l) => {
-            const active =
-              l.href === '/' ? pathname === '/' : pathname.startsWith(l.href);
+            const active = pathname.startsWith(l.href);
             return (
               <Link
                 key={l.href}

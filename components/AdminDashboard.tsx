@@ -7,6 +7,8 @@ import { pickLocalized } from '@/lib/localized';
 import { slugify } from '@/lib/slugify';
 import { locales, localeNames, type Locale } from '@/i18n';
 import { AdminOrdersPanel } from './AdminOrdersPanel';
+import { AdminAboutPanel } from './AdminAboutPanel';
+import { AdminCollectionPanel } from './AdminCollectionPanel';
 import type { Product } from '@/lib/types';
 
 function emptyFormFor(sourceLocale: string) {
@@ -20,11 +22,12 @@ function emptyFormFor(sourceLocale: string) {
     description: '',
     materials: '',
     dimensions: '',
+    weight: '',
     images: [] as string[],
   };
 }
 
-export function AdminDashboard() {
+function CatalogAdminPanel() {
   const t = useTranslations('admin');
   const locale = useLocale();
   const supabase = createClient();
@@ -74,6 +77,7 @@ export function AdminDashboard() {
       description: pickLocalized(p.description, locale),
       materials: pickLocalized(p.materials, locale),
       dimensions: pickLocalized(p.dimensions, locale),
+      weight: pickLocalized(p.weight, locale),
       images: p.images ?? [],
     });
   }
@@ -121,6 +125,7 @@ export function AdminDashboard() {
           description: form.description,
           materials: form.materials || null,
           dimensions: form.dimensions || null,
+          weight: form.weight || null,
           sourceLocale: form.sourceLocale,
         }),
       });
@@ -140,6 +145,7 @@ export function AdminDashboard() {
         description: translated.description,
         materials: translated.materials,
         dimensions: translated.dimensions,
+        weight: translated.weight,
         images: form.images,
         currency: 'EUR',
       };
@@ -325,6 +331,14 @@ export function AdminDashboard() {
               className="input"
             />
           </Field>
+          <Field label="Weight">
+            <input
+              value={form.weight}
+              onChange={(e) => setForm((f) => ({ ...f, weight: e.target.value }))}
+              placeholder="e.g. 1.2 kg"
+              className="input"
+            />
+          </Field>
 
           <Field label={t('images')}>
             <div className="flex flex-wrap gap-3">
@@ -446,5 +460,39 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
       </span>
       <div className="mt-2">{children}</div>
     </label>
+  );
+}
+
+export function AdminDashboard() {
+  const [section, setSection] = useState<'catalog' | 'about' | 'collection'>('catalog');
+
+  const sections: { id: typeof section; label: string }[] = [
+    { id: 'catalog', label: 'Catalog' },
+    { id: 'about', label: 'About page' },
+    { id: 'collection', label: 'Collection Book' },
+  ];
+
+  return (
+    <div>
+      <div className="flex flex-wrap gap-3">
+        {sections.map((s) => (
+          <button
+            key={s.id}
+            onClick={() => setSection(s.id)}
+            className={`border px-5 py-2.5 font-mono text-[11px] uppercase tracking-widest2 transition-colors ${
+              section === s.id
+                ? 'border-ink bg-ink text-cream'
+                : 'border-line text-stone hover:border-ink hover:text-ink'
+            }`}
+          >
+            {s.label}
+          </button>
+        ))}
+      </div>
+
+      {section === 'catalog' && <CatalogAdminPanel />}
+      {section === 'about' && <AdminAboutPanel />}
+      {section === 'collection' && <AdminCollectionPanel />}
+    </div>
   );
 }

@@ -6,7 +6,8 @@
     "contact": "Kontakt",
     "account": "Konto",
     "cart": "Warenkorb",
-    "search": "Suche"
+    "search": "Suche",
+    "collection": "Sammlungsbuch"
   },
   "home": {
     "heroEyebrow": "vkv.form — Objekte aus Ton, Gips und Stein",
@@ -17,7 +18,7 @@
     "philosophyTitle": "Ein Objekt sollte sich seinen Platz langsam verdienen.",
     "philosophyBody": "Wir arbeiten mit rohen, ehrlichen Materialien — unglasiertem Ton, Gips, warmem Stein — und lassen ihre Textur sichtbar. Nichts wird bis zur Perfektion korrigiert. Die Spur der Hand ist der Sinn, nicht der Makel.",
     "catalogEyebrow": "Die Kollektion",
-    "catalogTitle": "Die neuesten Produkte",
+    "catalogTitle": "Neueste Formen",
     "catalogCta": "Alle Objekte ansehen",
     "featuredEyebrow": "01 — 03"
   },
@@ -31,7 +32,10 @@
     "philosophyTitle": "Warum wir tun, was wir tun",
     "philosophyBody1": "Moderne Räume sind voller Dinge, die Aufmerksamkeit verlangen. Wir wollten das Gegenteil schaffen — Objekte, die sich still in einen Raum einfügen und einen längeren Blick belohnen, nicht nur den ersten.",
     "philosophyBody2": "Das bedeutet Zurückhaltung in der Farbe, Ehrlichkeit im Material und kein Stück, das einem anderen perfekt gleicht. Ein leicht unebener Vasenrand ist kein Fehler, den man verstecken muss — er ist der Beweis, dass ein Mensch die Arbeit vollendet hat, nicht allein eine Gussform.",
-    "philosophyBody3": "Wir arbeiten hauptsächlich mit drei Materialfamilien — unglasiertem Steinzeug, eingefärbtem Gips und weichem Naturstein — gewählt, weil sie gut altern und ihre Oberfläche sich über Jahre sanft mit Licht und Berührung verändert."
+    "philosophyBody3": "Wir arbeiten hauptsächlich mit drei Materialfamilien — unglasiertem Steinzeug, eingefärbtem Gips und weichem Naturstein — gewählt, weil sie gut altern und ihre Oberfläche sich über Jahre sanft mit Licht und Berührung verändert.",
+    "journalEyebrow": "Journal",
+    "journalTitle": "Notizen aus dem Atelier",
+    "readMore": "Weiterlesen"
   },
   "catalog": {
     "title": "Katalog",
@@ -55,9 +59,12 @@
     "quantityLabel": "Menge",
     "shippingNote": "Auf Bestellung in kleinen Serien gefertigt. Versand aus der EU innerhalb von 5–10 Werktagen.",
     "inStock": "Auf Lager",
+    "like": "Merken",
+    "liked": "Gemerkt",
+    "orderNow": "Jetzt bestellen",
     "save": "Merken",
     "saved": "Gemerkt",
-    "orderNow": "Jetzt bestellen"
+    "weightLabel": "Gewicht"
   },
   "cart": {
     "title": "Ihr Warenkorb",
@@ -72,7 +79,9 @@
   "checkout": {
     "title": "Kasse",
     "redirecting": "Sie werden zur sicheren Kasse weitergeleitet…",
-    "error": "Bei der Vorbereitung Ihrer Bestellung ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
+    "error": "Bei der Vorbereitung Ihrer Bestellung ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+    "emailLabel": "E-Mail",
+    "payButton": "Jetzt bezahlen"
   },
   "contact": {
     "title": "Kontakt",
@@ -101,7 +110,7 @@
     "orSignUp": "Neu hier? Konto erstellen",
     "orSignIn": "Schon ein Konto? Anmelden",
     "signOut": "Abmelden",
-    "ordersTitle": "Profil",
+    "ordersTitle": "Bestellverlauf",
     "noOrders": "Sie haben noch keine Bestellungen.",
     "orderNumber": "Bestellung",
     "orderStatus": "Status",
@@ -111,7 +120,15 @@
     "noActiveOrders": "Sie haben derzeit keine aktiven Bestellungen.",
     "pastOrdersTitle": "Bestellverlauf",
     "savedTitle": "Gemerkte Objekte",
-    "noSaved": "Sie haben noch nichts gemerkt."
+    "noSaved": "Sie haben noch nichts gemerkt.",
+    "errors": {
+      "invalidCredentials": "E-Mail oder Passwort ist falsch.",
+      "emailNotConfirmed": "Bitte bestätigen Sie Ihre E-Mail, bevor Sie sich anmelden.",
+      "alreadyRegistered": "Ein Konto mit dieser E-Mail existiert bereits — versuchen Sie sich anzumelden.",
+      "weakPassword": "Das Passwort muss mindestens 6 Zeichen lang sein.",
+      "rateLimited": "Zu viele Versuche — bitte warten Sie ein paar Minuten und versuchen Sie es erneut.",
+      "generic": "Etwas ist schiefgelaufen. Bitte überprüfen Sie Ihre Angaben und versuchen Sie es erneut."
+    }
   },
   "admin": {
     "title": "Atelier-Verwaltung",
@@ -133,7 +150,8 @@
     "edit": "Bearbeiten",
     "cancel": "Abbrechen",
     "confirmDelete": "Dieses Objekt löschen? Das kann nicht rückgängig gemacht werden.",
-    "noProducts": "Noch keine Objekte. Fügen Sie oben das erste hinzu."
+    "noProducts": "Noch keine Objekte. Fügen Sie oben das erste hinzu.",
+    "available": "Verfügbar zum Verkauf"
   },
   "footer": {
     "newsletterTitle": "Neuigkeiten aus dem Atelier",
@@ -146,5 +164,12 @@
   "common": {
     "loading": "Wird geladen…",
     "currency": "€"
+  },
+  "collection": {
+    "eyebrow": "Archiv",
+    "title": "Sammlungsbuch",
+    "intro": "Ein Verzeichnis von Stücken, die bereits ein neues Zuhause gefunden haben — hier als Archiv geführt, nicht zum erneuten Verkauf.",
+    "empty": "Das Sammlungsbuch ist derzeit leer.",
+    "soldIn": "Verkauft im Jahr"
   }
 }

@@ -9,11 +9,10 @@ export function Footer() {
 
   return (
     <footer className="border-t border-line bg-cream">
-      <div className="mx-auto max-w-[1400px] px-6 py-10 md:px-10 md:py-12">
-        <div className="grid gap-10 md:grid-cols-[1.3fr_1fr_1fr]">
+      <div className="mx-auto max-w-[1400px] px-6 py-7 md:px-10 md:py-8">
+        <div className="grid gap-8 md:grid-cols-[1.3fr_1fr_1fr]">
           <div>
-            <p className="font-display text-lg italic text-cocoa">VKV.FORM</p>
-            
+            <p className="font-display text-base uppercase italic text-cocoa">vkv.form</p>
             
           </div>
 
@@ -21,7 +20,7 @@ export function Footer() {
             <p className="font-mono text-[10px] uppercase tracking-widest2 text-stone">
               {tn('catalog')}
             </p>
-            <nav className="mt-3 flex flex-col gap-2">
+            <nav className="mt-2 flex flex-col gap-1.5">
               <Link href="/catalog" className="font-body text-sm text-ink hover:text-stone">
                 {tn('catalog')}
               </Link>
@@ -38,9 +37,9 @@ export function Footer() {
             <p className="font-mono text-[10px] uppercase tracking-widest2 text-stone">
               Studio
             </p>
-            <div className="mt-3 flex gap-4">
+            <div className="mt-2 flex gap-4">
               <a
-                href="https://www.instagram.com/vkv.form?igsh=NzZxdWQ1dTFjNWF6"
+                href="https://www.instagram.com/vkv.form"
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Instagram"
@@ -49,7 +48,7 @@ export function Footer() {
                 <Instagram size={16} strokeWidth={1.5} />
               </a>
               <a
-                href="https://www.facebook.com/share/181miuZz4t/?mibextid=wwXIfr"
+                href="https://www.facebook.com"
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Facebook"
@@ -61,9 +60,9 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-8 flex flex-col-reverse items-start justify-between gap-3 border-t border-line pt-4 md:flex-row md:items-center">
+        <div className="mt-6 flex flex-col-reverse items-start justify-between gap-2 border-t border-line pt-3 md:flex-row md:items-center">
           <p className="font-mono text-[10px] uppercase tracking-widest2 text-stone">
-            © {new Date().getFullYear()} vkv.form — {t('rights')}
+            © {new Date().getFullYear()} VKV.FORM — {t('rights')}
           </p>
         </div>
       </div>

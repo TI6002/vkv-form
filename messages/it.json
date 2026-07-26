@@ -6,7 +6,8 @@
     "contact": "Contatti",
     "account": "Account",
     "cart": "Carrello",
-    "search": "Cerca"
+    "search": "Cerca",
+    "collection": "Libro della collezione"
   },
   "home": {
     "heroEyebrow": "vkv.form — oggetti in argilla, gesso e pietra",
@@ -17,7 +18,7 @@
     "philosophyTitle": "Un oggetto deve guadagnarsi il suo posto, lentamente.",
     "philosophyBody": "Lavoriamo materiali grezzi e onesti — argilla non smaltata, gesso, pietra calda — lasciandone visibile la texture. Nulla viene corretto fino alla perfezione. Il segno della mano è il punto, non il difetto.",
     "catalogEyebrow": "La collezione",
-    "catalogTitle": "I prodotti più recenti",
+    "catalogTitle": "Forme recenti",
     "catalogCta": "Vedi tutti gli oggetti",
     "featuredEyebrow": "01 — 03"
   },
@@ -31,7 +32,10 @@
     "philosophyTitle": "Perché facciamo ciò che facciamo",
     "philosophyBody1": "Gli interni moderni sono pieni di oggetti che chiedono attenzione. Abbiamo voluto fare l'opposto — oggetti che si posano in silenzio in uno spazio e premiano uno sguardo prolungato più di una prima occhiata.",
     "philosophyBody2": "Questo significa sobrietà nel colore, onestà nel materiale, e nessun pezzo perfettamente identico a un altro. Un bordo leggermente irregolare di un vaso non è un errore da nascondere; è la prova che a finire il lavoro è stata una persona, non solo uno stampo.",
-    "philosophyBody3": "Lavoriamo principalmente con tre famiglie di materiali — grès non smaltato, gesso colorato e pietra naturale tenera — scelti perché invecchiano bene e la loro superficie cambia dolcemente con la luce e il tocco nel corso degli anni."
+    "philosophyBody3": "Lavoriamo principalmente con tre famiglie di materiali — grès non smaltato, gesso colorato e pietra naturale tenera — scelti perché invecchiano bene e la loro superficie cambia dolcemente con la luce e il tocco nel corso degli anni.",
+    "journalEyebrow": "Diario",
+    "journalTitle": "Note dallo studio",
+    "readMore": "Leggi di più"
   },
   "catalog": {
     "title": "Catalogo",
@@ -55,9 +59,12 @@
     "quantityLabel": "Quantità",
     "shippingNote": "Realizzato su ordinazione in piccole serie. Spedizione dall'UE in 5–10 giorni lavorativi.",
     "inStock": "Disponibile",
+    "like": "Salva",
+    "liked": "Salvato",
+    "orderNow": "Ordina ora",
     "save": "Salva",
     "saved": "Salvato",
-    "orderNow": "Ordina ora"
+    "weightLabel": "Peso"
   },
   "cart": {
     "title": "Il tuo carrello",
@@ -72,7 +79,9 @@
   "checkout": {
     "title": "Checkout",
     "redirecting": "Reindirizzamento al pagamento sicuro…",
-    "error": "Qualcosa è andato storto nella preparazione dell'ordine. Riprova."
+    "error": "Qualcosa è andato storto nella preparazione dell'ordine. Riprova.",
+    "emailLabel": "Email",
+    "payButton": "Paga ora"
   },
   "contact": {
     "title": "Contatti",
@@ -101,7 +110,7 @@
     "orSignUp": "Nuovo qui? Crea un account",
     "orSignIn": "Hai già un account? Accedi",
     "signOut": "Esci",
-    "ordersTitle": "Profilo",
+    "ordersTitle": "Storico ordini",
     "noOrders": "Non hai ancora nessun ordine.",
     "orderNumber": "Ordine",
     "orderStatus": "Stato",
@@ -111,7 +120,15 @@
     "noActiveOrders": "Non hai ordini attivi al momento.",
     "pastOrdersTitle": "Storico ordini",
     "savedTitle": "Salvati",
-    "noSaved": "Non hai ancora salvato nulla."
+    "noSaved": "Non hai ancora salvato nulla.",
+    "errors": {
+      "invalidCredentials": "Email o password errati.",
+      "emailNotConfirmed": "Conferma la tua email prima di accedere.",
+      "alreadyRegistered": "Esiste già un account con questa email — prova ad accedere.",
+      "weakPassword": "La password deve contenere almeno 6 caratteri.",
+      "rateLimited": "Troppi tentativi — attendi qualche minuto e riprova.",
+      "generic": "Qualcosa è andato storto. Controlla i dati e riprova."
+    }
   },
   "admin": {
     "title": "Amministrazione dello studio",
@@ -133,7 +150,8 @@
     "edit": "Modifica",
     "cancel": "Annulla",
     "confirmDelete": "Eliminare questo oggetto? L'azione è irreversibile.",
-    "noProducts": "Ancora nessun oggetto. Aggiungi il primo qui sopra."
+    "noProducts": "Ancora nessun oggetto. Aggiungi il primo qui sopra.",
+    "available": "Disponibile per la vendita"
   },
   "footer": {
     "newsletterTitle": "Notizie dallo studio",
@@ -146,5 +164,12 @@
   "common": {
     "loading": "Caricamento…",
     "currency": "€"
+  },
+  "collection": {
+    "eyebrow": "Archivio",
+    "title": "Libro della collezione",
+    "intro": "Un registro di pezzi che hanno già trovato casa — conservato qui come archivio, non in vendita.",
+    "empty": "Il libro della collezione è vuoto per ora.",
+    "soldIn": "Venduto nel"
   }
 }

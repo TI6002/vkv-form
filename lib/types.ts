@@ -12,11 +12,34 @@ export type Product = {
   description: LocalizedText;
   materials: LocalizedText | null;
   dimensions: LocalizedText | null;
+  weight: LocalizedText | null;
   stock: number;
   available: boolean;
   images: string[];
   created_at: string;
 };
+
+export type CollectionItem = {
+  id: string;
+  name: LocalizedText;
+  description: LocalizedText;
+  images: string[];
+  sold_year: string | null;
+  created_at: string;
+};
+
+export type AboutPost = {
+  id: string;
+  title: LocalizedText;
+  body: LocalizedText;
+  images: string[];
+  created_at: string;
+};
+
+/** Keyed the same way as messages/en.json's "about" section — the public
+ * page falls back to that file's English copy for any key an admin
+ * hasn't filled in yet. */
+export type AboutContentMap = Record<string, LocalizedText>;
 
 export type CartLine = {
   productId: string;

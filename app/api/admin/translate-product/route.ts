@@ -11,14 +11,15 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { name, description, materials, dimensions, sourceLocale } = await req.json();
+    const { name, description, materials, dimensions, weight, sourceLocale } = await req.json();
     const source = sourceLocale || 'en';
 
-    const [nameT, descriptionT, materialsT, dimensionsT] = await Promise.all([
+    const [nameT, descriptionT, materialsT, dimensionsT, weightT] = await Promise.all([
       translateToAllLocales(name ?? '', source),
       translateToAllLocales(description ?? '', source),
       materials ? translateToAllLocales(materials, source) : Promise.resolve(null),
       dimensions ? translateToAllLocales(dimensions, source) : Promise.resolve(null),
+      weight ? translateToAllLocales(weight, source) : Promise.resolve(null),
     ]);
 
     return NextResponse.json({
@@ -26,6 +27,7 @@ export async function POST(req: Request) {
       description: descriptionT,
       materials: materialsT,
       dimensions: dimensionsT,
+      weight: weightT,
     });
   } catch (err) {
     console.error('Product translation error:', err);

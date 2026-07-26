@@ -6,7 +6,8 @@
     "contact": "Contact",
     "account": "Account",
     "cart": "Cart",
-    "search": "Search"
+    "search": "Search",
+    "collection": "Collection Book"
   },
   "home": {
     "heroEyebrow": "vkv.form — objects in clay, plaster and stone",
@@ -17,7 +18,7 @@
     "philosophyTitle": "An object should earn its place slowly.",
     "philosophyBody": "We work with raw, honest materials — unglazed clay, plaster, warm stone — and let their texture stay visible. Nothing is corrected into perfection. The imprint of the hand is the point, not the flaw.",
     "catalogEyebrow": "The Collection",
-    "catalogTitle": "Latest Products",
+    "catalogTitle": "Recent forms",
     "catalogCta": "View all objects",
     "featuredEyebrow": "01 — 03"
   },
@@ -31,7 +32,10 @@
     "philosophyTitle": "Why we make what we make",
     "philosophyBody1": "Modern rooms are full of things that ask for attention. We wanted to make the opposite — objects that settle into a space quietly and reward a longer look rather than a first glance.",
     "philosophyBody2": "That means restraint in colour, honesty in material, and no two pieces that are perfectly identical. A vase with a slightly uneven rim is not a mistake to hide; it is proof that a person, not a mould alone, finished the work.",
-    "philosophyBody3": "We work primarily in three families of material — unglazed stoneware, tinted plaster, and soft natural stone — chosen because they age well and because their surface changes gently with light and touch over years of use."
+    "philosophyBody3": "We work primarily in three families of material — unglazed stoneware, tinted plaster, and soft natural stone — chosen because they age well and because their surface changes gently with light and touch over years of use.",
+    "journalEyebrow": "Journal",
+    "journalTitle": "Notes from the studio",
+    "readMore": "Read more"
   },
   "catalog": {
     "title": "Catalogue",
@@ -55,9 +59,12 @@
     "quantityLabel": "Quantity",
     "shippingNote": "Made to order in small batches. Ships from the EU within 5–10 working days.",
     "inStock": "In stock",
+    "like": "Save",
+    "liked": "Saved",
+    "orderNow": "Order now",
     "save": "Save",
     "saved": "Saved",
-    "orderNow": "Order now"
+    "weightLabel": "Weight"
   },
   "cart": {
     "title": "Your cart",
@@ -103,7 +110,7 @@
     "orSignUp": "New here? Create an account",
     "orSignIn": "Already have an account? Sign in",
     "signOut": "Sign out",
-    "ordersTitle": "Profile",
+    "ordersTitle": "Order history",
     "noOrders": "You have no orders yet.",
     "orderNumber": "Order",
     "orderStatus": "Status",
@@ -111,6 +118,7 @@
     "error": "Something went wrong. Please check your details and try again.",
     "activeOrdersTitle": "Active orders",
     "noActiveOrders": "You have no active orders right now.",
+    "pastOrdersTitle": "Order history",
     "savedTitle": "Saved items",
     "noSaved": "You haven't saved anything yet.",
     "errors": {
@@ -120,8 +128,7 @@
       "weakPassword": "Password should be at least 6 characters.",
       "rateLimited": "Too many attempts — please wait a few minutes and try again.",
       "generic": "Something went wrong. Please check your details and try again."
-    },
-    "pastOrdersTitle": "Order history"
+    }
   },
   "admin": {
     "title": "Studio admin",
@@ -157,5 +164,12 @@
   "common": {
     "loading": "Loading…",
     "currency": "€"
+  },
+  "collection": {
+    "eyebrow": "Archive",
+    "title": "Collection Book",
+    "intro": "A record of pieces that have already found their homes — kept here as an archive rather than offered for sale again.",
+    "empty": "The collection book is empty for now.",
+    "soldIn": "Sold in"
   }
 }
