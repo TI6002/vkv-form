@@ -28,8 +28,14 @@ export function AdminOrdersPanel() {
   }, []);
 
   async function updateStatus(id: string, status: Order['status']) {
+    const previous = orders;
     setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status } : o)));
-    await supabase.from('orders').update({ status }).eq('id', id);
+    const { error } = await supabase.from('orders').update({ status }).eq('id', id);
+    if (error) {
+      console.error(error);
+      setOrders(previous); // roll back the optimistic UI update
+      alert('Could not update this order\'s status — check the console.');
+    }
   }
 
   if (loading) {

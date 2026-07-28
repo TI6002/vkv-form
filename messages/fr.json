@@ -67,7 +67,8 @@
     "weightLabel": "Poids",
     "heightLabel": "Hauteur",
     "circumferenceLabel": "Circonférence",
-    "depthLabel": "Profondeur"
+    "depthLabel": "Profondeur",
+    "widthLabel": "Largeur"
   },
   "cart": {
     "title": "Votre panier",
@@ -88,7 +89,7 @@
   },
   "contact": {
     "title": "Contact",
-    "intro": "Pour une visite de l'atelier, la presse, une demande de revente ou toute autre question — écrivez-nous directement ou utilisez le formulaire ci-dessous.",
+    "intro": "Pour une visite de l'atelier, la presse, une demande de revente ou toute autre question — écrivez-nous directement.",
     "formName": "Nom",
     "formEmail": "Email",
     "formMessage": "Message",
@@ -101,7 +102,8 @@
     "vatNumber": "N° de TVA",
     "address": "Adresse",
     "email": "Email",
-    "follow": "Suivre l'atelier"
+    "follow": "Suivre l'atelier",
+    "phone": "Téléphone"
   },
   "account": {
     "signInTitle": "Se connecter",

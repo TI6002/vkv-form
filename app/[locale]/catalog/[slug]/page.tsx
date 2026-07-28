@@ -30,6 +30,7 @@ export default async function ProductPage({
   const description = pickLocalized(product.description, locale);
   const materials = pickLocalized(product.materials, locale);
   const height = pickLocalized(product.height, locale);
+  const width = pickLocalized(product.width, locale);
   const circumference = pickLocalized(product.circumference, locale);
   const depth = pickLocalized(product.depth, locale);
   const weight = pickLocalized(product.weight, locale);
@@ -78,6 +79,14 @@ export default async function ProductPage({
                   {t('heightLabel')}
                 </dt>
                 <dd className="font-body text-sm text-ink">{height}</dd>
+              </div>
+            )}
+            {width && (
+              <div className="flex gap-4">
+                <dt className="w-32 shrink-0 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
+                  {t('widthLabel')}
+                </dt>
+                <dd className="font-body text-sm text-ink">{width}</dd>
               </div>
             )}
             {circumference && (

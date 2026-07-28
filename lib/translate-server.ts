@@ -2,67 +2,50 @@ import { locales, type Locale } from '@/i18n';
 import type { LocalizedText } from '@/lib/types';
 
 /**
- * Translation backend: MyMemory (api.mymemory.translated.net).
+ * Translation backend: DeepL API (Free tier).
  * -----------------------------------------------------------
- * Free, public, no-API-key translation API. Anonymous requests are
- * capped at roughly 1,000–5,000 words/day per IP — easy to hit with a
- * long product description translated into 6 languages, especially once
- * it gets split into multiple chunks. Passing a contact email via the
- * `de` parameter raises that ceiling to ~50,000 words/day. Set
- * MYMEMORY_CONTACT_EMAIL in .env.local to enable this (any real email
- * you control — MyMemory doesn't email you, it's just used to raise
- * your IP's quota).
+ * Free tier: 500,000 characters/month, no credit card required. Get a
+ * key at https://www.deepl.com/pro-api (choose "DeepL API Free") and put
+ * it in .env.local as DEEPL_API_KEY.
+ *
+ * IMPORTANT: requests are sent one at a time, not all at once. Saving a
+ * product translates several fields into 6 other languages each — firing
+ * all of those as parallel requests (dozens at once) trips DeepL's
+ * burst rate limit (HTTP 429) even though you're nowhere near the
+ * monthly character quota. Going one at a time (with a short retry on
+ * 429) is slower per save but actually reliable.
  */
-const MYMEMORY_ENDPOINT = 'https://api.mymemory.translated.net/get';
-const MAX_CHUNK_LENGTH = 450; // MyMemory truncates/rejects very long single requests
-const CONTACT_EMAIL = process.env.MYMEMORY_CONTACT_EMAIL || '';
+const DEEPL_ENDPOINT = 'https://api-free.deepl.com/v2/translate';
+const DEEPL_API_KEY = process.env.DEEPL_API_KEY || '';
 
-async function translateChunk(text: string, source: string, target: string): Promise<string> {
-  const params = new URLSearchParams({ q: text, langpair: `${source}|${target}` });
-  if (CONTACT_EMAIL) params.set('de', CONTACT_EMAIL);
+// DeepL's language codes don't always match our locale codes exactly —
+// English specifically needs a regional variant when it's the *target*
+// language (EN alone is only valid as a *source* language).
+const DEEPL_SOURCE_CODE: Record<string, string> = {
+  en: 'EN',
+  fr: 'FR',
+  es: 'ES',
+  it: 'IT',
+  de: 'DE',
+  ru: 'RU',
+  lv: 'LV',
+};
 
-  const res = await fetch(`${MYMEMORY_ENDPOINT}?${params.toString()}`);
+const DEEPL_TARGET_CODE: Record<string, string> = {
+  en: 'EN-GB',
+  fr: 'FR',
+  es: 'ES',
+  it: 'IT',
+  de: 'DE',
+  ru: 'RU',
+  lv: 'LV',
+};
 
-  if (!res.ok) throw new Error(`MyMemory HTTP ${res.status}`);
-
-  const data = await res.json();
-  const translated = data?.responseData?.translatedText;
-
-  if (!translated || typeof translated !== 'string') {
-    throw new Error('MyMemory returned no translation');
-  }
-  // MyMemory returns its rate-limit/quota notices *as* the "translation"
-  // text instead of an HTTP error — catch that so it doesn't get saved
-  // as if it were real product copy.
-  if (/MYMEMORY WARNING|QUERY LENGTH LIMIT|IS AN INVALID/i.test(translated)) {
-    throw new Error(translated);
-  }
-
-  return translated;
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function splitIntoChunks(text: string, maxLen: number): string[] {
-  if (text.length <= maxLen) return [text];
-
-  const sentences = text.split(/(?<=[.!?])\s+/);
-  const chunks: string[] = [];
-  let current = '';
-
-  for (const sentence of sentences) {
-    const candidate = current ? `${current} ${sentence}` : sentence;
-    if (candidate.length > maxLen && current) {
-      chunks.push(current);
-      current = sentence;
-    } else {
-      current = candidate;
-    }
-  }
-  if (current) chunks.push(current);
-
-  return chunks;
-}
-
-/** Translates one string from `source` to `target` (both locale codes like "ru", "en"). */
+/** Translates one string from `source` to `target` (locale codes like "ru", "en"). */
 export async function translateText(
   text: string,
   source: string,
@@ -72,26 +55,77 @@ export async function translateText(
   if (!clean) return '';
   if (source === target) return clean;
 
-  const chunks = splitIntoChunks(clean, MAX_CHUNK_LENGTH);
-  const translatedChunks = await Promise.all(
-    chunks.map((chunk) => translateChunk(chunk, source, target))
-  );
-  return translatedChunks.join(' ');
+  if (!DEEPL_API_KEY) {
+    throw new Error(
+      'DEEPL_API_KEY is not set — add it to .env.local (see .env.example).'
+    );
+  }
+
+  const sourceLang = DEEPL_SOURCE_CODE[source];
+  const targetLang = DEEPL_TARGET_CODE[target];
+  if (!sourceLang || !targetLang) {
+    throw new Error(`Unsupported locale for DeepL: ${source} -> ${target}`);
+  }
+
+  const MAX_ATTEMPTS = 4;
+  let lastError: unknown;
+
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    const res = await fetch(DEEPL_ENDPOINT, {
+      method: 'POST',
+      headers: {
+        Authorization: `DeepL-Auth-Key ${DEEPL_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        text: [clean],
+        source_lang: sourceLang,
+        target_lang: targetLang,
+      }),
+    });
+
+    if (res.status === 429 || res.status === 529) {
+      // Rate limited / server overloaded — back off and try again
+      // instead of giving up immediately.
+      lastError = new Error(`DeepL HTTP ${res.status} (rate limited)`);
+      if (attempt < MAX_ATTEMPTS) {
+        await sleep(attempt * 700); // 700ms, 1400ms, 2100ms
+        continue;
+      }
+      throw lastError;
+    }
+
+    if (!res.ok) {
+      const body = await res.text().catch(() => '');
+      throw new Error(`DeepL HTTP ${res.status}${body ? `: ${body}` : ''}`);
+    }
+
+    const data = await res.json();
+    const translated = data?.translations?.[0]?.text;
+
+    if (!translated || typeof translated !== 'string') {
+      throw new Error('DeepL returned no translation');
+    }
+
+    return translated;
+  }
+
+  // Unreachable in practice, but keeps TypeScript happy.
+  throw lastError instanceof Error ? lastError : new Error('DeepL translation failed');
 }
 
 export type TranslateAllResult = {
   text: LocalizedText;
   /** Locales where translation failed and the source text was used
-   * instead — surfaced to the admin UI so a silent quota failure isn't
+   * instead — surfaced to the admin UI so a quota/config failure isn't
    * mistaken for a successful translation. */
   failedLocales: Locale[];
 };
 
 /**
  * Translates a single string, written in `sourceLocale`, into every
- * locale configured in i18n.ts. `sourceLocale` is the language the admin
- * was actually typing in (whatever /admin is currently displayed in) —
- * far more reliable than trying to auto-detect it.
+ * locale configured in i18n.ts — one request at a time (see note above
+ * about why this isn't parallelized).
  */
 export async function translateToAllLocales(
   text: string,
@@ -101,24 +135,22 @@ export async function translateToAllLocales(
   const result: LocalizedText = {};
   const failedLocales: Locale[] = [];
 
-  await Promise.all(
-    locales.map(async (locale) => {
-      if (!clean) {
-        result[locale as Locale] = '';
-        return;
-      }
-      try {
-        result[locale as Locale] = await translateText(clean, sourceLocale, locale);
-      } catch (err) {
-        console.error(`[translate] ${sourceLocale} -> ${locale} failed:`, err);
-        // Fall back to the original text rather than leaving the field
-        // blank — better to show the wrong language than nothing at all —
-        // but record it so the caller can warn about it.
-        result[locale as Locale] = clean;
-        if (locale !== sourceLocale) failedLocales.push(locale as Locale);
-      }
-    })
-  );
+  for (const locale of locales) {
+    if (!clean) {
+      result[locale as Locale] = '';
+      continue;
+    }
+    try {
+      result[locale as Locale] = await translateText(clean, sourceLocale, locale);
+    } catch (err) {
+      console.error(`[translate] ${sourceLocale} -> ${locale} failed:`, err);
+      // Fall back to the original text rather than leaving the field
+      // blank — better to show the wrong language than nothing at all —
+      // but record it so the caller can warn about it.
+      result[locale as Locale] = clean;
+      if (locale !== sourceLocale) failedLocales.push(locale as Locale);
+    }
+  }
 
   return { text: result, failedLocales };
 }

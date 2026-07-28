@@ -67,7 +67,8 @@
     "weightLabel": "Svars",
     "heightLabel": "Augstums",
     "circumferenceLabel": "Apkārtmērs",
-    "depthLabel": "Dziļums"
+    "depthLabel": "Dziļums",
+    "widthLabel": "Platums"
   },
   "cart": {
     "title": "Jūsu grozs",
@@ -88,7 +89,7 @@
   },
   "contact": {
     "title": "Kontakti",
-    "intro": "Lai apmeklētu darbnīcu, presei, vairumtirdzniecības jautājumiem vai jebkam citam — rakstiet mums tieši vai izmantojiet formu zemāk.",
+    "intro": "Lai apmeklētu darbnīcu, presei, vairumtirdzniecības jautājumiem vai jebkam citam — rakstiet mums tieši.",
     "formName": "Vārds",
     "formEmail": "E-pasts",
     "formMessage": "Ziņa",
@@ -101,7 +102,8 @@
     "vatNumber": "PVN Nr.",
     "address": "Adrese",
     "email": "E-pasts",
-    "follow": "Sekojiet darbnīcai"
+    "follow": "Sekojiet darbnīcai",
+    "phone": "Tālrunis"
   },
   "account": {
     "signInTitle": "Pieslēgties",

@@ -67,7 +67,8 @@
     "weightLabel": "Peso",
     "heightLabel": "Altezza",
     "circumferenceLabel": "Circonferenza",
-    "depthLabel": "Profondità"
+    "depthLabel": "Profondità",
+    "widthLabel": "Larghezza"
   },
   "cart": {
     "title": "Il tuo carrello",
@@ -88,7 +89,7 @@
   },
   "contact": {
     "title": "Contatti",
-    "intro": "Per visite allo studio, stampa, richieste di rivendita o altro — scrivici direttamente o usa il modulo qui sotto.",
+    "intro": "Per visite allo studio, stampa, richieste di rivendita o altro — scrivici direttamente.",
     "formName": "Nome",
     "formEmail": "Email",
     "formMessage": "Messaggio",
@@ -101,7 +102,8 @@
     "vatNumber": "P. IVA",
     "address": "Indirizzo",
     "email": "Email",
-    "follow": "Segui lo studio"
+    "follow": "Segui lo studio",
+    "phone": "Telefono"
   },
   "account": {
     "signInTitle": "Accedi",

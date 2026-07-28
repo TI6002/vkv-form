@@ -67,7 +67,8 @@
     "weightLabel": "Peso",
     "heightLabel": "Altura",
     "circumferenceLabel": "Circunferencia",
-    "depthLabel": "Profundidad"
+    "depthLabel": "Profundidad",
+    "widthLabel": "Ancho"
   },
   "cart": {
     "title": "Tu carrito",
@@ -88,7 +89,7 @@
   },
   "contact": {
     "title": "Contacto",
-    "intro": "Para visitas al taller, prensa, consultas de distribución o cualquier otra cosa — escríbenos directamente o usa el formulario de abajo.",
+    "intro": "Para visitas al taller, prensa, consultas de distribución o cualquier otra cosa — escríbenos directamente.",
     "formName": "Nombre",
     "formEmail": "Email",
     "formMessage": "Mensaje",
@@ -101,7 +102,8 @@
     "vatNumber": "N.º de IVA",
     "address": "Dirección",
     "email": "Email",
-    "follow": "Sigue al taller"
+    "follow": "Sigue al taller",
+    "phone": "Teléfono"
   },
   "account": {
     "signInTitle": "Iniciar sesión",

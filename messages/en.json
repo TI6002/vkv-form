@@ -67,7 +67,8 @@
     "weightLabel": "Weight",
     "heightLabel": "Height",
     "circumferenceLabel": "Circumference",
-    "depthLabel": "Depth"
+    "depthLabel": "Depth",
+    "widthLabel": "Width"
   },
   "cart": {
     "title": "Your cart",
@@ -88,7 +89,7 @@
   },
   "contact": {
     "title": "Contact",
-    "intro": "For studio visits, press, stockist enquiries or anything else — write to us directly or use the form below.",
+    "intro": "For studio visits, press, stockist enquiries or anything else — write to us directly.",
     "formName": "Name",
     "formEmail": "Email",
     "formMessage": "Message",
@@ -101,7 +102,8 @@
     "vatNumber": "VAT No.",
     "address": "Address",
     "email": "Email",
-    "follow": "Follow the studio"
+    "follow": "Follow the studio",
+    "phone": "Phone"
   },
   "account": {
     "signInTitle": "Sign in",

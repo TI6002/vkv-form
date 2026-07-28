@@ -1,6 +1,5 @@
 import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
 import { Reveal } from '@/components/Reveal';
-import { ContactForm } from '@/components/ContactForm';
 
 export default async function ContactPage({
   params: { locale },
@@ -15,9 +14,12 @@ export default async function ContactPage({
     company: process.env.NEXT_PUBLIC_STUDIO_COMPANY_NAME || 'vkv.form SIA',
     reg: process.env.NEXT_PUBLIC_STUDIO_REG_NUMBER || 'add your registration number',
     vat: process.env.NEXT_PUBLIC_STUDIO_VAT_NUMBER || 'add your VAT number',
-    address: process.env.NEXT_PUBLIC_STUDIO_ADDRESS || 'add your studio address',
-    email: process.env.NEXT_PUBLIC_STUDIO_EMAIL || 'wff63@ya.lv',
+    address: process.env.NEXT_PUBLIC_STUDIO_ADDRESS || 'Burtnieku Street 33, Riga, Latvia',
+    email: process.env.NEXT_PUBLIC_STUDIO_EMAIL || 'vkv.form.info@gmail.com',
+    phone: process.env.NEXT_PUBLIC_STUDIO_PHONE || '+371 20509471',
   };
+
+  const mapQuery = encodeURIComponent(details.address);
 
   return (
     <div className="mx-auto max-w-[1400px] px-6 py-20 md:px-10 md:py-28">
@@ -30,7 +32,15 @@ export default async function ContactPage({
 
       <div className="mt-16 grid gap-16 md:grid-cols-2 md:gap-24">
         <Reveal>
-          <ContactForm />
+          <div className="relative aspect-[4/3] w-full overflow-hidden bg-sand md:aspect-square">
+            <iframe
+              title="Studio location"
+              src={`https://www.google.com/maps?q=${mapQuery}&output=embed`}
+              className="absolute inset-0 h-full w-full border-0"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+          </div>
         </Reveal>
 
         <Reveal delay={0.1}>
@@ -42,7 +52,12 @@ export default async function ContactPage({
             <Row label={t('regNumber')} value={details.reg} />
             <Row label={t('vatNumber')} value={details.vat} />
             <Row label={t('address')} value={details.address} />
-            <Row label={t('email')} value={details.email} />
+            <Row
+              label={t('email')}
+              value={details.email}
+              href={`mailto:${details.email}`}
+            />
+            <Row label={t('phone')} value={details.phone} href={`tel:${details.phone.replace(/\s+/g, '')}`} />
           </dl>
 
           <p className="mt-10 font-mono text-[11px] uppercase tracking-widest2 text-stone">
@@ -64,13 +79,21 @@ export default async function ContactPage({
   );
 }
 
-function Row({ label, value }: { label: string; value: string }) {
+function Row({ label, value, href }: { label: string; value: string; href?: string }) {
   return (
     <div className="flex gap-4">
       <dt className="w-32 shrink-0 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
         {label}
       </dt>
-      <dd className="font-body text-sm text-ink">{value}</dd>
+      <dd className="font-body text-sm text-ink">
+        {href ? (
+          <a href={href} className="underline underline-offset-4 hover:text-stone">
+            {value}
+          </a>
+        ) : (
+          value
+        )}
+      </dd>
     </div>
   );
 }

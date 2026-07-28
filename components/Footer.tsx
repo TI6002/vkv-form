@@ -24,6 +24,9 @@ export function Footer() {
               <Link href="/catalog" className="font-body text-sm text-ink hover:text-stone">
                 {tn('catalog')}
               </Link>
+              <Link href="/collection" className="font-body text-sm text-ink hover:text-stone">
+                {tn('collection')}
+              </Link>
               <Link href="/about" className="font-body text-sm text-ink hover:text-stone">
                 {tn('about')}
               </Link>

@@ -8,6 +8,7 @@ import { CartProvider } from '@/context/CartContext';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { CartDrawer } from '@/components/CartDrawer';
+// @ts-expect-error - Next.js handles global CSS imports
 import '../globals.css';
 
 const display = Playfair_Display({

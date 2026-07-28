@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useLocale } from 'next-intl';
 import { createClient } from '@/lib/supabase/client';
 import { pickLocalized } from '@/lib/localized';
+import { sanitizeFileName } from '@/lib/sanitize-filename';
 import { locales, localeNames, type Locale } from '@/i18n';
 import type { CollectionItem } from '@/lib/types';
 
@@ -61,19 +62,28 @@ export function AdminCollectionPanel() {
     if (files.length === 0) return;
     setUploading(true);
     const urls: string[] = [];
+    const errors: string[] = [];
     for (const file of files) {
-      const path = `collection-${Date.now()}-${file.name}`;
+      const path = `collection-${Date.now()}-${sanitizeFileName(file.name)}`;
       const { error } = await supabase.storage
         .from('product-images')
         .upload(path, file, { cacheControl: '3600', upsert: false });
-      if (!error) {
+      if (error) {
+        console.error('Collection image upload failed:', file.name, error);
+        errors.push(`${file.name}: ${error.message}`);
+      } else {
         const { data } = supabase.storage.from('product-images').getPublicUrl(path);
         urls.push(data.publicUrl);
       }
     }
-    setForm((f) => ({ ...f, images: [...f.images, ...urls] }));
+    if (urls.length > 0) {
+      setForm((f) => ({ ...f, images: [...f.images, ...urls] }));
+    }
     setUploading(false);
     e.target.value = '';
+    if (errors.length > 0) {
+      alert(`Could not upload:\n\n${errors.join('\n')}`);
+    }
   }
 
   function removeImage(index: number) {
@@ -118,11 +128,11 @@ export function AdminCollectionPanel() {
 
       const failedLocales: string[] = translated.failedLocales ?? [];
       if (failedLocales.length > 0) {
-        alert(
-          `Saved — but translation failed for: ${failedLocales.join(', ')}. Those ` +
-            `languages are showing the original text for now (usually the free ` +
-            `translator's daily limit — try again in a bit).`
-        );
+        const reason =
+          translated.deeplConfigured === false
+            ? "DEEPL_API_KEY is not set (or the server wasn't restarted after adding it)."
+            : "usually the free translator's daily limit — try again in a bit.";
+        alert(`Saved — but translation failed for: ${failedLocales.join(', ')}.\n\nReason: ${reason}`);
       }
     } catch (err) {
       console.error(err);
@@ -134,7 +144,12 @@ export function AdminCollectionPanel() {
 
   async function handleDelete(id: string) {
     if (!confirm('Delete this collection item?')) return;
-    await supabase.from('collection_items').delete().eq('id', id);
+    const { error } = await supabase.from('collection_items').delete().eq('id', id);
+    if (error) {
+      console.error(error);
+      alert('Could not delete this item — check the console.');
+      return;
+    }
     load();
   }
 

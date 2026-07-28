@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { createClient } from '@/lib/supabase/client';
 import { pickLocalized } from '@/lib/localized';
 import { slugify } from '@/lib/slugify';
+import { sanitizeFileName } from '@/lib/sanitize-filename';
 import { locales, localeNames, type Locale } from '@/i18n';
 import { AdminOrdersPanel } from './AdminOrdersPanel';
 import { AdminAboutPanel } from './AdminAboutPanel';
@@ -22,6 +23,7 @@ function emptyFormFor(sourceLocale: string) {
     description: '',
     materials: '',
     height: '',
+    width: '',
     circumference: '',
     depth: '',
     weight: '',
@@ -79,6 +81,7 @@ function CatalogAdminPanel() {
       description: pickLocalized(p.description, locale),
       materials: pickLocalized(p.materials, locale),
       height: pickLocalized(p.height, locale),
+      width: pickLocalized(p.width, locale),
       circumference: pickLocalized(p.circumference, locale),
       depth: pickLocalized(p.depth, locale),
       weight: pickLocalized(p.weight, locale),
@@ -92,20 +95,29 @@ function CatalogAdminPanel() {
     setUploading(true);
 
     const uploadedUrls: string[] = [];
+    const errors: string[] = [];
     for (const file of files) {
-      const path = `${Date.now()}-${file.name}`;
+      const path = `${Date.now()}-${sanitizeFileName(file.name)}`;
       const { error } = await supabase.storage
         .from('product-images')
         .upload(path, file, { cacheControl: '3600', upsert: false });
-      if (!error) {
+      if (error) {
+        console.error('Product image upload failed:', file.name, error);
+        errors.push(`${file.name}: ${error.message}`);
+      } else {
         const { data } = supabase.storage.from('product-images').getPublicUrl(path);
         uploadedUrls.push(data.publicUrl);
       }
     }
 
-    setForm((f) => ({ ...f, images: [...f.images, ...uploadedUrls] }));
+    if (uploadedUrls.length > 0) {
+      setForm((f) => ({ ...f, images: [...f.images, ...uploadedUrls] }));
+    }
     setUploading(false);
     e.target.value = ''; // lets you pick the same file(s) again later if needed
+    if (errors.length > 0) {
+      alert(`Could not upload:\n\n${errors.join('\n')}`);
+    }
   }
 
   function removeImage(index: number) {
@@ -129,6 +141,7 @@ function CatalogAdminPanel() {
           description: form.description,
           materials: form.materials || null,
           height: form.height || null,
+          width: form.width || null,
           circumference: form.circumference || null,
           depth: form.depth || null,
           weight: form.weight || null,
@@ -151,6 +164,7 @@ function CatalogAdminPanel() {
         description: translated.description,
         materials: translated.materials,
         height: translated.height,
+        width: translated.width,
         circumference: translated.circumference,
         depth: translated.depth,
         weight: translated.weight,
@@ -170,11 +184,13 @@ function CatalogAdminPanel() {
       await loadProducts();
 
       if (translated.failedLocales && translated.failedLocales.length > 0) {
+        const reason =
+          translated.deeplConfigured === false
+            ? 'DEEPL_API_KEY is not set (or the server wasn\'t restarted after adding it) — translation cannot run at all right now.'
+            : 'usually the free translator\'s daily limit — try again in a bit, or edit that language directly in "Fine-tune the name per language" below.';
         alert(
-          `Saved — but translation failed for: ${translated.failedLocales.join(', ')}.\n` +
-            `Those languages are showing the original text for now (usually the free ` +
-            `translator's daily limit — try again in a bit, or edit that language directly ` +
-            `in "Fine-tune the name per language" below).`
+          `Saved — but translation failed for: ${translated.failedLocales.join(', ')}.\n\n` +
+            `Reason: ${reason}`
         );
       }
     } catch (err) {
@@ -188,16 +204,28 @@ function CatalogAdminPanel() {
 
   async function handleDelete(id: string) {
     if (!confirm(t('confirmDelete'))) return;
-    await supabase.from('products').delete().eq('id', id);
+    const { error } = await supabase.from('products').delete().eq('id', id);
+    if (error) {
+      console.error(error);
+      alert('Could not delete this object — check the console.');
+      return;
+    }
     loadProducts();
   }
 
   async function handleSaveOverrides() {
     if (!editingId) return;
     setSavingOverrides(true);
-    await supabase.from('products').update({ name: nameOverrides }).eq('id', editingId);
+    const { error } = await supabase
+      .from('products')
+      .update({ name: nameOverrides })
+      .eq('id', editingId);
     await loadProducts();
     setSavingOverrides(false);
+    if (error) {
+      console.error(error);
+      alert('Could not save these names — check the console.');
+    }
   }
 
   return (
@@ -349,6 +377,14 @@ function CatalogAdminPanel() {
               value={form.height}
               onChange={(e) => setForm((f) => ({ ...f, height: e.target.value }))}
               placeholder="e.g. 30 cm"
+              className="input"
+            />
+          </Field>
+          <Field label="Width">
+            <input
+              value={form.width}
+              onChange={(e) => setForm((f) => ({ ...f, width: e.target.value }))}
+              placeholder="e.g. 20 cm"
               className="input"
             />
           </Field>

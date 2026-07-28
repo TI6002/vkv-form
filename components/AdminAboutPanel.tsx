@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useLocale } from 'next-intl';
 import { createClient } from '@/lib/supabase/client';
 import { pickLocalized } from '@/lib/localized';
+import { sanitizeFileName } from '@/lib/sanitize-filename';
 import { locales, localeNames, type Locale } from '@/i18n';
 import type { AboutPost } from '@/lib/types';
 
@@ -79,11 +80,11 @@ export function AdminAboutPanel() {
       }
 
       if (failedLocales.length > 0) {
-        alert(
-          `Saved — but translation failed for: ${failedLocales.join(', ')}. Those ` +
-            `languages are showing the original text for now (usually the free ` +
-            `translator's daily limit — try again in a bit).`
-        );
+        const reason =
+          translated.deeplConfigured === false
+            ? "DEEPL_API_KEY is not set (or the server wasn't restarted after adding it)."
+            : "usually the free translator's daily limit — try again in a bit.";
+        alert(`Saved — but translation failed for: ${failedLocales.join(', ')}.\n\nReason: ${reason}`);
       } else {
         alert('Saved. Refresh the About page to see it.');
       }
@@ -100,19 +101,28 @@ export function AdminAboutPanel() {
     if (files.length === 0) return;
     setUploading(true);
     const urls: string[] = [];
+    const errors: string[] = [];
     for (const file of files) {
-      const path = `post-${Date.now()}-${file.name}`;
+      const path = `post-${Date.now()}-${sanitizeFileName(file.name)}`;
       const { error } = await supabase.storage
         .from('product-images')
         .upload(path, file, { cacheControl: '3600', upsert: false });
-      if (!error) {
+      if (error) {
+        console.error('Post image upload failed:', file.name, error);
+        errors.push(`${file.name}: ${error.message}`);
+      } else {
         const { data } = supabase.storage.from('product-images').getPublicUrl(path);
         urls.push(data.publicUrl);
       }
     }
-    setPostForm((f) => ({ ...f, images: [...f.images, ...urls] }));
+    if (urls.length > 0) {
+      setPostForm((f) => ({ ...f, images: [...f.images, ...urls] }));
+    }
     setUploading(false);
     e.target.value = '';
+    if (errors.length > 0) {
+      alert(`Could not upload:\n\n${errors.join('\n')}`);
+    }
   }
 
   function resetPostForm() {
@@ -171,11 +181,11 @@ export function AdminAboutPanel() {
 
       const failedLocales: string[] = translated.failedLocales ?? [];
       if (failedLocales.length > 0) {
-        alert(
-          `Saved — but translation failed for: ${failedLocales.join(', ')}. Those ` +
-            `languages are showing the original text for now (usually the free ` +
-            `translator's daily limit — try again in a bit).`
-        );
+        const reason =
+          translated.deeplConfigured === false
+            ? "DEEPL_API_KEY is not set (or the server wasn't restarted after adding it)."
+            : "usually the free translator's daily limit — try again in a bit.";
+        alert(`Saved — but translation failed for: ${failedLocales.join(', ')}.\n\nReason: ${reason}`);
       }
     } catch (err) {
       console.error(err);
@@ -187,7 +197,12 @@ export function AdminAboutPanel() {
 
   async function handleDeletePost(id: string) {
     if (!confirm('Delete this post?')) return;
-    await supabase.from('about_posts').delete().eq('id', id);
+    const { error } = await supabase.from('about_posts').delete().eq('id', id);
+    if (error) {
+      console.error(error);
+      alert('Could not delete this post — check the console.');
+      return;
+    }
     loadAll();
   }
 

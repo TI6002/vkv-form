@@ -22,13 +22,17 @@ export async function POST(req: Request) {
     const source = sourceLocale || 'en';
 
     const entries = Object.entries(fields ?? {}) as [string, string | null][];
-    const results = await Promise.all(
-      entries.map(async ([name, text]) => {
-        if (!text) return [name, null, []] as const;
-        const { text: translated, failedLocales } = await translateToAllLocales(text, source);
-        return [name, translated, failedLocales] as const;
-      })
-    );
+    // One field at a time, on purpose — see lib/translate-server.ts for why
+    // parallel requests trip DeepL's burst rate limit.
+    const results: (readonly [string, unknown, string[]])[] = [];
+    for (const [name, text] of entries) {
+      if (!text) {
+        results.push([name, null, []] as const);
+        continue;
+      }
+      const { text: translated, failedLocales } = await translateToAllLocales(text, source);
+      results.push([name, translated, failedLocales] as const);
+    }
 
     const out: Record<string, unknown> = {};
     const allFailed = new Set<string>();
@@ -37,6 +41,7 @@ export async function POST(req: Request) {
       failed.forEach((l) => allFailed.add(l));
     }
     out.failedLocales = Array.from(allFailed);
+    out.deeplConfigured = !!process.env.DEEPL_API_KEY;
 
     return NextResponse.json(out);
   } catch (err) {

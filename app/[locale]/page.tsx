@@ -39,7 +39,7 @@ export default async function HomePage({
 
         <div className="relative z-10 mx-auto w-full max-w-[1400px] px-6 pb-10 md:px-10 md:pb-16">
           <div className="max-w-xl">
-            <p className="hero-text-outline font-mono text-[11px] uppercase tracking-widest2 text-white">
+            <p className="hero-text-outline font-mono text-[11px] uppercase tracking-widest2 text-cocoa-brown">
               {t('heroEyebrow')}
             </p>
             <h1 className="hero-text-outline mt-5 font-display text-[11vw] leading-[0.98] text-white md:text-[4.4vw]">

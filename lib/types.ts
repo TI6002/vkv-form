@@ -14,6 +14,7 @@ export type Product = {
   height: LocalizedText | null;
   circumference: LocalizedText | null;
   depth: LocalizedText | null;
+  width: LocalizedText | null;
   weight: LocalizedText | null;
   stock: number;
   available: boolean;

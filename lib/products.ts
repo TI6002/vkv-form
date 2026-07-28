@@ -13,9 +13,15 @@ export async function getProducts(): Promise<Product[]> {
       .from('products')
       .select('*')
       .order('created_at', { ascending: false });
-    if (error || !data || data.length === 0) return demoProducts;
+
+    if (error) {
+      console.error('[getProducts] Supabase error — falling back to demo products:', error);
+      return demoProducts;
+    }
+    if (!data || data.length === 0) return demoProducts;
     return data as Product[];
-  } catch {
+  } catch (err) {
+    console.error('[getProducts] Unexpected error — falling back to demo products:', err);
     return demoProducts;
   }
 }
@@ -29,9 +35,14 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
       .select('*')
       .eq('slug', slug)
       .single();
-    if (error || !data) return demoProducts.find((p) => p.slug === slug) ?? null;
+    if (error) {
+      console.error(`[getProductBySlug:${slug}] Supabase error:`, error);
+      return demoProducts.find((p) => p.slug === slug) ?? null;
+    }
+    if (!data) return demoProducts.find((p) => p.slug === slug) ?? null;
     return data as Product;
-  } catch {
+  } catch (err) {
+    console.error(`[getProductBySlug:${slug}] Unexpected error:`, err);
     return demoProducts.find((p) => p.slug === slug) ?? null;
   }
 }

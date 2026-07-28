@@ -67,7 +67,8 @@
     "weightLabel": "Gewicht",
     "heightLabel": "Höhe",
     "circumferenceLabel": "Umfang",
-    "depthLabel": "Tiefe"
+    "depthLabel": "Tiefe",
+    "widthLabel": "Breite"
   },
   "cart": {
     "title": "Ihr Warenkorb",
@@ -88,7 +89,7 @@
   },
   "contact": {
     "title": "Kontakt",
-    "intro": "Für Atelierbesuche, Presse, Handelsanfragen oder alles andere — schreiben Sie uns direkt oder nutzen Sie das Formular unten.",
+    "intro": "Für Atelierbesuche, Presse, Handelsanfragen oder alles andere — schreiben Sie uns direkt.",
     "formName": "Name",
     "formEmail": "E-Mail",
     "formMessage": "Nachricht",
@@ -101,7 +102,8 @@
     "vatNumber": "USt-IdNr.",
     "address": "Adresse",
     "email": "E-Mail",
-    "follow": "Dem Atelier folgen"
+    "follow": "Dem Atelier folgen",
+    "phone": "Telefon"
   },
   "account": {
     "signInTitle": "Anmelden",

@@ -60,9 +60,23 @@ export default async function AboutPage({
             <p className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
               {t('authorEyebrow')}
             </p>
-            <h2 className="mt-4 font-display text-3xl text-ink md:text-4xl">{authorTitle}</h2>
-            <p className="mt-6 font-body text-base leading-relaxed text-stone">{authorBody1}</p>
-            <p className="mt-5 font-body text-base leading-relaxed text-stone">{authorBody2}</p>
+
+            <blockquote className="relative mt-8 max-w-xl">
+              <span
+                aria-hidden
+                className="pointer-events-none absolute -left-2 -top-10 select-none font-display text-[7rem] italic leading-none text-sand"
+              >
+                &ldquo;
+              </span>
+              <p className="relative font-display text-3xl italic leading-snug text-ink md:text-4xl">
+                {authorTitle}
+              </p>
+            </blockquote>
+
+            <div className="mt-10 max-w-md space-y-5 border-l border-line pl-6">
+              <p className="font-body text-base leading-relaxed text-stone">{authorBody1}</p>
+              <p className="font-body text-base leading-relaxed text-stone">{authorBody2}</p>
+            </div>
           </Reveal>
         </div>
       </section>
