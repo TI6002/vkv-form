@@ -67,9 +67,10 @@ export function AdminAboutPanel() {
       });
       if (!res.ok) throw new Error('translate failed');
       const translated = await res.json();
+      const failedLocales: string[] = translated.failedLocales ?? [];
 
       const rows = Object.entries(translated)
-        .filter(([, value]) => value !== null)
+        .filter(([key, value]) => key !== 'failedLocales' && value !== null)
         .map(([key, value]) => ({ key, value }));
 
       if (rows.length > 0) {
@@ -77,7 +78,15 @@ export function AdminAboutPanel() {
         if (error) throw error;
       }
 
-      alert('Saved. Refresh the About page to see it.');
+      if (failedLocales.length > 0) {
+        alert(
+          `Saved — but translation failed for: ${failedLocales.join(', ')}. Those ` +
+            `languages are showing the original text for now (usually the free ` +
+            `translator's daily limit — try again in a bit).`
+        );
+      } else {
+        alert('Saved. Refresh the About page to see it.');
+      }
     } catch (err) {
       console.error(err);
       alert('Could not save — check the console.');
@@ -159,6 +168,15 @@ export function AdminAboutPanel() {
 
       resetPostForm();
       loadAll();
+
+      const failedLocales: string[] = translated.failedLocales ?? [];
+      if (failedLocales.length > 0) {
+        alert(
+          `Saved — but translation failed for: ${failedLocales.join(', ')}. Those ` +
+            `languages are showing the original text for now (usually the free ` +
+            `translator's daily limit — try again in a bit).`
+        );
+      }
     } catch (err) {
       console.error(err);
       alert('Could not save this post — check the console.');

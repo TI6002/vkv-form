@@ -4,21 +4,23 @@ import type { LocalizedText } from '@/lib/types';
 /**
  * Translation backend: MyMemory (api.mymemory.translated.net).
  * -----------------------------------------------------------
- * We switched away from the unofficial Google Translate scraper here
- * because it silently fails when called from a server's IP (very common
- * with hosting providers) — Google blocks/rate-limits it, the library
- * swallows the error, and every language ends up with the original,
- * untranslated text. MyMemory is a genuinely free, public, no-API-key
- * translation API meant exactly for this kind of server-side use, so it
- * doesn't get blocked the same way. (scripts/translate-missing.mjs, which
- * runs on your own machine, still uses the Google wrapper — that one's
- * fine since it's not calling from a shared hosting IP.)
+ * Free, public, no-API-key translation API. Anonymous requests are
+ * capped at roughly 1,000–5,000 words/day per IP — easy to hit with a
+ * long product description translated into 6 languages, especially once
+ * it gets split into multiple chunks. Passing a contact email via the
+ * `de` parameter raises that ceiling to ~50,000 words/day. Set
+ * MYMEMORY_CONTACT_EMAIL in .env.local to enable this (any real email
+ * you control — MyMemory doesn't email you, it's just used to raise
+ * your IP's quota).
  */
 const MYMEMORY_ENDPOINT = 'https://api.mymemory.translated.net/get';
 const MAX_CHUNK_LENGTH = 450; // MyMemory truncates/rejects very long single requests
+const CONTACT_EMAIL = process.env.MYMEMORY_CONTACT_EMAIL || '';
 
 async function translateChunk(text: string, source: string, target: string): Promise<string> {
   const params = new URLSearchParams({ q: text, langpair: `${source}|${target}` });
+  if (CONTACT_EMAIL) params.set('de', CONTACT_EMAIL);
+
   const res = await fetch(`${MYMEMORY_ENDPOINT}?${params.toString()}`);
 
   if (!res.ok) throw new Error(`MyMemory HTTP ${res.status}`);
@@ -32,7 +34,7 @@ async function translateChunk(text: string, source: string, target: string): Pro
   // MyMemory returns its rate-limit/quota notices *as* the "translation"
   // text instead of an HTTP error — catch that so it doesn't get saved
   // as if it were real product copy.
-  if (/MYMEMORY WARNING|QUERY LENGTH LIMIT/i.test(translated)) {
+  if (/MYMEMORY WARNING|QUERY LENGTH LIMIT|IS AN INVALID/i.test(translated)) {
     throw new Error(translated);
   }
 
@@ -77,6 +79,14 @@ export async function translateText(
   return translatedChunks.join(' ');
 }
 
+export type TranslateAllResult = {
+  text: LocalizedText;
+  /** Locales where translation failed and the source text was used
+   * instead — surfaced to the admin UI so a silent quota failure isn't
+   * mistaken for a successful translation. */
+  failedLocales: Locale[];
+};
+
 /**
  * Translates a single string, written in `sourceLocale`, into every
  * locale configured in i18n.ts. `sourceLocale` is the language the admin
@@ -86,9 +96,10 @@ export async function translateText(
 export async function translateToAllLocales(
   text: string,
   sourceLocale: string
-): Promise<LocalizedText> {
+): Promise<TranslateAllResult> {
   const clean = (text ?? '').trim();
   const result: LocalizedText = {};
+  const failedLocales: Locale[] = [];
 
   await Promise.all(
     locales.map(async (locale) => {
@@ -101,11 +112,13 @@ export async function translateToAllLocales(
       } catch (err) {
         console.error(`[translate] ${sourceLocale} -> ${locale} failed:`, err);
         // Fall back to the original text rather than leaving the field
-        // blank — better to show the wrong language than nothing at all.
+        // blank — better to show the wrong language than nothing at all —
+        // but record it so the caller can warn about it.
         result[locale as Locale] = clean;
+        if (locale !== sourceLocale) failedLocales.push(locale as Locale);
       }
     })
   );
 
-  return result;
+  return { text: result, failedLocales };
 }

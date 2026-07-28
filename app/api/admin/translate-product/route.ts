@@ -11,23 +11,52 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { name, description, materials, dimensions, weight, sourceLocale } = await req.json();
+    const {
+      name,
+      description,
+      materials,
+      height,
+      circumference,
+      depth,
+      weight,
+      sourceLocale,
+    } = await req.json();
     const source = sourceLocale || 'en';
 
-    const [nameT, descriptionT, materialsT, dimensionsT, weightT] = await Promise.all([
-      translateToAllLocales(name ?? '', source),
-      translateToAllLocales(description ?? '', source),
-      materials ? translateToAllLocales(materials, source) : Promise.resolve(null),
-      dimensions ? translateToAllLocales(dimensions, source) : Promise.resolve(null),
-      weight ? translateToAllLocales(weight, source) : Promise.resolve(null),
-    ]);
+    const empty = { text: null, failedLocales: [] as string[] };
+
+    const [nameR, descriptionR, materialsR, heightR, circumferenceR, depthR, weightR] =
+      await Promise.all([
+        translateToAllLocales(name ?? '', source),
+        translateToAllLocales(description ?? '', source),
+        materials ? translateToAllLocales(materials, source) : Promise.resolve(empty),
+        height ? translateToAllLocales(height, source) : Promise.resolve(empty),
+        circumference ? translateToAllLocales(circumference, source) : Promise.resolve(empty),
+        depth ? translateToAllLocales(depth, source) : Promise.resolve(empty),
+        weight ? translateToAllLocales(weight, source) : Promise.resolve(empty),
+      ]);
+
+    const failedLocales = Array.from(
+      new Set([
+        ...nameR.failedLocales,
+        ...descriptionR.failedLocales,
+        ...materialsR.failedLocales,
+        ...heightR.failedLocales,
+        ...circumferenceR.failedLocales,
+        ...depthR.failedLocales,
+        ...weightR.failedLocales,
+      ])
+    );
 
     return NextResponse.json({
-      name: nameT,
-      description: descriptionT,
-      materials: materialsT,
-      dimensions: dimensionsT,
-      weight: weightT,
+      name: nameR.text,
+      description: descriptionR.text,
+      materials: materialsR.text,
+      height: heightR.text,
+      circumference: circumferenceR.text,
+      depth: depthR.text,
+      weight: weightR.text,
+      failedLocales,
     });
   } catch (err) {
     console.error('Product translation error:', err);

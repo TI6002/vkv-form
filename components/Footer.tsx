@@ -39,7 +39,7 @@ export function Footer() {
             </p>
             <div className="mt-2 flex gap-4">
               <a
-                href="https://www.instagram.com/vkv.form"
+                href="https://www.instagram.com/vkv.form?igsh=b244OG1yd2Vja2d3"
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Instagram"
@@ -48,7 +48,7 @@ export function Footer() {
                 <Instagram size={16} strokeWidth={1.5} />
               </a>
               <a
-                href="https://www.facebook.com"
+                href="https://www.facebook.com/share/1BcSUJmHiN/"
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Facebook"

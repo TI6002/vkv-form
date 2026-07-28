@@ -64,7 +64,10 @@
     "orderNow": "Commander",
     "save": "Enregistrer",
     "saved": "Enregistré",
-    "weightLabel": "Poids"
+    "weightLabel": "Poids",
+    "heightLabel": "Hauteur",
+    "circumferenceLabel": "Circonférence",
+    "depthLabel": "Profondeur"
   },
   "cart": {
     "title": "Votre panier",

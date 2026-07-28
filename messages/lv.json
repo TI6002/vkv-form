@@ -64,7 +64,10 @@
     "orderNow": "Pasūtīt tagad",
     "save": "Saglabāt",
     "saved": "Saglabāts",
-    "weightLabel": "Svars"
+    "weightLabel": "Svars",
+    "heightLabel": "Augstums",
+    "circumferenceLabel": "Apkārtmērs",
+    "depthLabel": "Dziļums"
   },
   "cart": {
     "title": "Jūsu grozs",

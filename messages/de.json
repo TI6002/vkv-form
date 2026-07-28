@@ -64,7 +64,10 @@
     "orderNow": "Jetzt bestellen",
     "save": "Merken",
     "saved": "Gemerkt",
-    "weightLabel": "Gewicht"
+    "weightLabel": "Gewicht",
+    "heightLabel": "Höhe",
+    "circumferenceLabel": "Umfang",
+    "depthLabel": "Tiefe"
   },
   "cart": {
     "title": "Ihr Warenkorb",

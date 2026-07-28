@@ -97,19 +97,33 @@ export function AdminCollectionPanel() {
 
       const payload = {
         name: translated.name,
-        description: translated.description,
+        description: translated.description ?? {},
         sold_year: form.soldYear || null,
         images: form.images,
       };
 
       if (editingId) {
-        await supabase.from('collection_items').update(payload).eq('id', editingId);
+        const { error } = await supabase
+          .from('collection_items')
+          .update(payload)
+          .eq('id', editingId);
+        if (error) throw error;
       } else {
-        await supabase.from('collection_items').insert(payload);
+        const { error } = await supabase.from('collection_items').insert(payload);
+        if (error) throw error;
       }
 
       resetForm();
       await load();
+
+      const failedLocales: string[] = translated.failedLocales ?? [];
+      if (failedLocales.length > 0) {
+        alert(
+          `Saved — but translation failed for: ${failedLocales.join(', ')}. Those ` +
+            `languages are showing the original text for now (usually the free ` +
+            `translator's daily limit — try again in a bit).`
+        );
+      }
     } catch (err) {
       console.error(err);
       alert('Could not save — check the console.');

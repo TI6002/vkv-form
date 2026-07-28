@@ -9,7 +9,7 @@ import { translateToAllLocales } from '@/lib/translate-server';
  * don't need their own bespoke translate route each.
  *
  * Body: { fields: { [name: string]: string | null }, sourceLocale: string }
- * Response: { [name: string]: LocalizedText | null }
+ * Response: { [name: string]: LocalizedText | null, failedLocales: string[] }
  */
 export async function POST(req: Request) {
   const admin = await requireAdmin();
@@ -23,14 +23,20 @@ export async function POST(req: Request) {
 
     const entries = Object.entries(fields ?? {}) as [string, string | null][];
     const results = await Promise.all(
-      entries.map(async ([name, text]) => [
-        name,
-        text ? await translateToAllLocales(text, source) : null,
-      ] as const)
+      entries.map(async ([name, text]) => {
+        if (!text) return [name, null, []] as const;
+        const { text: translated, failedLocales } = await translateToAllLocales(text, source);
+        return [name, translated, failedLocales] as const;
+      })
     );
 
     const out: Record<string, unknown> = {};
-    for (const [name, value] of results) out[name] = value;
+    const allFailed = new Set<string>();
+    for (const [name, value, failed] of results) {
+      out[name] = value;
+      failed.forEach((l) => allFailed.add(l));
+    }
+    out.failedLocales = Array.from(allFailed);
 
     return NextResponse.json(out);
   } catch (err) {

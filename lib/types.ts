@@ -11,7 +11,9 @@ export type Product = {
   currency: string;
   description: LocalizedText;
   materials: LocalizedText | null;
-  dimensions: LocalizedText | null;
+  height: LocalizedText | null;
+  circumference: LocalizedText | null;
+  depth: LocalizedText | null;
   weight: LocalizedText | null;
   stock: number;
   available: boolean;

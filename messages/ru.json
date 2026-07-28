@@ -64,7 +64,10 @@
     "orderNow": "Заказать",
     "save": "Сохранить",
     "saved": "Сохранено",
-    "weightLabel": "Вес"
+    "weightLabel": "Вес",
+    "heightLabel": "Высота",
+    "circumferenceLabel": "Окружность",
+    "depthLabel": "Глубина"
   },
   "cart": {
     "title": "Ваша корзина",

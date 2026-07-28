@@ -21,7 +21,9 @@ function emptyFormFor(sourceLocale: string) {
     isAvailable: true,
     description: '',
     materials: '',
-    dimensions: '',
+    height: '',
+    circumference: '',
+    depth: '',
     weight: '',
     images: [] as string[],
   };
@@ -76,7 +78,9 @@ function CatalogAdminPanel() {
       isAvailable: p.available,
       description: pickLocalized(p.description, locale),
       materials: pickLocalized(p.materials, locale),
-      dimensions: pickLocalized(p.dimensions, locale),
+      height: pickLocalized(p.height, locale),
+      circumference: pickLocalized(p.circumference, locale),
+      depth: pickLocalized(p.depth, locale),
       weight: pickLocalized(p.weight, locale),
       images: p.images ?? [],
     });
@@ -124,7 +128,9 @@ function CatalogAdminPanel() {
           name: form.name,
           description: form.description,
           materials: form.materials || null,
-          dimensions: form.dimensions || null,
+          height: form.height || null,
+          circumference: form.circumference || null,
+          depth: form.depth || null,
           weight: form.weight || null,
           sourceLocale: form.sourceLocale,
         }),
@@ -144,23 +150,37 @@ function CatalogAdminPanel() {
         available: form.isAvailable,
         description: translated.description,
         materials: translated.materials,
-        dimensions: translated.dimensions,
+        height: translated.height,
+        circumference: translated.circumference,
+        depth: translated.depth,
         weight: translated.weight,
         images: form.images,
         currency: 'EUR',
       };
 
       if (editingId) {
-        await supabase.from('products').update(payload).eq('id', editingId);
+        const { error } = await supabase.from('products').update(payload).eq('id', editingId);
+        if (error) throw error;
       } else {
-        await supabase.from('products').insert(payload);
+        const { error } = await supabase.from('products').insert(payload);
+        if (error) throw error;
       }
 
       resetForm();
       await loadProducts();
+
+      if (translated.failedLocales && translated.failedLocales.length > 0) {
+        alert(
+          `Saved — but translation failed for: ${translated.failedLocales.join(', ')}.\n` +
+            `Those languages are showing the original text for now (usually the free ` +
+            `translator's daily limit — try again in a bit, or edit that language directly ` +
+            `in "Fine-tune the name per language" below).`
+        );
+      }
     } catch (err) {
       console.error('Save product error:', err);
-      alert('Could not save this object — check the browser console for details.');
+      const message = err instanceof Error ? err.message : JSON.stringify(err);
+      alert(`Could not save this object:\n\n${message}\n\n(Also check the browser console for the full details.)`);
     } finally {
       setSaving(false);
     }
@@ -324,10 +344,27 @@ function CatalogAdminPanel() {
               className="input"
             />
           </Field>
-          <Field label={t('dimensions')}>
+          <Field label="Height">
             <input
-              value={form.dimensions}
-              onChange={(e) => setForm((f) => ({ ...f, dimensions: e.target.value }))}
+              value={form.height}
+              onChange={(e) => setForm((f) => ({ ...f, height: e.target.value }))}
+              placeholder="e.g. 30 cm"
+              className="input"
+            />
+          </Field>
+          <Field label="Circumference">
+            <input
+              value={form.circumference}
+              onChange={(e) => setForm((f) => ({ ...f, circumference: e.target.value }))}
+              placeholder="e.g. 86 cm"
+              className="input"
+            />
+          </Field>
+          <Field label="Depth">
+            <input
+              value={form.depth}
+              onChange={(e) => setForm((f) => ({ ...f, depth: e.target.value }))}
+              placeholder="e.g. 12 cm"
               className="input"
             />
           </Field>

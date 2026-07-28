@@ -64,7 +64,10 @@
     "orderNow": "Pedir ahora",
     "save": "Guardar",
     "saved": "Guardado",
-    "weightLabel": "Peso"
+    "weightLabel": "Peso",
+    "heightLabel": "Altura",
+    "circumferenceLabel": "Circunferencia",
+    "depthLabel": "Profundidad"
   },
   "cart": {
     "title": "Tu carrito",
