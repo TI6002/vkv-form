@@ -133,7 +133,8 @@
       "weakPassword": "La password deve contenere almeno 6 caratteri.",
       "rateLimited": "Troppi tentativi — attendi qualche minuto e riprova.",
       "generic": "Qualcosa è andato storto. Controlla i dati e riprova."
-    }
+    },
+    "signInRequired": "Devi prima accedere per farlo."
   },
   "admin": {
     "title": "Amministrazione dello studio",

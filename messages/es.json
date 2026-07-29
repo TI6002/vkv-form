@@ -133,7 +133,8 @@
       "weakPassword": "La contraseña debe tener al menos 6 caracteres.",
       "rateLimited": "Demasiados intentos — espera unos minutos y vuelve a intentarlo.",
       "generic": "Algo salió mal. Revisa tus datos e inténtalo de nuevo."
-    }
+    },
+    "signInRequired": "Primero inicia sesión para hacer esto."
   },
   "admin": {
     "title": "Administración del taller",

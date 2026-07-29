@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { Link } from '@/lib/navigation';
 import { Reveal } from '@/components/Reveal';
 import { ProductCard } from '@/components/ProductCard';
+import { HeroSlider } from '@/components/HeroSlider';
 import { getProducts } from '@/lib/products';
 
 export const dynamic = 'force-dynamic';
@@ -21,50 +22,116 @@ export default async function HomePage({
 
   return (
     <div>
-      {/* Hero */}
-      <section className="relative flex min-h-[92vh] items-end overflow-hidden">
-        {/*
-          Drop your own photo in as public/images/hero.png (landscape,
-          ideally 1800px+ wide) and it replaces this automatically — no
-          code change needed. Falls back to a placeholder until then.
-        */}
-        <Image
-          src="/images/hero.png"
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover"
-        />
+      {/*
+        Hero slider — 3 slides. The first two are drafts for the client's
+        two upcoming events (photo, title, link — all placeholder text
+        below, meant to be edited). The third slide is the studio's
+        regular homepage banner, unchanged.
+      */}
+      <HeroSlider
+        slides={[
+          // --- Slide 1: Event (DRAFT — replace photo, title, link) ---
+          <div key="event-1" className="relative h-full w-full">
+            <Image
+              src="/images/event-1.png"
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover"
+            />
+            <div className="relative z-10 flex h-full w-full items-end">
+              <div className="mx-auto w-full max-w-[1400px] px-6 pb-16 md:px-10 md:pb-24">
+                <p className="hero-text-outline font-mono text-[11px] uppercase tracking-widest2 text-white">
+                  UPCOMING EVENT
+                </p>
+                <h2 className="hero-text-outline mt-4 max-w-xl font-display text-4xl italic leading-tight text-white md:text-6xl">
+                  Event name here
+                </h2>
+                <p className="hero-text-outline mt-5 max-w-md font-body text-base text-white">
+                  Short one-line description of the event — date, city, venue.
+                </p>
+                <Link
+                  href="/contact"
+                  className="mt-7 inline-block border border-white px-7 py-3.5 font-mono text-[11px] uppercase tracking-widest2 text-white transition-colors hover:bg-white hover:text-ink"
+                >
+                  Explore
+                </Link>
+              </div>
+            </div>
+          </div>,
 
-        <div className="relative z-10 mx-auto w-full max-w-[1400px] px-6 pb-10 md:px-10 md:pb-16">
-          <div className="max-w-xl">
-            <p className="hero-text-outline font-mono text-[11px] uppercase tracking-widest2 text-cocoa-brown">
-              {t('heroEyebrow')}
-            </p>
-            <h1 className="hero-text-outline mt-5 font-display text-[11vw] leading-[0.98] text-white md:text-[4.4vw]">
-              {heroLines.map((line, i) => (
-                <span key={i} className="block">
-                  {i === heroLines.length - 1 ? (
-                    <em className="not-italic italic">{line}</em>
-                  ) : (
-                    line
-                  )}
-                </span>
-              ))}
-            </h1>
-            <p className="hero-text-outline mt-6 font-body text-base leading-relaxed text-white">
-              {t('heroSubtitle')}
-            </p>
-            <Link
-              href="/catalog"
-              className="mt-8 inline-block border border-white px-7 py-3.5 font-mono text-[11px] uppercase tracking-widest2 text-white transition-colors hover:bg-white hover:text-ink"
-            >
-              {t('heroCta')}
-            </Link>
-          </div>
-        </div>
-      </section>
+          // --- Slide 2: Event (DRAFT — replace photo, title, link) ---
+          <div key="event-2" className="relative h-full w-full">
+            <Image
+              src="/images/event-2.png"
+              alt=""
+              fill
+              sizes="100vw"
+              className="object-cover"
+            />
+            <div className="relative z-10 flex h-full w-full items-end">
+              <div className="mx-auto w-full max-w-[1400px] px-6 pb-16 md:px-10 md:pb-24">
+                <p className="hero-text-outline font-mono text-[11px] uppercase tracking-widest2 text-white">
+                  UPCOMING EVENT
+                </p>
+                <h2 className="hero-text-outline mt-4 max-w-xl font-display text-4xl italic leading-tight text-white md:text-6xl">
+                  Second event name here
+                </h2>
+                <p className="hero-text-outline mt-5 max-w-md font-body text-base text-white">
+                  Short one-line description of the event — date, city, venue.
+                </p>
+                <Link
+                  href="/contact"
+                  className="mt-7 inline-block border border-white px-7 py-3.5 font-mono text-[11px] uppercase tracking-widest2 text-white transition-colors hover:bg-white hover:text-ink"
+                >
+                  Explore
+                </Link>
+              </div>
+            </div>
+          </div>,
+
+          // --- Slide 3: the studio's regular homepage banner (unchanged) ---
+          <div key="studio" className="relative h-full w-full">
+            <Image
+              src="/images/hero.png"
+              alt=""
+              fill
+              sizes="100vw"
+              className="object-cover"
+            />
+            <div className="relative z-10 flex h-full w-full items-end">
+              <div className="mx-auto w-full max-w-[1400px] px-6 pb-10 md:px-10 md:pb-16">
+                <div className="max-w-xl">
+                  <p className="hero-text-outline font-mono text-[11px] uppercase tracking-widest2 text-white">
+                    {t('heroEyebrow')}
+                  </p>
+                  <h1 className="hero-text-outline mt-5 font-display text-[11vw] leading-[0.98] text-white md:text-[4.4vw]">
+                    {heroLines.map((line, i) => (
+                      <span key={i} className="block">
+                        {i === heroLines.length - 1 ? (
+                          <em className="not-italic italic">{line}</em>
+                        ) : (
+                          line
+                        )}
+                      </span>
+                    ))}
+                  </h1>
+                  <p className="hero-text-outline mt-6 font-body text-base leading-relaxed text-white">
+                    {t('heroSubtitle')}
+                  </p>
+                  <Link
+                    href="/catalog"
+                    className="mt-8 inline-block border border-white px-7 py-3.5 font-mono text-[11px] uppercase tracking-widest2 text-white transition-colors hover:bg-white hover:text-ink"
+                  >
+                    {t('heroCta')}
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>,
+        ]}
+      />
 
       {/* Philosophy — white panel */}
       <section className="bg-white">

@@ -56,7 +56,7 @@ export function LikeButton({
     e?.stopPropagation();
 
     if (!userId) {
-      router.push('/account');
+      router.push('/account?authRequired=1');
       return;
     }
 

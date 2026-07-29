@@ -133,7 +133,8 @@
       "weakPassword": "Das Passwort muss mindestens 6 Zeichen lang sein.",
       "rateLimited": "Zu viele Versuche — bitte warten Sie ein paar Minuten und versuchen Sie es erneut.",
       "generic": "Etwas ist schiefgelaufen. Bitte überprüfen Sie Ihre Angaben und versuchen Sie es erneut."
-    }
+    },
+    "signInRequired": "Bitte melden Sie sich zuerst an."
   },
   "admin": {
     "title": "Atelier-Verwaltung",

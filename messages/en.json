@@ -133,7 +133,8 @@
       "weakPassword": "Password should be at least 6 characters.",
       "rateLimited": "Too many attempts — please wait a few minutes and try again.",
       "generic": "Something went wrong. Please check your details and try again."
-    }
+    },
+    "signInRequired": "Please sign in first to do that."
   },
   "admin": {
     "title": "Studio admin",

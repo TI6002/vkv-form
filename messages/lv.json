@@ -133,7 +133,8 @@
       "weakPassword": "Parolei jābūt vismaz 6 rakstzīmes garai.",
       "rateLimited": "Pārāk daudz mēģinājumu — lūdzu, uzgaidiet dažas minūtes un mēģiniet vēlreiz.",
       "generic": "Kaut kas nogāja greizi. Pārbaudiet datus un mēģiniet vēlreiz."
-    }
+    },
+    "signInRequired": "Vispirms lūdzu piesakieties."
   },
   "admin": {
     "title": "Darbnīcas administrēšana",

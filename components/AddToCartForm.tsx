@@ -11,6 +11,10 @@ import type { Product } from '@/lib/types';
  * Each object is a one-of-a-kind, handmade piece — there's only ever one
  * in stock, so there's no quantity to choose. Quantity is always 1.
  *
+ * Both buttons require being signed in — a signed-out visitor gets sent
+ * to /account with a "please sign in first" message instead of being
+ * allowed to add to cart / order.
+ *
  * Availability is also kept live via Supabase Realtime: if an admin
  * toggles it off in /admin while someone has this page open, the button
  * disables itself immediately instead of waiting for a refresh.
@@ -56,13 +60,28 @@ export function AddToCartForm({ product, name }: { product: Product; name: strin
     };
   }
 
-  function handleAdd() {
+  /** Returns true if signed in; otherwise redirects to /account and returns false. */
+  async function requireSignedIn(): Promise<boolean> {
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      router.push('/account?authRequired=1');
+      return false;
+    }
+    return true;
+  }
+
+  async function handleAdd() {
+    if (!(await requireSignedIn())) return;
     addItem(currentLine(), 1);
     setJustAdded(true);
     setTimeout(() => setJustAdded(false), 1800);
   }
 
-  function handleOrderNow() {
+  async function handleOrderNow() {
+    if (!(await requireSignedIn())) return;
     addItem(currentLine(), 1);
     router.push('/checkout');
   }

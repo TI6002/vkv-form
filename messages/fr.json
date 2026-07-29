@@ -133,7 +133,8 @@
       "weakPassword": "Le mot de passe doit contenir au moins 6 caractères.",
       "rateLimited": "Trop de tentatives — veuillez patienter quelques minutes et réessayer.",
       "generic": "Une erreur est survenue. Vérifiez vos informations et réessayez."
-    }
+    },
+    "signInRequired": "Veuillez d'abord vous connecter."
   },
   "admin": {
     "title": "Administration de l'atelier",

@@ -11,11 +11,14 @@ import type { Order, Favorite } from '@/lib/types';
 
 export default async function AccountPage({
   params: { locale },
+  searchParams,
 }: {
   params: { locale: string };
+  searchParams: { [key: string]: string | string[] | undefined };
 }) {
   unstable_setRequestLocale(locale);
   const t = await getTranslations('account');
+  const authRequired = searchParams?.authRequired === '1';
 
   let user = null;
   let orders: Order[] = [];
@@ -58,6 +61,11 @@ export default async function AccountPage({
     <div className="mx-auto max-w-[1100px] px-6 py-20 md:px-10 md:py-28">
       {!user ? (
         <Reveal>
+          {authRequired && (
+            <p className="mb-8 max-w-sm border border-cocoa/40 bg-cocoa/5 px-5 py-4 font-body text-sm text-cocoa">
+              {t('signInRequired')}
+            </p>
+          )}
           <AuthForm />
         </Reveal>
       ) : (
