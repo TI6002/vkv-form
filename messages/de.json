@@ -165,7 +165,8 @@
     "newsletterPlaceholder": "Ihre E-Mail",
     "newsletterCta": "Abonnieren",
     "newsletterSuccess": "Abonniert — danke.",
-    "rights": "Alle Rechte vorbehalten."
+    "rights": "Alle Rechte vorbehalten.",
+    "cookiePolicy": "Cookie-Richtlinie"
   },
   "common": {
     "loading": "Wird geladen…",
@@ -177,5 +178,25 @@
     "intro": "Ein Verzeichnis von Stücken, die bereits ein neues Zuhause gefunden haben — hier als Archiv geführt, nicht zum erneuten Verkauf.",
     "empty": "Das Sammlungsbuch ist derzeit leer.",
     "soldIn": "Verkauft im Jahr"
+  },
+  "cookies": {
+    "message": "Diese Website verwendet eine kleine Anzahl notwendiger Cookies, um Sie angemeldet zu halten und Ihren Warenkorb zu merken — nichts wird für Werbung oder Tracking verwendet.",
+    "learnMore": "Mehr erfahren",
+    "accept": "Verstanden"
+  },
+  "cookiePolicy": {
+    "title": "Cookie-Richtlinie",
+    "lastUpdated": "Zuletzt aktualisiert 2026",
+    "intro": "Diese Seite erklärt in einfacher Sprache, welche Cookies und ähnliche Technologien vkv.form verwendet und warum. Wir halten dies bewusst kurz, weil wir bewusst sehr wenige verwenden.",
+    "essentialTitle": "Notwendige Cookies",
+    "essentialBody": "Beim Anmelden setzt unser Authentifizierungsanbieter (Supabase) ein sicheres Cookie, damit die Website weiß, dass Sie angemeldet sind, während Sie zwischen Seiten wechseln. Dieses Cookie ist für die Funktion der Website unbedingt erforderlich — ohne es könnten Sie nicht angemeldet bleiben oder Ihre Bestellungen einsehen — daher erfordert es nach der DSGVO keine Einwilligung, wir erwähnen es hier jedoch aus Gründen der Transparenz.",
+    "localStorageTitle": "Ihr Warenkorb",
+    "localStorageBody": "Artikel, die Sie Ihrem Warenkorb hinzufügen, werden im lokalen Speicher Ihres Browsers gespeichert, nicht in einem Cookie und nicht auf unseren Servern, bis Sie zur Kasse gehen. Das Löschen Ihrer Browserdaten löscht auch Ihren Warenkorb.",
+    "thirdPartyTitle": "Drittanbieter",
+    "thirdPartyBody": "Wir verwenden keine Werbe-Cookies, Tracking-Pixel oder Analysetools von Drittanbietern. Bei der Bezahlung werden Sie zur eigenen sicheren Zahlungsseite unseres Zahlungsanbieters weitergeleitet, die dessen eigener Cookie- und Datenschutzrichtlinie unterliegt, nicht unserer.",
+    "rightsTitle": "Ihre Rechte",
+    "rightsBody": "Nach der DSGVO können Sie von uns erfragen, welche personenbezogenen Daten wir über Sie speichern, deren Berichtigung oder Löschung verlangen und der Verarbeitung widersprechen. Da wir sehr wenige Daten speichern (Konto-E-Mail, Bestellverlauf und das, was Sie ausdrücklich gespeichert haben), können die meisten Anfragen schnell bearbeitet werden.",
+    "contactTitle": "Kontakt",
+    "contactBody": "Fragen zu dieser Richtlinie oder Ihren Daten können an die auf unserer Kontaktseite angegebene Atelier-E-Mail gesendet werden."
   }
 }

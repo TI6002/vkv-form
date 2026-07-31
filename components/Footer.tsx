@@ -13,7 +13,12 @@ export function Footer() {
         <div className="grid gap-8 md:grid-cols-[1.3fr_1fr_1fr]">
           <div>
             <p className="font-display text-base uppercase italic text-cocoa">vkv.form</p>
-            
+            <p className="mt-2 max-w-xs font-body text-xs leading-relaxed text-stone">
+              {t('newsletterBody')}
+            </p>
+            <div className="mt-3">
+              <NewsletterForm />
+            </div>
           </div>
 
           <div>
@@ -23,9 +28,6 @@ export function Footer() {
             <nav className="mt-2 flex flex-col gap-1.5">
               <Link href="/catalog" className="font-body text-sm text-ink hover:text-stone">
                 {tn('catalog')}
-              </Link>
-              <Link href="/collection" className="font-body text-sm text-ink hover:text-stone">
-                {tn('collection')}
               </Link>
               <Link href="/about" className="font-body text-sm text-ink hover:text-stone">
                 {tn('about')}
@@ -42,7 +44,7 @@ export function Footer() {
             </p>
             <div className="mt-2 flex gap-4">
               <a
-                href="https://www.instagram.com/vkv.form?igsh=b244OG1yd2Vja2d3"
+                href="https://www.instagram.com/vkv.form"
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Instagram"
@@ -51,7 +53,7 @@ export function Footer() {
                 <Instagram size={16} strokeWidth={1.5} />
               </a>
               <a
-                href="https://www.facebook.com/share/1BcSUJmHiN/"
+                href="https://www.facebook.com"
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Facebook"
@@ -67,6 +69,12 @@ export function Footer() {
           <p className="font-mono text-[10px] uppercase tracking-widest2 text-stone">
             © {new Date().getFullYear()} VKV.FORM — {t('rights')}
           </p>
+          <Link
+            href="/cookie-policy"
+            className="font-mono text-[10px] uppercase tracking-widest2 text-stone underline underline-offset-4 hover:text-ink"
+          >
+            {t('cookiePolicy')}
+          </Link>
         </div>
       </div>
     </footer>

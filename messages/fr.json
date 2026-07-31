@@ -165,7 +165,8 @@
     "newsletterPlaceholder": "Votre email",
     "newsletterCta": "S'abonner",
     "newsletterSuccess": "Abonné — merci.",
-    "rights": "Tous droits réservés."
+    "rights": "Tous droits réservés.",
+    "cookiePolicy": "Politique cookies"
   },
   "common": {
     "loading": "Chargement…",
@@ -177,5 +178,25 @@
     "intro": "Un registre des pièces qui ont déjà trouvé leur foyer — conservé ici comme archive plutôt que remis en vente.",
     "empty": "Le livre de collection est vide pour l'instant.",
     "soldIn": "Vendu en"
+  },
+  "cookies": {
+    "message": "Ce site utilise un petit nombre de cookies essentiels pour vous garder connecté(e) et mémoriser votre panier — rien n'est utilisé pour la publicité ou le suivi.",
+    "learnMore": "En savoir plus",
+    "accept": "Compris"
+  },
+  "cookiePolicy": {
+    "title": "Politique relative aux cookies",
+    "lastUpdated": "Mise à jour en 2026",
+    "intro": "Cette page explique, en langage simple, quels cookies et technologies similaires vkv.form utilise et pourquoi. Nous restons volontairement brefs, car nous en utilisons volontairement très peu.",
+    "essentialTitle": "Cookies essentiels",
+    "essentialBody": "Lorsque vous vous connectez, notre fournisseur d'authentification (Supabase) dépose un cookie sécurisé afin que le site sache que vous êtes connecté(e) en naviguant entre les pages. Ce cookie est strictement nécessaire au fonctionnement du site — sans lui, vous ne pourriez pas rester connecté(e) ni consulter vos commandes — il ne nécessite donc pas de consentement au titre du RGPD, mais nous le mentionnons ici par souci de transparence.",
+    "localStorageTitle": "Votre panier",
+    "localStorageBody": "Les articles ajoutés à votre panier sont stockés dans le stockage local de votre navigateur, pas dans un cookie, et pas sur nos serveurs, jusqu'à la validation de la commande. Effacer les données de votre navigateur effacera aussi votre panier.",
+    "thirdPartyTitle": "Tiers",
+    "thirdPartyBody": "Nous n'utilisons ni cookies publicitaires, ni pixels de suivi, ni outils d'analyse tiers. Lors du paiement, vous êtes redirigé(e) vers la page de paiement sécurisée de notre prestataire, soumise à sa propre politique de cookies et de confidentialité, distincte de la nôtre.",
+    "rightsTitle": "Vos droits",
+    "rightsBody": "Conformément au RGPD, vous pouvez nous demander quelles données personnelles nous détenons vous concernant, demander leur correction ou suppression, et vous opposer à leur traitement. Comme nous conservons très peu de données (email du compte, historique des commandes et ce que vous avez explicitement enregistré), la plupart des demandes sont traitées rapidement.",
+    "contactTitle": "Contact",
+    "contactBody": "Toute question sur cette politique ou vos données peut être envoyée à l'adresse email de l'atelier indiquée sur notre page Contact."
   }
 }

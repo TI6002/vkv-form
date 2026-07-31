@@ -165,7 +165,8 @@
     "newsletterPlaceholder": "Jūsu e-pasts",
     "newsletterCta": "Abonēt",
     "newsletterSuccess": "Abonēts — paldies.",
-    "rights": "Visas tiesības aizsargātas."
+    "rights": "Visas tiesības aizsargātas.",
+    "cookiePolicy": "Sīkdatņu politika"
   },
   "common": {
     "loading": "Ielādē…",
@@ -177,5 +178,25 @@
     "intro": "Pieraksts par priekšmetiem, kas jau atraduši savas mājas — glabāts šeit kā arhīvs, nevis atkārtotai pārdošanai.",
     "empty": "Kolekcijas grāmata pagaidām ir tukša.",
     "soldIn": "Pārdots"
+  },
+  "cookies": {
+    "message": "Šī vietne izmanto nelielu skaitu nepieciešamo sīkdatņu, lai saglabātu jūsu pieslēgšanos un grozu — nekas netiek izmantots reklāmai vai izsekošanai.",
+    "learnMore": "Uzzināt vairāk",
+    "accept": "Sapratu"
+  },
+  "cookiePolicy": {
+    "title": "Sīkdatņu politika",
+    "lastUpdated": "Atjaunināts 2026. gadā",
+    "intro": "Šī lapa vienkāršā valodā skaidro, kādas sīkdatnes un līdzīgas tehnoloģijas izmanto vkv.form un kāpēc. Mēs apzināti to turam īsu, jo apzināti izmantojam ļoti maz.",
+    "essentialTitle": "Nepieciešamās sīkdatnes",
+    "essentialBody": "Kad piesakāties, mūsu autentifikācijas nodrošinātājs (Supabase) uzstāda drošu sīkdatni, lai vietne zinātu, ka esat pieslēdzies, pārvietojoties starp lapām. Šī sīkdatne ir absolūti nepieciešama vietnes darbībai — bez tās nevarētu palikt pieslēgts vai skatīt savus pasūtījumus — tāpēc saskaņā ar VDAR tā neprasa piekrišanu, bet mēs to pieminam šeit pārskatāmības labad.",
+    "localStorageTitle": "Jūsu grozs",
+    "localStorageBody": "Grozam pievienotie priekšmeti tiek glabāti jūsu pārlūkprogrammas lokālajā krātuvē, nevis sīkdatnē un nevis mūsu serveros, līdz pasūtījuma noformēšanai. Pārlūkprogrammas datu dzēšana dzēsīs arī jūsu grozu.",
+    "thirdPartyTitle": "Trešās puses",
+    "thirdPartyBody": "Mēs neizmantojam reklāmas sīkdatnes, izsekošanas pikseļus vai trešo pušu analītiku. Veicot apmaksu, jūs tiekat novirzīts uz mūsu maksājumu nodrošinātāja drošo apmaksas lapu, uz kuru attiecas viņu, nevis mūsu, sīkdatņu un privātuma politika.",
+    "rightsTitle": "Jūsu tiesības",
+    "rightsBody": "Saskaņā ar VDAR jūs varat pieprasīt no mums, kādus personas datus mēs par jums glabājam, lūgt tos labot vai dzēst, kā arī iebilst pret to apstrādi. Tā kā mēs glabājam ļoti maz datu (konta e-pastu, pasūtījumu vēsturi un to, ko esat skaidri saglabājis), lielākā daļa pieprasījumu tiek apstrādāti ātri.",
+    "contactTitle": "Kontakti",
+    "contactBody": "Jautājumus par šo politiku vai jūsu datiem var sūtīt uz darbnīcas e-pastu, kas norādīts mūsu Kontaktu lapā."
   }
 }

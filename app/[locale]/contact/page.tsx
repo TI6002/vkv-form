@@ -11,9 +11,6 @@ export default async function ContactPage({
 
   // Fill these in .env.local — see README "Studio details" section.
   const details = {
-    company: process.env.NEXT_PUBLIC_STUDIO_COMPANY_NAME || 'vkv.form SIA',
-    reg: process.env.NEXT_PUBLIC_STUDIO_REG_NUMBER || 'add your registration number',
-    vat: process.env.NEXT_PUBLIC_STUDIO_VAT_NUMBER || 'add your VAT number',
     address: process.env.NEXT_PUBLIC_STUDIO_ADDRESS || 'Burtnieku Street 33, Riga, Latvia',
     email: process.env.NEXT_PUBLIC_STUDIO_EMAIL || 'vkv.form.info@gmail.com',
     phone: process.env.NEXT_PUBLIC_STUDIO_PHONE || '+371 20509471',
@@ -48,9 +45,7 @@ export default async function ContactPage({
             {t('detailsTitle')}
           </p>
           <dl className="mt-6 space-y-4 border-t border-line pt-6">
-            <Row label={t('companyName')} value={details.company} />
-            <Row label={t('regNumber')} value={details.reg} />
-            <Row label={t('vatNumber')} value={details.vat} />
+          
             <Row label={t('address')} value={details.address} />
             <Row
               label={t('email')}

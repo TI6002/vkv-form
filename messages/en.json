@@ -165,7 +165,8 @@
     "newsletterPlaceholder": "Your email",
     "newsletterCta": "Subscribe",
     "newsletterSuccess": "Subscribed — thank you.",
-    "rights": "All rights reserved."
+    "rights": "All rights reserved.",
+    "cookiePolicy": "Cookie Policy"
   },
   "common": {
     "loading": "Loading…",
@@ -177,5 +178,25 @@
     "intro": "A record of pieces that have already found their homes — kept here as an archive rather than offered for sale again.",
     "empty": "The collection book is empty for now.",
     "soldIn": "Sold in"
+  },
+  "cookies": {
+    "message": "This site uses a small number of essential cookies to keep you signed in and remember your cart — nothing is used for advertising or tracking.",
+    "learnMore": "Learn more",
+    "accept": "Got it"
+  },
+  "cookiePolicy": {
+    "title": "Cookie Policy",
+    "lastUpdated": "Last updated 2026",
+    "intro": "This page explains, in plain language, what cookies and similar technologies vkv.form uses and why. We keep this deliberately short because we deliberately use very little.",
+    "essentialTitle": "Essential cookies",
+    "essentialBody": "When you sign in, our authentication provider (Supabase) sets a secure cookie so the site knows you're signed in as you move between pages. This cookie is strictly necessary for the site to function — without it, you couldn't stay logged in or view your orders — so it doesn't require consent under GDPR, but we mention it here for transparency.",
+    "localStorageTitle": "Your cart",
+    "localStorageBody": "Items you add to your cart are stored in your browser's local storage, not a cookie, and not on our servers, until you check out. Clearing your browser data will clear your cart.",
+    "thirdPartyTitle": "Third parties",
+    "thirdPartyBody": "We do not use advertising cookies, tracking pixels, or third-party analytics. When you pay, you are taken to our payment provider's own secure checkout page, which is subject to their own cookie and privacy policy, not ours.",
+    "rightsTitle": "Your rights",
+    "rightsBody": "Under GDPR, you can ask us what personal data we hold about you, ask us to correct or delete it, and object to how it's processed. Since we store very little (an account email, order history, and anything you've explicitly saved), most requests can be handled quickly.",
+    "contactTitle": "Contact",
+    "contactBody": "Questions about this policy or your data can be sent to the studio email listed on our Contact page."
   }
 }

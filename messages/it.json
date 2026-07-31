@@ -165,7 +165,8 @@
     "newsletterPlaceholder": "La tua email",
     "newsletterCta": "Iscriviti",
     "newsletterSuccess": "Iscritto — grazie.",
-    "rights": "Tutti i diritti riservati."
+    "rights": "Tutti i diritti riservati.",
+    "cookiePolicy": "Cookie Policy"
   },
   "common": {
     "loading": "Caricamento…",
@@ -177,5 +178,25 @@
     "intro": "Un registro di pezzi che hanno già trovato casa — conservato qui come archivio, non in vendita.",
     "empty": "Il libro della collezione è vuoto per ora.",
     "soldIn": "Venduto nel"
+  },
+  "cookies": {
+    "message": "Questo sito utilizza un piccolo numero di cookie essenziali per mantenerti connesso(a) e ricordare il tuo carrello — nulla viene usato per pubblicità o tracciamento.",
+    "learnMore": "Scopri di più",
+    "accept": "Ho capito"
+  },
+  "cookiePolicy": {
+    "title": "Cookie Policy",
+    "lastUpdated": "Aggiornato nel 2026",
+    "intro": "Questa pagina spiega, in modo semplice, quali cookie e tecnologie simili usa vkv.form e perché. Restiamo volutamente brevi, perché ne usiamo volutamente pochissimi.",
+    "essentialTitle": "Cookie essenziali",
+    "essentialBody": "Quando accedi, il nostro fornitore di autenticazione (Supabase) imposta un cookie sicuro affinché il sito sappia che sei connesso(a) mentre navighi tra le pagine. Questo cookie è strettamente necessario per il funzionamento del sito — senza di esso non potresti restare collegato(a) né vedere i tuoi ordini — quindi non richiede consenso ai sensi del GDPR, ma lo menzioniamo qui per trasparenza.",
+    "localStorageTitle": "Il tuo carrello",
+    "localStorageBody": "Gli articoli aggiunti al carrello sono salvati nella memoria locale del tuo browser, non in un cookie, e non sui nostri server, fino al completamento dell'ordine. Cancellare i dati del browser cancellerà anche il carrello.",
+    "thirdPartyTitle": "Terze parti",
+    "thirdPartyBody": "Non utilizziamo cookie pubblicitari, pixel di tracciamento o strumenti di analisi di terze parti. Al momento del pagamento vieni reindirizzato(a) alla pagina di pagamento sicura del nostro fornitore, soggetta alla sua propria informativa su cookie e privacy, non alla nostra.",
+    "rightsTitle": "I tuoi diritti",
+    "rightsBody": "Secondo il GDPR, puoi chiederci quali dati personali conserviamo su di te, chiederne la correzione o cancellazione, e opporti al loro trattamento. Poiché conserviamo pochissimi dati (email dell'account, storico ordini e ciò che hai esplicitamente salvato), la maggior parte delle richieste viene gestita rapidamente.",
+    "contactTitle": "Contatti",
+    "contactBody": "Domande su questa policy o sui tuoi dati possono essere inviate all'email dello studio indicata nella pagina Contatti."
   }
 }

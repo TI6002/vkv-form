@@ -165,7 +165,8 @@
     "newsletterPlaceholder": "Tu email",
     "newsletterCta": "Suscribirse",
     "newsletterSuccess": "Suscrito — gracias.",
-    "rights": "Todos los derechos reservados."
+    "rights": "Todos los derechos reservados.",
+    "cookiePolicy": "Política de cookies"
   },
   "common": {
     "loading": "Cargando…",
@@ -177,5 +178,25 @@
     "intro": "Un registro de piezas que ya han encontrado su hogar — conservado aquí como archivo y no para la venta.",
     "empty": "El libro de colección está vacío por ahora.",
     "soldIn": "Vendido en"
+  },
+  "cookies": {
+    "message": "Este sitio usa un pequeño número de cookies esenciales para mantenerte conectado(a) y recordar tu carrito — nada se usa para publicidad o seguimiento.",
+    "learnMore": "Saber más",
+    "accept": "Entendido"
+  },
+  "cookiePolicy": {
+    "title": "Política de cookies",
+    "lastUpdated": "Actualizado en 2026",
+    "intro": "Esta página explica, en lenguaje sencillo, qué cookies y tecnologías similares usa vkv.form y por qué. Mantenemos esto deliberadamente breve, porque deliberadamente usamos muy pocas.",
+    "essentialTitle": "Cookies esenciales",
+    "essentialBody": "Al iniciar sesión, nuestro proveedor de autenticación (Supabase) coloca una cookie segura para que el sitio sepa que has iniciado sesión mientras navegas entre páginas. Esta cookie es estrictamente necesaria para el funcionamiento del sitio — sin ella no podrías permanecer conectado(a) ni ver tus pedidos — por lo que no requiere consentimiento bajo el RGPD, pero la mencionamos aquí por transparencia.",
+    "localStorageTitle": "Tu carrito",
+    "localStorageBody": "Los artículos añadidos a tu carrito se guardan en el almacenamiento local de tu navegador, no en una cookie, y no en nuestros servidores, hasta que finalizas la compra. Borrar los datos del navegador borrará también tu carrito.",
+    "thirdPartyTitle": "Terceros",
+    "thirdPartyBody": "No usamos cookies publicitarias, píxeles de seguimiento ni analítica de terceros. Al pagar, se te redirige a la página segura de pago de nuestro proveedor, sujeta a su propia política de cookies y privacidad, no a la nuestra.",
+    "rightsTitle": "Tus derechos",
+    "rightsBody": "Según el RGPD, puedes solicitarnos qué datos personales tenemos sobre ti, pedir que los corrijamos o eliminemos, y oponerte a su tratamiento. Como guardamos muy pocos datos (email de la cuenta, historial de pedidos y lo que hayas guardado explícitamente), la mayoría de solicitudes se resuelven rápido.",
+    "contactTitle": "Contacto",
+    "contactBody": "Las preguntas sobre esta política o tus datos pueden enviarse al email del taller indicado en nuestra página de Contacto."
   }
 }
