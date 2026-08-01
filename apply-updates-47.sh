@@ -1,3 +1,15 @@
+#!/usr/bin/env bash
+set -e
+
+if [ ! -f package.json ]; then
+  echo "ERROR: no package.json here. cd into the project root first."
+  exit 1
+fi
+
+echo "Applying vkv.form updates (round 48 — slide 1 photo only, slide 2 button lower)..."
+
+mkdir -p "app/[locale]"
+cat > "app/[locale]/page.tsx" << '__VKV_PATCH_EOF__'
 import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
 import Image from 'next/image';
 import { Link } from '@/lib/navigation';
@@ -53,7 +65,7 @@ export default async function HomePage({
             />
             <div className="relative z-10 flex h-full w-full items-end justify-center pb-20 md:pb-28">
               <Link
-                href="https://www.1000vases.com/about"
+                href="/contact"
                 className="border-2 border-white px-12 py-5 font-mono text-sm uppercase tracking-widest2 text-white transition-colors hover:bg-white hover:text-ink"
               >
                 Explore
@@ -168,3 +180,7 @@ export default async function HomePage({
     </div>
   );
 }
+__VKV_PATCH_EOF__
+echo "  updated: app/[locale]/page.tsx"
+
+echo "Done. Restart npm run dev after this."

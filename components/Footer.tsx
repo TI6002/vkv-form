@@ -13,12 +13,6 @@ export function Footer() {
         <div className="grid gap-8 md:grid-cols-[1.3fr_1fr_1fr]">
           <div>
             <p className="font-display text-base uppercase italic text-cocoa">vkv.form</p>
-            <p className="mt-2 max-w-xs font-body text-xs leading-relaxed text-stone">
-              {t('newsletterBody')}
-            </p>
-            <div className="mt-3">
-              <NewsletterForm />
-            </div>
           </div>
 
           <div>
