@@ -8,18 +8,36 @@ import { sanitizeFileName } from '@/lib/sanitize-filename';
 import { locales, localeNames, type Locale } from '@/i18n';
 import type { AboutPost } from '@/lib/types';
 
+// authorBody is ONE free-form field now — the client separates paragraphs
+// herself with a blank line (press Enter twice), same as any normal text
+// editor, instead of being limited to a fixed number of paragraph fields.
 const FIELDS: { key: string; label: string; multiline?: boolean }[] = [
-  { key: 'authorTitle', label: 'Author — title' },
-  { key: 'authorBody1', label: 'Author — paragraph 1', multiline: true },
-  { key: 'authorBody2', label: 'Author — paragraph 2', multiline: true },
-  { key: 'philosophyTitle', label: 'Philosophy — title' },
-  { key: 'philosophyBody1', label: 'Philosophy — paragraph 1', multiline: true },
-  { key: 'philosophyBody2', label: 'Philosophy — paragraph 2', multiline: true },
-  { key: 'philosophyBody3', label: 'Philosophy — paragraph 3', multiline: true },
+  { key: 'authorTitle', label: 'Author — title (the quote)' },
+  { key: 'authorBody', label: 'Author — text', multiline: true },
 ];
 
 function emptyPostForm(sourceLocale: string) {
   return { sourceLocale, title: '', body: '', images: [] as string[] };
+}
+
+/**
+ * Lets Tab actually insert a tab character at the cursor instead of
+ * jumping focus to the next field — the normal browser behaviour in a
+ * <textarea> is unhelpful for writing indented paragraphs.
+ */
+function handleTabIndent(
+  e: React.KeyboardEvent<HTMLTextAreaElement>,
+  update: (transform: (prev: string) => string) => void
+) {
+  if (e.key !== 'Tab') return;
+  e.preventDefault();
+  const el = e.currentTarget;
+  const start = el.selectionStart;
+  const end = el.selectionEnd;
+  update((prev) => prev.slice(0, start) + '\t' + prev.slice(end));
+  requestAnimationFrame(() => {
+    el.selectionStart = el.selectionEnd = start + 1;
+  });
 }
 
 export function AdminAboutPanel() {
@@ -47,6 +65,12 @@ export function AdminAboutPanel() {
     for (const row of contentRows ?? []) {
       map[row.key] = pickLocalized(row.value, locale);
     }
+    // If the client already saved the old two-field version (authorBody1 /
+    // authorBody2) but hasn't re-saved under the new combined "authorBody"
+    // field yet, prefill it here so nothing looks like it vanished.
+    if (!map.authorBody && (map.authorBody1 || map.authorBody2)) {
+      map.authorBody = [map.authorBody1, map.authorBody2].filter(Boolean).join('\n\n');
+    }
     setValues(map);
     setPosts((postRows as AboutPost[]) ?? []);
     setLoaded(true);
@@ -71,7 +95,7 @@ export function AdminAboutPanel() {
       const failedLocales: string[] = translated.failedLocales ?? [];
 
       const rows = Object.entries(translated)
-        .filter(([key, value]) => key !== 'failedLocales' && value !== null)
+        .filter(([key, value]) => key !== 'failedLocales' && key !== 'deeplConfigured' && value !== null)
         .map(([key, value]) => ({ key, value }));
 
       if (rows.length > 0) {
@@ -94,6 +118,25 @@ export function AdminAboutPanel() {
     } finally {
       setSaving(false);
     }
+  }
+
+  function resetPostForm() {
+    setPostForm(emptyPostForm(locale));
+    setEditingPostId(null);
+  }
+
+  function startEditPost(post: AboutPost) {
+    setEditingPostId(post.id);
+    setPostForm({
+      sourceLocale: locale,
+      title: pickLocalized(post.title, locale),
+      body: pickLocalized(post.body, locale),
+      images: post.images ?? [],
+    });
+  }
+
+  function removePostImage(index: number) {
+    setPostForm((f) => ({ ...f, images: f.images.filter((_, i) => i !== index) }));
   }
 
   async function handlePostUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -123,25 +166,6 @@ export function AdminAboutPanel() {
     if (errors.length > 0) {
       alert(`Could not upload:\n\n${errors.join('\n')}`);
     }
-  }
-
-  function resetPostForm() {
-    setPostForm(emptyPostForm(locale));
-    setEditingPostId(null);
-  }
-
-  function startEditPost(post: AboutPost) {
-    setEditingPostId(post.id);
-    setPostForm({
-      sourceLocale: locale,
-      title: pickLocalized(post.title, locale),
-      body: pickLocalized(post.body, locale),
-      images: post.images ?? [],
-    });
-  }
-
-  function removePostImage(index: number) {
-    setPostForm((f) => ({ ...f, images: f.images.filter((_, i) => i !== index) }));
   }
 
   async function handleSavePost(e: React.FormEvent) {
@@ -181,11 +205,11 @@ export function AdminAboutPanel() {
 
       const failedLocales: string[] = translated.failedLocales ?? [];
       if (failedLocales.length > 0) {
-        const reason =
-          translated.deeplConfigured === false
-            ? "DEEPL_API_KEY is not set (or the server wasn't restarted after adding it)."
-            : "usually the free translator's daily limit — try again in a bit.";
-        alert(`Saved — but translation failed for: ${failedLocales.join(', ')}.\n\nReason: ${reason}`);
+        alert(
+          `Saved — but translation failed for: ${failedLocales.join(', ')}. Those ` +
+            `languages are showing the original text for now (usually the free ` +
+            `translator's daily limit — try again in a bit).`
+        );
       }
     } catch (err) {
       console.error(err);
@@ -246,12 +270,24 @@ export function AdminAboutPanel() {
                 {f.label}
               </span>
               {f.multiline ? (
-                <textarea
-                  rows={3}
-                  value={values[f.key] ?? ''}
-                  onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
-                  className="input mt-2"
-                />
+                <>
+                  <textarea
+                    rows={12}
+                    value={values[f.key] ?? ''}
+                    onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
+                    onKeyDown={(e) =>
+                      handleTabIndent(e, (transform) =>
+                        setValues((v) => ({ ...v, [f.key]: transform(v[f.key] ?? '') }))
+                      )
+                    }
+                    className="input mt-2 font-mono text-sm"
+                  />
+                  <p className="mt-1.5 font-body text-xs text-taupe">
+                    Leave a blank line between paragraphs (press Enter twice) —
+                    each becomes its own paragraph on the page. Tab now inserts
+                    a real indent.
+                  </p>
+                </>
               ) : (
                 <input
                   value={values[f.key] ?? ''}
@@ -353,11 +389,19 @@ export function AdminAboutPanel() {
             </span>
             <textarea
               required
-              rows={5}
+              rows={8}
               value={postForm.body}
               onChange={(e) => setPostForm((f) => ({ ...f, body: e.target.value }))}
-              className="input mt-2"
+              onKeyDown={(e) =>
+                handleTabIndent(e, (transform) =>
+                  setPostForm((f) => ({ ...f, body: transform(f.body) }))
+                )
+              }
+              className="input mt-2 font-mono text-sm"
             />
+            <p className="mt-1.5 font-body text-xs text-taupe">
+              Blank line between paragraphs; Tab inserts a real indent.
+            </p>
           </label>
 
           <div className="flex flex-wrap gap-3">
