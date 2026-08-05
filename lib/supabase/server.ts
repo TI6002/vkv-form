@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+export const dynamic = 'force-dynamic';
 
 /**
  * Supabase client for use on the server — Server Components, Route

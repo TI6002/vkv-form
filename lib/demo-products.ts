@@ -1,4 +1,5 @@
 import type { Product } from './types';
+export const dynamic = 'force-dynamic';
 
 export const demoProducts: Product[] = [
   {

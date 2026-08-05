@@ -6,3 +6,4 @@ export function formatPrice(cents: number, currency = 'EUR', locale?: string) {
     maximumFractionDigits: 2,
   }).format(cents / 100);
 }
+export const dynamic = 'force-dynamic';

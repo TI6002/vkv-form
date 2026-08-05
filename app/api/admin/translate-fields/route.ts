@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
 import { translateToAllLocales } from '@/lib/translate-server';
+export const dynamic = 'force-dynamic';
 
 /**
  * Generic version of /api/admin/translate-product — takes any set of named

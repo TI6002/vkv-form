@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+export const dynamic = 'force-dynamic';
 
 export type AdminCheckResult =
   | { ok: true; profile: { id: string; email: string; role: string } }

@@ -3,6 +3,7 @@ import { stripe } from '@/lib/stripe';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import type { CartLine } from '@/lib/types';
+export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
   try {

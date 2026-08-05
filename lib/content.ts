@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import type { AboutContentMap, AboutPost, CollectionItem } from '@/lib/types';
+export const dynamic = 'force-dynamic';
 
 const supabaseConfigured =
   !!process.env.NEXT_PUBLIC_SUPABASE_URL && !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;

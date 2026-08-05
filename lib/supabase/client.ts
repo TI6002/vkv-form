@@ -1,4 +1,5 @@
 import { createBrowserClient } from '@supabase/ssr';
+export const dynamic = 'force-dynamic';
 
 /**
  * Supabase client for use in the browser (client components).

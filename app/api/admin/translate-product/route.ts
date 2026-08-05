@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
 import { translateToAllLocales } from '@/lib/translate-server';
+export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
   // Gate this behind admin auth — it's the one place in the app that calls

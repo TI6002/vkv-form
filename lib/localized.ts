@@ -1,5 +1,6 @@
 import { defaultLocale, type Locale } from '@/i18n';
 import type { LocalizedText } from '@/lib/types';
+export const dynamic = 'force-dynamic';
 
 /**
  * Picks the right-language string out of a per-locale text field.

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { createAdminClient } from '@/lib/supabase/admin';
 import Stripe from 'stripe';
+export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
   const body = await req.text();

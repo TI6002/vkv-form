@@ -1,5 +1,6 @@
 import { locales, type Locale } from '@/i18n';
 import type { LocalizedText } from '@/lib/types';
+export const dynamic = 'force-dynamic';
 
 /**
  * Translation backend: DeepL API (Free tier).

@@ -8,6 +8,8 @@
  * flows re-encode them inconsistently, which is what caused product pages
  * to 404 intermittently.
  */
+export const dynamic = 'force-dynamic';
+
 export function slugify(input: string): string {
   return input
     .normalize('NFD')

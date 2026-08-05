@@ -1,4 +1,5 @@
 import type { Locale } from '@/i18n';
+export const dynamic = 'force-dynamic';
 
 /** A piece of text stored once per language, e.g. { en: "Vase", ru: "Ваза" }. */
 export type LocalizedText = Partial<Record<Locale, string>>;

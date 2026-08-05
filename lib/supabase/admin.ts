@@ -1,5 +1,5 @@
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
-
+export const dynamic = 'force-dynamic';
 /**
  * Admin/service-role Supabase client. This bypasses Row Level Security,
  * so it must NEVER be imported into a client component and the

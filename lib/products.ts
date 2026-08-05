@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { demoProducts } from '@/lib/demo-products';
 import type { Product } from '@/lib/types';
+export const dynamic = 'force-dynamic';
 
 const supabaseConfigured =
   !!process.env.NEXT_PUBLIC_SUPABASE_URL && !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;

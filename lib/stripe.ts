@@ -1,5 +1,5 @@
 import Stripe from 'stripe';
-
+export const dynamic = 'force-dynamic';
 /**
  * Payment provider: Stripe Checkout.
  * -----------------------------------

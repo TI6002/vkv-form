@@ -5,6 +5,7 @@ export type AuthErrorKey =
   | 'weakPassword'
   | 'rateLimited'
   | 'generic';
+export const dynamic = 'force-dynamic';
 
 /** Supabase always returns its auth error messages in English — this maps
  * the known ones to a translation key so AuthForm can show them in

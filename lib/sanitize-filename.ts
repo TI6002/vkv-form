@@ -6,6 +6,7 @@
  * extension, so uploads never fail just because of how a photo happened
  * to be named on someone's computer.
  */
+export const dynamic = 'force-dynamic';
 export function sanitizeFileName(name: string): string {
   const dotIndex = name.lastIndexOf('.');
   const base = dotIndex > 0 ? name.slice(0, dotIndex) : name;
