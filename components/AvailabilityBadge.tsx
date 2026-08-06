@@ -6,9 +6,7 @@ import { createClient } from '@/lib/supabase/client';
 
 /**
  * Shows "in stock" / "unavailable" and updates live the moment an admin
- * toggles availability in /admin — no page refresh needed. Requires
- * Supabase Realtime to be enabled for the `products` table (the
- * migration file turns this on automatically).
+ * toggles availability in /admin — no page refresh needed.
  */
 export function AvailabilityBadge({
   productId,
@@ -27,9 +25,9 @@ export function AvailabilityBadge({
       .on(
         'postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'products', filter: `id=eq.${productId}` },
-        (payload) => {
-          const next = (payload.new as { available?: boolean }).available;
-          if (typeof next === 'boolean') setAvailable(next);
+        (payload: any) => {
+          const nextAvailable = payload?.new?.available;
+          if (typeof nextAvailable === 'boolean') setAvailable(nextAvailable);
         }
       )
       .subscribe();
