@@ -1,3 +1,15 @@
+#!/usr/bin/env bash
+set -e
+
+if [ ! -f package.json ]; then
+  echo "ERROR: no package.json here. cd into the project root first."
+  exit 1
+fi
+
+echo "Applying vkv.form updates — make Stripe client lazy, fixes build-time crash..."
+
+mkdir -p "lib"
+cat > "lib/stripe.ts" << '__VKV_PATCH_EOF__'
 import Stripe from 'stripe';
 
 /**
@@ -35,3 +47,7 @@ export const stripe: Stripe = new Proxy({} as Stripe, {
     return typeof value === 'function' ? value.bind(real) : value;
   },
 });
+__VKV_PATCH_EOF__
+echo "  updated: lib/stripe.ts"
+
+echo "Done. Commit and push this to trigger a new deploy: git add -A && git commit -m \"Fix Stripe build error\" && git push"
