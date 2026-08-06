@@ -24,7 +24,12 @@ function getInstance(): Stripe {
     );
   }
 
-  _instance = new Stripe(key, { apiVersion: '2024-06-20' });
+  // No apiVersion pinned on purpose — the Stripe SDK's TypeScript types
+  // require this to match a specific literal tied to the installed
+  // package version exactly, which broke the build when the installed
+  // version didn't match. Omitting it just uses the account's default
+  // API version, which is simpler and won't drift out of sync again.
+  _instance = new Stripe(key);
   return _instance;
 }
 

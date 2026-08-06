@@ -6,7 +6,7 @@ if [ ! -f package.json ]; then
   exit 1
 fi
 
-echo "Applying vkv.form updates — make Stripe client lazy, fixes build-time crash..."
+echo "Applying vkv.form updates — remove hardcoded Stripe apiVersion (type mismatch)..."
 
 mkdir -p "lib"
 cat > "lib/stripe.ts" << '__VKV_PATCH_EOF__'
@@ -36,7 +36,12 @@ function getInstance(): Stripe {
     );
   }
 
-  _instance = new Stripe(key, { apiVersion: '2024-06-20' });
+  // No apiVersion pinned on purpose — the Stripe SDK's TypeScript types
+  // require this to match a specific literal tied to the installed
+  // package version exactly, which broke the build when the installed
+  // version didn't match. Omitting it just uses the account's default
+  // API version, which is simpler and won't drift out of sync again.
+  _instance = new Stripe(key);
   return _instance;
 }
 
@@ -50,4 +55,4 @@ export const stripe: Stripe = new Proxy({} as Stripe, {
 __VKV_PATCH_EOF__
 echo "  updated: lib/stripe.ts"
 
-echo "Done. Commit and push this to trigger a new deploy: git add -A && git commit -m \"Fix Stripe build error\" && git push"
+echo "Done. git add -A && git commit -m \"Fix Stripe apiVersion type error\" && git push"
