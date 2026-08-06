@@ -1,3 +1,14 @@
+#!/usr/bin/env bash
+set -e
+
+if [ ! -f package.json ]; then
+  echo "ERROR: no package.json here. cd into the project root first."
+  exit 1
+fi
+
+echo "Applying vkv.form updates — disable on-server image processing (fixes likely OOM on the small hosting tier)..."
+
+cat > "next.config.mjs" << '__VKV_PATCH_EOF__'
 import createNextIntlPlugin from 'next-intl/plugin';
 
 const withNextIntl = createNextIntlPlugin('./i18n.ts');
@@ -28,3 +39,7 @@ const nextConfig = {
 };
 
 export default withNextIntl(nextConfig);
+__VKV_PATCH_EOF__
+echo "  updated: next.config.mjs"
+
+echo "Done. git add -A && git commit -m \"Disable image optimization to reduce server load\" && git push"
