@@ -2,13 +2,12 @@ import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
 /**
- * Server-side Supabase client — created fresh per request (it has to be,
- * since it reads/writes that specific request's cookies), but no longer
- * prints the URL/key to the logs on every single call. That debug
- * logging was left over from early setup and was flooding the runtime
- * logs on every page load in production.
+ * Server-side Supabase client — created fresh per request (it has to
+ * be, since it reads/writes that specific request's cookies).
+ *
+ * Typed as `any` on purpose — see lib/supabase/admin.ts for why.
  */
-export function createClient() {
+export function createClient(): any {
   const cookieStore = cookies();
 
   return createServerClient(
