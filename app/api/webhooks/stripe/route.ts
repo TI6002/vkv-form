@@ -1,34 +1,95 @@
 import { NextResponse } from 'next/server';
+import { headers } from 'next/headers';
 import { stripe } from '@/lib/stripe';
 import { createAdminClient } from '@/lib/supabase/admin';
-import Stripe from 'stripe';
-export const dynamic = 'force-dynamic';
+import { sendNewOrderEmail } from '@/lib/resend';
 
+/**
+ * Stripe calls this the moment a checkout is completed. It's the only
+ * reliable point at which we should mark an order "paid" — never trust
+ * the browser's redirect back to /account for that, since a person can
+ * close the tab before it loads, or the redirect can simply fail.
+ */
 export async function POST(req: Request) {
   const body = await req.text();
-  const signature = req.headers.get('stripe-signature');
+  const signature = headers().get('stripe-signature');
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-  let event: Stripe.Event;
+  if (!signature || !webhookSecret) {
+    console.error('Stripe webhook: missing signature header or STRIPE_WEBHOOK_SECRET.');
+    return NextResponse.json({ error: 'Webhook not configured' }, { status: 400 });
+  }
+
+  let event;
   try {
-    event = stripe.webhooks.constructEvent(body, signature!, process.env.STRIPE_WEBHOOK_SECRET!);
+    event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
   } catch (err) {
-    console.error('Webhook signature verification failed:', err);
+    console.error('Stripe webhook: signature verification failed:', err);
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
   }
 
   if (event.type === 'checkout.session.completed') {
-    const session = event.data.object as Stripe.Checkout.Session;
-    const orderId = session.metadata?.order_id;
-    const admin = createAdminClient();
+    const session = event.data.object as import('stripe').default.Checkout.Session;
 
-    if (orderId) {
-      await admin
+    try {
+      const lineItems = await stripe.checkout.sessions.listLineItems(session.id, {
+        limit: 100,
+      });
+
+      const items = lineItems.data.map((line) => ({
+        name: line.description ?? 'Item',
+        quantity: line.quantity ?? 1,
+        amount_total: line.amount_total ?? 0,
+      }));
+
+      const customerDetails = session.customer_details
+        ? {
+            name: session.customer_details.name,
+            phone: session.customer_details.phone,
+            address: session.customer_details.address
+              ? {
+                  line1: session.customer_details.address.line1,
+                  line2: session.customer_details.address.line2,
+                  city: session.customer_details.address.city,
+                  postal_code: session.customer_details.address.postal_code,
+                  country: session.customer_details.address.country,
+                }
+              : null,
+          }
+        : null;
+
+      const supabase = createAdminClient();
+      const { data: order, error } = await supabase
         .from('orders')
-        .update({
+        .insert({
+          user_id: session.metadata?.user_id || null,
+          email: session.customer_details?.email || session.customer_email || '',
           status: 'paid',
-          email: session.customer_details?.email ?? undefined,
+          total_cents: session.amount_total ?? 0,
+          currency: (session.currency ?? 'eur').toUpperCase(),
+          stripe_session_id: session.id,
+          items,
+          customer_details: customerDetails,
         })
-        .eq('id', orderId);
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Stripe webhook: failed to save order:', error);
+        return NextResponse.json({ error: 'Failed to save order' }, { status: 500 });
+      }
+
+      await sendNewOrderEmail({
+        order_number: order.order_number,
+        email: order.email,
+        total_cents: order.total_cents,
+        currency: order.currency,
+        items: order.items,
+        customer_details: order.customer_details,
+      });
+    } catch (err) {
+      console.error('Stripe webhook: unexpected error while processing session:', err);
+      return NextResponse.json({ error: 'Processing failed' }, { status: 500 });
     }
   }
 
