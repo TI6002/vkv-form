@@ -1,5 +1,6 @@
 import { getRequestConfig } from 'next-intl/server';
 
+
 // The base language we write copy in. All other files under /messages
 // are generated automatically — see scripts/translate-missing.mjs and README.md.
 export const defaultLocale = 'en' as const;
