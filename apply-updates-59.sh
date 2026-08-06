@@ -1,3 +1,15 @@
+#!/usr/bin/env bash
+set -e
+
+if [ ! -f package.json ]; then
+  echo "ERROR: no package.json here. cd into the project root first."
+  exit 1
+fi
+
+echo "Applying vkv.form updates — fix contact route build error..."
+
+mkdir -p "app/api/contact"
+cat > "app/api/contact/route.ts" << '__VKV_PATCH_EOF__'
 import { NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 
@@ -40,3 +52,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Something went wrong' }, { status: 500 });
   }
 }
+__VKV_PATCH_EOF__
+echo "  updated: app/api/contact/route.ts"
+
+echo "Done. git add -A && git commit -m \"Fix contact route type error\" && git push"
