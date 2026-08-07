@@ -1,3 +1,15 @@
+#!/usr/bin/env bash
+set -e
+
+if [ ! -f package.json ]; then
+  echo "ERROR: no package.json here. cd into the project root first."
+  exit 1
+fi
+
+echo "Applying vkv.form updates — use the real ordersTitle translation key..."
+
+mkdir -p "app/[locale]/account"
+cat > "app/[locale]/account/page.tsx" << '__VKV_PATCH_EOF__'
 import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase/server';
@@ -150,3 +162,7 @@ export default async function AccountPage({
     </div>
   );
 }
+__VKV_PATCH_EOF__
+echo "  updated: app/[locale]/account/page.tsx"
+
+echo "Done. git add -A && git commit -m \"Use existing ordersTitle key instead of nonexistent title key\" && git push"
