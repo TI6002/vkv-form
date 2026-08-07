@@ -23,12 +23,12 @@ type CartLine = {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { items, email } = body as {
-      items: CartLine[];
+    const { lines, email } = body as {
+      lines: CartLine[];
       email?: string;
     };
 
-    if (!items || items.length === 0) {
+    if (!lines || lines.length === 0) {
       console.error('Checkout: cart is empty or malformed. Received body:', JSON.stringify(body));
       return NextResponse.json({ error: 'Cart is empty' }, { status: 400 });
     }
@@ -44,7 +44,7 @@ export async function POST(req: Request) {
       mode: 'payment',
       payment_method_types: ['card'],
       customer_email: email || user?.email || undefined,
-      line_items: items.map((item) => ({
+      line_items: lines.map((item) => ({
         quantity: 1,
         price_data: {
           currency: 'eur',
