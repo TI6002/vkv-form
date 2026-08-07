@@ -6,7 +6,7 @@ if [ ! -f package.json ]; then
   exit 1
 fi
 
-echo "Applying vkv.form updates — use the real ordersTitle translation key..."
+echo "Applying vkv.form updates — restore the admin panel link on the account page..."
 
 mkdir -p "app/[locale]/account"
 cat > "app/[locale]/account/page.tsx" << '__VKV_PATCH_EOF__'
@@ -49,18 +49,21 @@ export default async function AccountPage({
 
   let orders: Order[] = [];
   let favorites: Favorite[] = [];
+  let isAdmin = false;
 
   if (user) {
-    const [{ data: orderRows }, { data: favoriteRows }] = await Promise.all([
+    const [{ data: orderRows }, { data: favoriteRows }, { data: profileRow }] = await Promise.all([
       supabase.from('orders').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
       supabase
         .from('favorites')
         .select('*, products(*)')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false }),
+      supabase.from('profiles').select('role').eq('id', user.id).single(),
     ]);
     orders = (orderRows as Order[]) ?? [];
     favorites = (favoriteRows as Favorite[]) ?? [];
+    isAdmin = profileRow?.role === 'admin';
   }
 
   const activeOrders = orders.filter((o) => o.status === 'pending' || o.status === 'paid');
@@ -81,7 +84,17 @@ export default async function AccountPage({
         <div className="flex flex-col gap-8">
           <div className="flex items-center justify-between">
             <h1 className="font-display text-4xl italic text-ink md:text-5xl">{t('ordersTitle')}</h1>
-            <SignOutButton />
+            <div className="flex items-center gap-6">
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  className="font-mono text-[11px] uppercase tracking-widest2 text-ink underline underline-offset-4"
+                >
+                  Open studio admin
+                </Link>
+              )}
+              <SignOutButton />
+            </div>
           </div>
 
           <Reveal>
@@ -165,4 +178,4 @@ export default async function AccountPage({
 __VKV_PATCH_EOF__
 echo "  updated: app/[locale]/account/page.tsx"
 
-echo "Done. git add -A && git commit -m \"Use existing ordersTitle key instead of nonexistent title key\" && git push"
+echo "Done. git add -A && git commit -m \"Restore admin panel link on account page\" && git push"
