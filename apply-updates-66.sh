@@ -1,3 +1,15 @@
+#!/usr/bin/env bash
+set -e
+
+if [ ! -f package.json ]; then
+  echo "ERROR: no package.json here. cd into the project root first."
+  exit 1
+fi
+
+echo "Applying vkv.form updates — log the actual request body when checkout fails..."
+
+mkdir -p "app/api/checkout"
+cat > "app/api/checkout/route.ts" << '__VKV_PATCH_EOF__'
 import { NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { createClient } from '@/lib/supabase/server';
@@ -69,3 +81,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Could not start checkout' }, { status: 500 });
   }
 }
+__VKV_PATCH_EOF__
+echo "  updated: app/api/checkout/route.ts"
+
+echo "Done. git add -A && git commit -m \"Log checkout request body for debugging\" && git push"
