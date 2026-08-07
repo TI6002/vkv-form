@@ -6,7 +6,7 @@ if [ ! -f package.json ]; then
   exit 1
 fi
 
-echo "Applying vkv.form updates — fix field name mismatch (lines vs items) in checkout..."
+echo "Applying vkv.form updates — log the resolved site URL at checkout time..."
 
 mkdir -p "app/api/checkout"
 cat > "app/api/checkout/route.ts" << '__VKV_PATCH_EOF__'
@@ -51,6 +51,7 @@ export async function POST(req: Request) {
     } = await supabase.auth.getUser();
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+    console.log('Checkout: NEXT_PUBLIC_SITE_URL resolved to:', JSON.stringify(siteUrl));
 
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
@@ -84,4 +85,4 @@ export async function POST(req: Request) {
 __VKV_PATCH_EOF__
 echo "  updated: app/api/checkout/route.ts"
 
-echo "Done. git add -A && git commit -m \"Fix checkout field name mismatch: lines not items\" && git push"
+echo "Done. git add -A && git commit -m \"Log resolved site URL for debugging\" && git push"
