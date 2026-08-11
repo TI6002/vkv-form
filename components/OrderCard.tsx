@@ -4,6 +4,7 @@ const STATUS_LABEL: Record<Order['status'], string> = {
   pending: 'Pending payment',
   paid: 'Paid',
   shipped: 'Shipped',
+  delivered: 'Delivered',
   cancelled: 'Cancelled',
 };
 
