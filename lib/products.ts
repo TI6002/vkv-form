@@ -10,9 +10,16 @@ export async function getProducts(): Promise<Product[]> {
   if (!supabaseConfigured) return demoProducts;
   try {
     const supabase = createClient();
+    // Admin-controlled manual order first (sort_order — set by the
+    // up/down buttons in /admin). Products that haven't been manually
+    // ordered yet have sort_order = null, which Postgres places last
+    // in ascending order automatically — so new products always land
+    // at the end of the list until the admin moves them. Among those,
+    // newest first.
     const { data, error } = await supabase
       .from('products')
       .select('*')
+      .order('sort_order', { ascending: true, nullsFirst: false })
       .order('created_at', { ascending: false });
 
     if (error) {

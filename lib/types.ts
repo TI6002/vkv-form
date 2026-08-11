@@ -19,6 +19,7 @@ export type Product = {
   weight: LocalizedText | null;
   stock: number;
   available: boolean;
+  sort_order: number | null;
   images: string[];
   created_at: string;
 };

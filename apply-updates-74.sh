@@ -1,3 +1,91 @@
+#!/usr/bin/env bash
+set -e
+
+if [ ! -f package.json ]; then
+  echo "ERROR: no package.json here. cd into the project root first."
+  exit 1
+fi
+
+echo "Applying vkv.form updates — manual product ordering in admin (up/down)..."
+
+# --- 1. Add sort_order to the Product type wherever it's declared ---
+FILES_WITH_PRODUCT_TYPE=$(grep -rl "available: boolean;" --include="*.ts" --include="*.tsx" . 2>/dev/null || true)
+if [ -z "$FILES_WITH_PRODUCT_TYPE" ]; then
+  echo "WARNING: could not find \"available: boolean;\" in any .ts/.tsx file."
+  echo "  Open lib/types.ts yourself and add this field to the Product interface:"
+  echo "    sort_order: number | null;"
+else
+  echo "$FILES_WITH_PRODUCT_TYPE" | while IFS= read -r f; do
+    sed -i "s/available: boolean;/available: boolean;\n  sort_order: number | null;/" "$f"
+    echo "  updated type in: $f"
+  done
+fi
+
+# --- 2. lib/products.ts: order the public catalog by sort_order ---
+mkdir -p "lib"
+cat > "lib/products.ts" << '__VKV_PATCH_EOF__'
+import { createClient } from '@/lib/supabase/server';
+import { demoProducts } from '@/lib/demo-products';
+import type { Product } from '@/lib/types';
+export const dynamic = 'force-dynamic';
+
+const supabaseConfigured =
+  !!process.env.NEXT_PUBLIC_SUPABASE_URL && !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+export async function getProducts(): Promise<Product[]> {
+  if (!supabaseConfigured) return demoProducts;
+  try {
+    const supabase = createClient();
+    // Admin-controlled manual order first (sort_order — set by the
+    // up/down buttons in /admin). Products that haven't been manually
+    // ordered yet have sort_order = null, which Postgres places last
+    // in ascending order automatically — so new products always land
+    // at the end of the list until the admin moves them. Among those,
+    // newest first.
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .order('sort_order', { ascending: true, nullsFirst: false })
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('[getProducts] Supabase error — falling back to demo products:', error);
+      return demoProducts;
+    }
+    if (!data || data.length === 0) return demoProducts;
+    return data as Product[];
+  } catch (err) {
+    console.error('[getProducts] Unexpected error — falling back to demo products:', err);
+    return demoProducts;
+  }
+}
+
+export async function getProductBySlug(slug: string): Promise<Product | null> {
+  if (!supabaseConfigured) return demoProducts.find((p) => p.slug === slug) ?? null;
+  try {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('slug', slug)
+      .single();
+    if (error) {
+      console.error(`[getProductBySlug:${slug}] Supabase error:`, error);
+      return demoProducts.find((p) => p.slug === slug) ?? null;
+    }
+    if (!data) return demoProducts.find((p) => p.slug === slug) ?? null;
+    return data as Product;
+  } catch (err) {
+    console.error(`[getProductBySlug:${slug}] Unexpected error:`, err);
+    return demoProducts.find((p) => p.slug === slug) ?? null;
+  }
+}
+__VKV_PATCH_EOF__
+echo "  updated: lib/products.ts"
+
+# --- 3. AdminDashboard: same order in the admin list + up/down buttons ---
+mkdir -p "components"
+cat > "components/AdminDashboard.tsx" << '__VKV_PATCH_EOF__'
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -640,3 +728,27 @@ export function AdminDashboard() {
     </div>
   );
 }
+__VKV_PATCH_EOF__
+echo "  updated: components/AdminDashboard.tsx"
+
+echo ""
+echo "IMPORTANT — one-time SQL to run in the Supabase SQL editor before this works:"
+echo ""
+echo "  alter table products add column if not exists sort_order integer;"
+echo ""
+echo "  -- Backfill so existing products keep their current visual order"
+echo "  -- right after the migration (oldest = 0, newest = highest), instead"
+echo "  -- of all starting out with sort_order = null at once:"
+echo "  with ranked as ("
+echo "    select id, row_number() over (order by created_at asc) - 1 as rn"
+echo "    from products"
+echo "  )"
+echo "  update products p"
+echo "  set sort_order = ranked.rn"
+echo "  from ranked"
+echo "  where p.id = ranked.id;"
+echo ""
+echo "Also add this column to supabase/full-schema.sql yourself so a fresh"
+echo "database setup includes it too."
+echo ""
+echo "Done. git add -A && git commit -m \"Add manual product ordering (up/down) in admin\" && git push"
