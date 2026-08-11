@@ -1,3 +1,15 @@
+#!/usr/bin/env bash
+set -e
+
+if [ ! -f package.json ]; then
+  echo "ERROR: no package.json here. cd into the project root first."
+  exit 1
+fi
+
+echo "Applying vkv.form updates — reduce hero slider height to ~75-80% of viewport..."
+
+mkdir -p "components"
+cat > "components/HeroSlider.tsx" << '__VKV_PATCH_EOF__'
 'use client';
 
 import { useEffect, useRef, useState, type ReactNode } from 'react';
@@ -95,3 +107,8 @@ export function HeroSlider({ slides }: { slides: ReactNode[] }) {
     </div>
   );
 }
+__VKV_PATCH_EOF__
+echo "  updated: components/HeroSlider.tsx"
+
+echo ""
+echo "Done. git add -A && git commit -m \"Reduce hero slider height to ~75-80% of viewport\" && git push"
