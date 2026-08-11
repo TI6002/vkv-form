@@ -12,6 +12,7 @@ const STATUS_COLOR: Record<Order['status'], string> = {
   pending: 'text-taupe',
   paid: 'text-ink',
   shipped: 'text-stone',
+  delivered: 'text-green-700',
   cancelled: 'text-red-800',
 };
 
