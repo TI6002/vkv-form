@@ -37,7 +37,11 @@ export function HeroSlider({ slides }: { slides: ReactNode[] }) {
 
   return (
     <div
-      className="relative h-[92vh] w-full overflow-hidden"
+      // Shorter on phones so images that switch to object-contain
+      // (see HomePage — event slides with baked-in text) don't leave
+      // huge empty letterbox bars; back up to the original full-bleed
+      // height from tablet width up.
+      className="relative h-[70vh] w-full overflow-hidden sm:h-[80vh] md:h-[92vh]"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
