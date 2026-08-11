@@ -7,11 +7,13 @@ import { Reveal } from './Reveal';
 import type { Order } from '@/lib/types';
 
 /**
- * Renders the "Active orders" / "Past orders" sections on /account and
- * keeps them in sync in real time. If an admin changes an order's
- * status in /admin (e.g. Pending → Cancelled, or Paid → Shipped) while
- * the customer has this page open, the order moves between sections
- * immediately — no page refresh needed.
+ * Renders the "Active orders" / "Order history" sections on /account and
+ * keeps them in sync in real time. An order counts as active while it's
+ * still in progress — pending, paid, or shipped (on its way, not yet
+ * confirmed delivered) — and moves to history once it's finished:
+ * delivered or cancelled. If an admin changes the status in /admin
+ * while the customer has this page open, the order moves between
+ * sections immediately — no page refresh needed.
  *
  * Requires Realtime replication to be enabled for the `orders` table
  * in Supabase (Database → Replication, or:
@@ -26,6 +28,7 @@ export function AccountOrdersLive({
   activeOrdersTitle,
   pastOrdersTitle,
   noOrdersText,
+  noPastOrdersText,
 }: {
   userId: string;
   locale: string;
@@ -33,6 +36,7 @@ export function AccountOrdersLive({
   activeOrdersTitle: string;
   pastOrdersTitle: string;
   noOrdersText: string;
+  noPastOrdersText: string;
 }) {
   const supabase = createClient();
   const [orders, setOrders] = useState<Order[]>(initialOrders);
@@ -72,8 +76,10 @@ export function AccountOrdersLive({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
-  const activeOrders = orders.filter((o) => o.status === 'pending' || o.status === 'paid');
-  const pastOrders = orders.filter((o) => o.status === 'shipped' || o.status === 'cancelled');
+  const activeOrders = orders.filter(
+    (o) => o.status === 'pending' || o.status === 'paid' || o.status === 'shipped'
+  );
+  const pastOrders = orders.filter((o) => o.status === 'delivered' || o.status === 'cancelled');
 
   return (
     <>
@@ -100,7 +106,7 @@ export function AccountOrdersLive({
             {pastOrdersTitle}
           </p>
           {pastOrders.length === 0 ? (
-            <p className="mt-6 font-body text-stone">{noOrdersText}</p>
+            <p className="mt-6 font-body text-stone">{noPastOrdersText}</p>
           ) : (
             <div className="mt-6 flex flex-col gap-4">
               {pastOrders.map((order) => (

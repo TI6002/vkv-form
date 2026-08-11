@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/client';
 import { OrderCard } from './OrderCard';
 import type { Order } from '@/lib/types';
 
-const STATUSES: Order['status'][] = ['pending', 'paid', 'shipped', 'cancelled'];
+const STATUSES: Order['status'][] = ['pending', 'paid', 'shipped', 'delivered', 'cancelled'];
 
 export function AdminOrdersPanel() {
   const supabase = createClient();
@@ -37,6 +37,18 @@ export function AdminOrdersPanel() {
     }
   }
 
+  async function deleteOrder(id: string) {
+    if (!confirm('Delete this order? This cannot be undone.')) return;
+    const previous = orders;
+    setOrders((prev) => prev.filter((o) => o.id !== id));
+    const { error } = await supabase.from('orders').delete().eq('id', id);
+    if (error) {
+      console.error(error);
+      setOrders(previous);
+      alert('Could not delete this order — check the console.');
+    }
+  }
+
   if (loading) return <p className="mt-6 font-body text-stone">Loading…</p>;
 
   if (orders.length === 0) {
@@ -48,25 +60,33 @@ export function AdminOrdersPanel() {
       {orders.map((order) => (
         <div key={order.id} className="relative">
           <OrderCard order={order} />
-          <div className="mt-2 flex items-center gap-3 border border-t-0 border-line bg-cream px-5 py-3">
+          <div className="mt-2 flex flex-wrap items-center gap-3 border border-t-0 border-line bg-cream px-5 py-3">
             <span className="font-mono text-[11px] uppercase tracking-widest2 text-taupe">
               {order.email}
             </span>
-            <div className="ml-auto flex items-center gap-2">
-              <span className="font-mono text-[11px] uppercase tracking-widest2 text-taupe">
-                Status:
-              </span>
-              <select
-                value={order.status}
-                onChange={(e) => updateStatus(order.id, e.target.value as Order['status'])}
-                className="border border-line bg-white px-2 py-1 font-mono text-[11px] uppercase tracking-widest2 text-ink"
+            <div className="ml-auto flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-[11px] uppercase tracking-widest2 text-taupe">
+                  Status:
+                </span>
+                <select
+                  value={order.status}
+                  onChange={(e) => updateStatus(order.id, e.target.value as Order['status'])}
+                  className="border border-line bg-white px-2 py-1 font-mono text-[11px] uppercase tracking-widest2 text-ink"
+                >
+                  {STATUSES.map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <button
+                onClick={() => deleteOrder(order.id)}
+                className="font-mono text-[11px] uppercase tracking-widest2 text-red-600 underline underline-offset-4 hover:text-red-800"
               >
-                {STATUSES.map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
-                ))}
-              </select>
+                Delete
+              </button>
             </div>
           </div>
         </div>

@@ -124,6 +124,7 @@
     "activeOrdersTitle": "Aktive Bestellungen",
     "noActiveOrders": "Sie haben derzeit keine aktiven Bestellungen.",
     "pastOrdersTitle": "Bestellverlauf",
+    "noPastOrders": "Ihr Bestellverlauf ist leer.",
     "savedTitle": "Gemerkte Objekte",
     "noSaved": "Sie haben noch nichts gemerkt.",
     "errors": {

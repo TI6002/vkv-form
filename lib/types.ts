@@ -82,7 +82,7 @@ export type Order = {
   order_number: number;
   user_id: string | null;
   email: string;
-  status: 'pending' | 'paid' | 'shipped' | 'cancelled';
+  status: 'pending' | 'paid' | 'shipped' | 'delivered' | 'cancelled';
   total_cents: number;
   currency: string;
   stripe_session_id: string | null;

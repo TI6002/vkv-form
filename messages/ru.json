@@ -124,6 +124,7 @@
     "activeOrdersTitle": "Активные заказы",
     "noActiveOrders": "Сейчас нет активных заказов.",
     "pastOrdersTitle": "История заказов",
+    "noPastOrders": "История заказов пуста.",
     "savedTitle": "Сохранённое",
     "noSaved": "Вы пока ничего не сохранили.",
     "errors": {

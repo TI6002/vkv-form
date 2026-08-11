@@ -124,6 +124,7 @@
     "activeOrdersTitle": "Aktīvie pasūtījumi",
     "noActiveOrders": "Jums šobrīd nav aktīvu pasūtījumu.",
     "pastOrdersTitle": "Pasūtījumu vēsture",
+    "noPastOrders": "Jūsu pasūtījumu vēsture ir tukša.",
     "savedTitle": "Saglabātais",
     "noSaved": "Jūs vēl neko neesat saglabājis.",
     "errors": {

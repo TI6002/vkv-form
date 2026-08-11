@@ -124,6 +124,7 @@
     "activeOrdersTitle": "Active orders",
     "noActiveOrders": "You have no active orders right now.",
     "pastOrdersTitle": "Order history",
+    "noPastOrders": "Your order history is empty.",
     "savedTitle": "Saved items",
     "noSaved": "You haven't saved anything yet.",
     "errors": {

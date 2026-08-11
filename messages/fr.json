@@ -124,6 +124,7 @@
     "activeOrdersTitle": "Commandes en cours",
     "noActiveOrders": "Vous n'avez aucune commande en cours.",
     "pastOrdersTitle": "Historique des commandes",
+    "noPastOrders": "Votre historique de commandes est vide.",
     "savedTitle": "Objets enregistrés",
     "noSaved": "Vous n'avez encore rien enregistré.",
     "errors": {

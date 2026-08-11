@@ -84,7 +84,7 @@ export default async function AccountPage({
 
           {/* Active + past orders update live: if an admin changes an
               order's status while this page is open (e.g. marks it
-              Cancelled or Shipped), it moves between these sections
+              Delivered or Cancelled), it moves between these sections
               immediately, no refresh needed. */}
           <AccountOrdersLive
             userId={user.id}
@@ -93,6 +93,7 @@ export default async function AccountPage({
             activeOrdersTitle={t('activeOrdersTitle')}
             pastOrdersTitle={t('pastOrdersTitle')}
             noOrdersText={t('noActiveOrders')}
+            noPastOrdersText={t('noPastOrders')}
           />
 
           <Reveal delay={0.1}>
