@@ -43,6 +43,15 @@ export default async function AboutPage({
     .map((p) => p.trim())
     .filter(Boolean);
 
+  // Split the author text roughly in half so it can sit next to two
+  // photos: the quote + first half runs next to photo #1, the rest
+  // runs next to photo #2 further down the page. If the admin edits
+  // the text later, this split recalculates automatically — no code
+  // change needed.
+  const splitIndex = Math.ceil(authorParagraphs.length / 2);
+  const firstHalf = authorParagraphs.slice(0, splitIndex);
+  const secondHalf = authorParagraphs.slice(splitIndex);
+
   return (
     <div>
       <section className="mx-auto max-w-[1400px] px-6 pt-20 pb-8 md:px-10 md:pt-28">
@@ -51,13 +60,13 @@ export default async function AboutPage({
         </Reveal>
       </section>
 
-      {/* Author */}
+      {/* Author — part 1: photo left, quote + first half of the text right */}
       <section className="mx-auto max-w-[1400px] px-6 py-16 md:px-10 md:py-24">
         <div className="grid gap-12 md:grid-cols-[0.9fr_1.1fr] md:gap-20">
           <Reveal>
             <div className="relative aspect-[3/4] bg-sand">
               <Image
-                src="/images/about-author.png"
+                src="/images/about-author.jpg"
                 alt=""
                 fill
                 sizes="(min-width: 768px) 45vw, 100vw"
@@ -82,19 +91,52 @@ export default async function AboutPage({
               </p>
             </blockquote>
 
-            <div className="mt-10 max-w-2xl space-y-5 border-l border-line pl-6">
-              {authorParagraphs.map((paragraph, i) => (
-                <p
-                  key={i}
-                  className="whitespace-pre-wrap font-body text-base leading-relaxed text-stone [tab-size:2]"
-                >
-                  {paragraph}
-                </p>
-              ))}
-            </div>
+            {firstHalf.length > 0 && (
+              <div className="mt-10 max-w-2xl space-y-5 border-l border-line pl-6">
+                {firstHalf.map((paragraph, i) => (
+                  <p
+                    key={i}
+                    className="whitespace-pre-wrap font-body text-base leading-relaxed text-stone [tab-size:2]"
+                  >
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            )}
           </Reveal>
         </div>
       </section>
+
+      {/* Author — part 2: rest of the text left, photo right */}
+      {secondHalf.length > 0 && (
+        <section className="mx-auto max-w-[1400px] px-6 pb-16 md:px-10 md:pb-24">
+          <div className="grid gap-12 md:grid-cols-[1.1fr_0.9fr] md:gap-20">
+            <Reveal>
+              <div className="max-w-2xl space-y-5 border-l border-line pl-6 md:mt-2">
+                {secondHalf.map((paragraph, i) => (
+                  <p
+                    key={i}
+                    className="whitespace-pre-wrap font-body text-base leading-relaxed text-stone [tab-size:2]"
+                  >
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <div className="relative aspect-[3/4] bg-sand">
+                <Image
+                  src="/images/about-author-2.jpg"
+                  alt=""
+                  fill
+                  sizes="(min-width: 768px) 45vw, 100vw"
+                  className="object-cover"
+                />
+              </div>
+            </Reveal>
+          </div>
+        </section>
+      )}
 
       {/* Journal — the studio's growing collection of posts, editable from /admin */}
       {posts.length > 0 && (

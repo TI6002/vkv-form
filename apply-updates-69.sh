@@ -6,346 +6,223 @@ if [ ! -f package.json ]; then
   exit 1
 fi
 
-echo "Applying vkv.form updates — remove About page text editing, keep only journal posts..."
+echo "Applying vkv.form updates — split About author section into two photo/text blocks..."
 
-mkdir -p "components"
-cat > "components/AdminAboutPanel.tsx" << '__VKV_PATCH_EOF__'
-'use client';
-
-import { useEffect, useState } from 'react';
-import { useLocale } from 'next-intl';
-import { createClient } from '@/lib/supabase/client';
+mkdir -p "app/[locale]/about"
+cat > "app/[locale]/about/page.tsx" << '__VKV_PATCH_EOF__'
+import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
+import Image from 'next/image';
+import { Link } from '@/lib/navigation';
+import { Reveal } from '@/components/Reveal';
+import { getAboutContent, getAboutPosts } from '@/lib/content';
 import { pickLocalized } from '@/lib/localized';
-import { sanitizeFileName } from '@/lib/sanitize-filename';
-import { locales, localeNames, type Locale } from '@/i18n';
-import type { AboutPost } from '@/lib/types';
 
-function emptyPostForm(sourceLocale: string) {
-  return { sourceLocale, title: '', body: '', images: [] as string[] };
-}
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
-/**
- * Lets Tab actually insert a tab character at the cursor instead of
- * jumping focus to the next field — the normal browser behaviour in a
- * <textarea> is unhelpful for writing indented paragraphs.
- */
-function handleTabIndent(
-  e: React.KeyboardEvent<HTMLTextAreaElement>,
-  update: (transform: (prev: string) => string) => void
-) {
-  if (e.key !== 'Tab') return;
-  e.preventDefault();
-  const el = e.currentTarget;
-  const start = el.selectionStart;
-  const end = el.selectionEnd;
-  update((prev) => prev.slice(0, start) + '\t' + prev.slice(end));
-  requestAnimationFrame(() => {
-    el.selectionStart = el.selectionEnd = start + 1;
-  });
-}
+export default async function AboutPage({
+  params: { locale },
+}: {
+  params: { locale: string };
+}) {
+  unstable_setRequestLocale(locale);
+  const t = await getTranslations('about');
+  const [content, posts] = await Promise.all([getAboutContent(), getAboutPosts()]);
 
-export function AdminAboutPanel() {
-  const locale = useLocale();
-  const supabase = createClient();
+  // The client can edit any of these from /admin → About. Anything they
+  // haven't touched yet falls back to the built-in copy below, so the
+  // page is never missing text.
+  const text = (key: string, fallback: string) => {
+    const value = content[key];
+    if (!value || Object.keys(value).length === 0) return fallback;
+    return pickLocalized(value, locale) || fallback;
+  };
 
-  const [loaded, setLoaded] = useState(false);
+  const authorTitle = text('authorTitle', t('authorTitle'));
 
-  const [posts, setPosts] = useState<AboutPost[]>([]);
-  const [postForm, setPostForm] = useState(() => emptyPostForm(locale));
-  const [editingPostId, setEditingPostId] = useState<string | null>(null);
-  const [postSaving, setPostSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
+  // authorBody is one free-form field — the admin separates paragraphs
+  // with a blank line (press Enter twice), same as writing in a normal
+  // text editor. Falls back to the older authorBody1/authorBody2 fields
+  // (from before this was a single field) if authorBody was never saved.
+  const legacyBody1 = text('authorBody1', '');
+  const legacyBody2 = text('authorBody2', '');
+  const legacyCombined = [legacyBody1, legacyBody2].filter(Boolean).join('\n\n');
+  const authorBodyFallback = legacyCombined || `${t('authorBody1')}\n\n${t('authorBody2')}`;
+  const authorBody = text('authorBody', authorBodyFallback);
 
-  async function loadAll() {
-    const { data: postRows } = await supabase
-      .from('about_posts')
-      .select('*')
-      .order('created_at', { ascending: false });
+  const authorParagraphs = authorBody
+    .split(/\n\s*\n/)
+    .map((p) => p.trim())
+    .filter(Boolean);
 
-    setPosts((postRows as AboutPost[]) ?? []);
-    setLoaded(true);
-  }
-
-  useEffect(() => {
-    loadAll();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  function resetPostForm() {
-    setPostForm(emptyPostForm(locale));
-    setEditingPostId(null);
-  }
-
-  function startEditPost(post: AboutPost) {
-    setEditingPostId(post.id);
-    setPostForm({
-      sourceLocale: locale,
-      title: pickLocalized(post.title, locale),
-      body: pickLocalized(post.body, locale),
-      images: post.images ?? [],
-    });
-  }
-
-  function removePostImage(index: number) {
-    setPostForm((f) => ({ ...f, images: f.images.filter((_, i) => i !== index) }));
-  }
-
-  async function handlePostUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const files = Array.from(e.target.files ?? []);
-    if (files.length === 0) return;
-    setUploading(true);
-    const urls: string[] = [];
-    const errors: string[] = [];
-    for (const file of files) {
-      const path = `post-${Date.now()}-${sanitizeFileName(file.name)}`;
-      const { error } = await supabase.storage
-        .from('product-images')
-        .upload(path, file, { cacheControl: '3600', upsert: false });
-      if (error) {
-        console.error('Post image upload failed:', file.name, error);
-        errors.push(`${file.name}: ${error.message}`);
-      } else {
-        const { data } = supabase.storage.from('product-images').getPublicUrl(path);
-        urls.push(data.publicUrl);
-      }
-    }
-    if (urls.length > 0) {
-      setPostForm((f) => ({ ...f, images: [...f.images, ...urls] }));
-    }
-    setUploading(false);
-    e.target.value = '';
-    if (errors.length > 0) {
-      alert(`Could not upload:\n\n${errors.join('\n')}`);
-    }
-  }
-
-  async function handleSavePost(e: React.FormEvent) {
-    e.preventDefault();
-    setPostSaving(true);
-    try {
-      const res = await fetch('/api/admin/translate-fields', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          fields: { title: postForm.title, body: postForm.body },
-          sourceLocale: postForm.sourceLocale,
-        }),
-      });
-      if (!res.ok) throw new Error('translate failed');
-      const translated = await res.json();
-
-      const payload = {
-        title: translated.title,
-        body: translated.body,
-        images: postForm.images,
-      };
-
-      if (editingPostId) {
-        const { error } = await supabase
-          .from('about_posts')
-          .update(payload)
-          .eq('id', editingPostId);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.from('about_posts').insert(payload);
-        if (error) throw error;
-      }
-
-      resetPostForm();
-      loadAll();
-
-      const failedLocales: string[] = translated.failedLocales ?? [];
-      if (failedLocales.length > 0) {
-        alert(
-          `Saved — but translation failed for: ${failedLocales.join(', ')}. Those ` +
-            `languages are showing the original text for now (usually the free ` +
-            `translator's daily limit — try again in a bit).`
-        );
-      }
-    } catch (err) {
-      console.error(err);
-      alert('Could not save this post — check the console.');
-    } finally {
-      setPostSaving(false);
-    }
-  }
-
-  async function handleDeletePost(id: string) {
-    if (!confirm('Delete this post?')) return;
-    const { error } = await supabase.from('about_posts').delete().eq('id', id);
-    if (error) {
-      console.error(error);
-      alert('Could not delete this post — check the console.');
-      return;
-    }
-    loadAll();
-  }
-
-  if (!loaded) return <p className="mt-6 font-body text-stone">Loading…</p>;
+  // Split the author text roughly in half so it can sit next to two
+  // photos: the quote + first half runs next to photo #1, the rest
+  // runs next to photo #2 further down the page. If the admin edits
+  // the text later, this split recalculates automatically — no code
+  // change needed.
+  const splitIndex = Math.ceil(authorParagraphs.length / 2);
+  const firstHalf = authorParagraphs.slice(0, splitIndex);
+  const secondHalf = authorParagraphs.slice(splitIndex);
 
   return (
-    <div className="mt-10 flex flex-col gap-16">
-      {/* Journal posts */}
-      <div>
-        <h2 className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
-          Journal posts
-        </h2>
-        <p className="mt-2 max-w-lg font-body text-xs leading-relaxed text-taupe">
-          Shows up at the bottom of the About page, newest first.
-        </p>
+    <div>
+      <section className="mx-auto max-w-[1400px] px-6 pt-20 pb-8 md:px-10 md:pt-28">
+        <Reveal>
+          <h1 className="font-display text-5xl italic text-ink md:text-6xl">{t('title')}</h1>
+        </Reveal>
+      </section>
 
-        {posts.length > 0 && (
-          <ul className="mt-6 flex flex-col gap-3">
-            {posts.map((p) => (
-              <li
-                key={p.id}
-                className="flex items-center justify-between gap-4 border border-line p-3"
-              >
-                <div className="flex items-center gap-3">
-                  {p.images?.[0] && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={p.images[0]} alt="" className="h-12 w-16 object-cover" />
-                  )}
-                  <span className="font-body text-sm text-ink">
-                    {pickLocalized(p.title, locale) || '(untitled)'}
-                  </span>
-                </div>
-                <div className="flex gap-4">
-                  <button
-                    onClick={() => startEditPost(p)}
-                    className="font-mono text-[11px] uppercase tracking-widest2 text-ink underline underline-offset-4"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDeletePost(p.id)}
-                    className="font-mono text-[11px] uppercase tracking-widest2 text-red-800 underline underline-offset-4"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-
-        <form onSubmit={handleSavePost} className="mt-8 flex max-w-2xl flex-col gap-5">
-          <h3 className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
-            {editingPostId ? 'Edit post' : 'New post'}
-          </h3>
-          <label className="block">
-            <span className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
-              Text language
-            </span>
-            <select
-              value={postForm.sourceLocale}
-              onChange={(e) => setPostForm((f) => ({ ...f, sourceLocale: e.target.value }))}
-              className="input mt-2"
-            >
-              {locales.map((l) => (
-                <option key={l} value={l}>
-                  {localeNames[l as Locale]} ({l})
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="block">
-            <span className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
-              Title
-            </span>
-            <input
-              required
-              value={postForm.title}
-              onChange={(e) => setPostForm((f) => ({ ...f, title: e.target.value }))}
-              className="input mt-2"
-            />
-          </label>
-          <label className="block">
-            <span className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
-              Text
-            </span>
-            <textarea
-              required
-              rows={8}
-              value={postForm.body}
-              onChange={(e) => setPostForm((f) => ({ ...f, body: e.target.value }))}
-              onKeyDown={(e) =>
-                handleTabIndent(e, (transform) =>
-                  setPostForm((f) => ({ ...f, body: transform(f.body) }))
-                )
-              }
-              className="input mt-2 font-mono text-sm"
-            />
-            <p className="mt-1.5 font-body text-xs text-taupe">
-              Blank line between paragraphs; Tab inserts a real indent.
+      {/* Author — part 1: photo left, quote + first half of the text right */}
+      <section className="mx-auto max-w-[1400px] px-6 py-16 md:px-10 md:py-24">
+        <div className="grid gap-12 md:grid-cols-[0.9fr_1.1fr] md:gap-20">
+          <Reveal>
+            <div className="relative aspect-[3/4] bg-sand">
+              <Image
+                src="/images/about-author.jpg"
+                alt=""
+                fill
+                sizes="(min-width: 768px) 45vw, 100vw"
+                className="object-cover"
+              />
+            </div>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <p className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
+              {t('authorEyebrow')}
             </p>
-          </label>
 
-          <div className="flex flex-wrap gap-3">
-            {postForm.images.map((src, i) => (
-              <div key={i} className="group relative h-16 w-20 bg-sand">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={src} alt="" className="h-full w-full object-cover" />
-                <button
-                  type="button"
-                  onClick={() => removePostImage(i)}
-                  className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-ink text-[10px] text-cream opacity-0 transition-opacity group-hover:opacity-100"
-                >
-                  ×
-                </button>
-              </div>
-            ))}
-          </div>
-          <label className="inline-block w-fit cursor-pointer font-mono text-[11px] uppercase tracking-widest2 text-ink underline underline-offset-4">
-            {uploading ? 'Uploading…' : 'Upload photo(s)'}
-            <input
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={handlePostUpload}
-              className="hidden"
-            />
-          </label>
-
-          <div className="mt-2 flex gap-4">
-            <button
-              type="submit"
-              disabled={postSaving}
-              className="self-start border border-ink px-8 py-3.5 font-mono text-[11px] uppercase tracking-widest2 text-ink transition-colors hover:bg-ink hover:text-cream disabled:opacity-50"
-            >
-              {postSaving ? 'Translating & saving…' : editingPostId ? 'Save post' : 'Publish post'}
-            </button>
-            {editingPostId && (
-              <button
-                type="button"
-                onClick={resetPostForm}
-                className="font-mono text-[11px] uppercase tracking-widest2 text-stone underline underline-offset-4"
+            <blockquote className="relative mt-8 max-w-2xl border-l-2 border-cocoa pl-7">
+              <span
+                aria-hidden
+                className="pointer-events-none absolute -left-2 -top-8 select-none font-display text-[7rem] italic leading-none text-cocoa/25"
               >
-                Cancel
-              </button>
-            )}
-          </div>
-        </form>
-      </div>
+                &ldquo;
+              </span>
+              <p className="relative font-display text-3xl italic leading-snug text-ink md:text-[2.6rem]">
+                {authorTitle}
+              </p>
+            </blockquote>
 
-      <style jsx global>{`
-        .input {
-          width: 100%;
-          border-bottom: 1px solid #dcd0bc;
-          background: transparent;
-          padding: 0.5rem 0;
-          font-family: var(--font-body);
-          color: #211e1a;
-        }
-        .input:focus {
-          outline: none;
-          border-color: #211e1a;
-        }
-      `}</style>
+            {firstHalf.length > 0 && (
+              <div className="mt-10 max-w-2xl space-y-5 border-l border-line pl-6">
+                {firstHalf.map((paragraph, i) => (
+                  <p
+                    key={i}
+                    className="whitespace-pre-wrap font-body text-base leading-relaxed text-stone [tab-size:2]"
+                  >
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            )}
+          </Reveal>
+        </div>
+      </section>
+
+      {/* Author — part 2: rest of the text left, photo right */}
+      {secondHalf.length > 0 && (
+        <section className="mx-auto max-w-[1400px] px-6 pb-16 md:px-10 md:pb-24">
+          <div className="grid gap-12 md:grid-cols-[1.1fr_0.9fr] md:gap-20">
+            <Reveal>
+              <div className="max-w-2xl space-y-5 border-l border-line pl-6 md:mt-2">
+                {secondHalf.map((paragraph, i) => (
+                  <p
+                    key={i}
+                    className="whitespace-pre-wrap font-body text-base leading-relaxed text-stone [tab-size:2]"
+                  >
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <div className="relative aspect-[3/4] bg-sand">
+                <Image
+                  src="/images/about-author-2.jpg"
+                  alt=""
+                  fill
+                  sizes="(min-width: 768px) 45vw, 100vw"
+                  className="object-cover"
+                />
+              </div>
+            </Reveal>
+          </div>
+        </section>
+      )}
+
+      {/* Journal — the studio's growing collection of posts, editable from /admin */}
+      {posts.length > 0 && (
+        <section className="bg-white">
+          <div className="mx-auto max-w-[1400px] px-6 py-20 md:px-10 md:py-28">
+            <Reveal>
+              <p className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
+                {t('journalEyebrow')}
+              </p>
+              <h2 className="mt-4 font-display text-3xl text-ink md:text-4xl">
+                {t('journalTitle')}
+              </h2>
+            </Reveal>
+
+            <div className="mt-14 grid grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 md:grid-cols-3">
+              {posts.map((post, i) => {
+                const title = pickLocalized(post.title, locale);
+                const body = pickLocalized(post.body, locale);
+                const EXCERPT_LIMIT = 220;
+                const isLong = body.length > EXCERPT_LIMIT;
+                const excerpt = isLong
+                  ? body.slice(0, body.lastIndexOf(' ', EXCERPT_LIMIT)) + '…'
+                  : body;
+
+                return (
+                  <Reveal key={post.id} delay={(i % 3) * 0.06}>
+                    <article>
+                      {post.images?.[0] && (
+                        <div className="relative aspect-[4/5] overflow-hidden bg-sand">
+                          <Image
+                            src={post.images[0]}
+                            alt={title}
+                            fill
+                            sizes="(min-width: 768px) 33vw, 50vw"
+                            className="object-cover"
+                          />
+                        </div>
+                      )}
+                      <p className="mt-4 font-mono text-[10px] uppercase tracking-widest2 text-taupe">
+                        {new Date(post.created_at).toLocaleDateString(locale, {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                        })}
+                      </p>
+                      <h3 className="mt-2 font-display text-xl text-ink">{title}</h3>
+                      <p className="mt-3 whitespace-pre-line font-body text-sm leading-relaxed text-stone">
+                        {excerpt}
+                      </p>
+                      {isLong && (
+                        <Link
+                          href={`/about/journal/${post.id}`}
+                          className="mt-3 inline-block font-mono text-[11px] uppercase tracking-widest2 text-ink underline underline-offset-4"
+                        >
+                          {t('readMore')}
+                        </Link>
+                      )}
+                    </article>
+                  </Reveal>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 }
 __VKV_PATCH_EOF__
-echo "  updated: components/AdminAboutPanel.tsx"
+echo "  updated: app/[locale]/about/page.tsx"
 
-echo "Done. git add -A && git commit -m \"Remove About text editing from admin, keep only posts\" && git push"
+echo ""
+echo "Don't forget to add your two photos:"
+echo "  public/images/about-author.jpg    (photo 1 — top block, left side)"
+echo "  public/images/about-author-2.jpg  (photo 2 — bottom block, right side)"
+echo ""
+echo "Done. git add -A && git commit -m \"Split About author section into two photo/text blocks\" && git push"
