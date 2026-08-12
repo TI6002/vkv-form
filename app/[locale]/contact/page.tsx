@@ -13,7 +13,7 @@ export default async function ContactPage({
   const details = {
     address: process.env.NEXT_PUBLIC_STUDIO_ADDRESS || 'Burtnieku Street 33, Riga, Latvia',
     email: process.env.NEXT_PUBLIC_STUDIO_EMAIL || 'vkv.form.info@gmail.com',
-    phone: process.env.NEXT_PUBLIC_STUDIO_PHONE || '+371 20509471',
+    phone: process.env.NEXT_PUBLIC_STUDIO_PHONE || '+371 24247711',
   };
 
   const mapQuery = encodeURIComponent(details.address);
