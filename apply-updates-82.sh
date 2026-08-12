@@ -112,32 +112,27 @@ export default async function HomePage({
       />
 
       {/*
-        Philosophy — white panel. Uses the same visual language as the
-        "About the author" quote on /about (eyebrow label, italic
-        display heading with a left accent border) so the two pages
-        feel like the same site, plus the body paragraph that was
-        missing here before, so the section has real weight instead of
-        a small line of text floating in a lot of empty white space.
+        Philosophy — white panel. philosophyTitle and philosophyBody
+        currently hold the same sentence in the translations, so only
+        philosophyTitle is rendered here — showing both would just
+        repeat the same text twice. Single short quote-style block,
+        noticeably shorter than before (py-16/20 instead of py-28/36)
+        so it doesn't leave a lot of empty white space around one line
+        of text. If philosophyBody is later given different text of
+        its own, a second paragraph can be added back next to it.
       */}
       <section className="bg-white">
-        <div className="mx-auto max-w-[1400px] px-6 py-28 md:px-10 md:py-36">
-          <div className="grid gap-10 md:grid-cols-[0.9fr_1.1fr] md:gap-20">
-            <Reveal>
-              <p className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
-                {t('philosophyEyebrow')}
+        <div className="mx-auto max-w-[1400px] px-6 py-16 md:px-10 md:py-20">
+          <Reveal>
+            <p className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
+              {t('philosophyEyebrow')}
+            </p>
+            <blockquote className="relative mt-6 max-w-3xl border-l-2 border-cocoa pl-7">
+              <p className="font-display text-2xl italic leading-snug text-ink md:text-3xl">
+                {t('philosophyTitle')}
               </p>
-              <blockquote className="relative mt-8 max-w-xl border-l-2 border-cocoa pl-7">
-                <h2 className="font-display text-3xl italic leading-snug text-ink md:text-4xl">
-                  {t('philosophyTitle')}
-                </h2>
-              </blockquote>
-            </Reveal>
-            <Reveal delay={0.1}>
-              <p className="max-w-xl font-body text-lg leading-relaxed text-stone md:mt-16">
-                {t('philosophyBody')}
-              </p>
-            </Reveal>
-          </div>
+            </blockquote>
+          </Reveal>
         </div>
       </section>
 
