@@ -6,7 +6,7 @@ if [ ! -f package.json ]; then
   exit 1
 fi
 
-echo "Applying vkv.form updates — reorder hero slides, strip main banner to title only, new philosophy text on all 7 languages..."
+echo "Applying vkv.form updates — philosophy section shows only the new text, styled as the title..."
 
 mkdir -p "app/[locale]"
 cat > "app/[locale]/page.tsx" << '__VKV_PATCH_EOF__'
@@ -119,18 +119,11 @@ export default async function HomePage({
               {t('philosophyEyebrow')}
             </p>
           </Reveal>
-          <div className="mt-6 grid gap-10 md:grid-cols-2 md:gap-20">
-            <Reveal>
-              <h2 className="font-display text-4xl leading-[1.1] text-ink md:text-5xl">
-                {t('philosophyTitle')}
-              </h2>
-            </Reveal>
-            <Reveal delay={0.1}>
-              <p className="font-body text-lg leading-relaxed text-stone">
-                {t('philosophyBody')}
-              </p>
-            </Reveal>
-          </div>
+          <Reveal delay={0.1}>
+            <h2 className="mt-6 max-w-3xl font-display text-4xl leading-[1.15] text-ink md:text-5xl">
+              {t('philosophyTitle')}
+            </h2>
+          </Reveal>
         </div>
       </section>
 
@@ -198,7 +191,7 @@ cat > "messages/en.json" << '__VKV_PATCH_EOF__'
     "heroSubtitle": "Handmade sculptural objects for considered interiors. Each piece is cast, carved and finished by hand in a small studio, one at a time.",
     "heroCta": "Enter the catalogue",
     "philosophyEyebrow": "Philosophy",
-    "philosophyTitle": "An object should earn its place slowly.",
+    "philosophyTitle": "We believe that real strength is not always visible. It lives in the ability to go on, to remain yourself, and to take on a new form when the old one is no longer possible.",
     "philosophyBody": "We believe that real strength is not always visible. It lives in the ability to go on, to remain yourself, and to take on a new form when the old one is no longer possible.",
     "catalogEyebrow": "The Collection",
     "catalogTitle": "Recent forms",
@@ -406,7 +399,7 @@ cat > "messages/ru.json" << '__VKV_PATCH_EOF__'
     "heroSubtitle": "Рукотворные скульптурные предметы для продуманных интерьеров. Каждое изделие отливается, вырезается и доводится вручную в небольшой мастерской — по одному.",
     "heroCta": "В каталог",
     "philosophyEyebrow": "Философия",
-    "philosophyTitle": "Предмет должен заслужить своё место — не спеша.",
+    "philosophyTitle": "Мы верим, что настоящая сила не всегда заметна. Она живёт в способности продолжать, оставаться собой и обретать новую форму, когда прежняя уже невозможна.",
     "philosophyBody": "Мы верим, что настоящая сила не всегда заметна. Она живёт в способности продолжать, оставаться собой и обретать новую форму, когда прежняя уже невозможна.",
     "catalogEyebrow": "Коллекция",
     "catalogTitle": "Последние формы",
@@ -614,7 +607,7 @@ cat > "messages/fr.json" << '__VKV_PATCH_EOF__'
     "heroSubtitle": "Objets sculpturaux faits main pour des intérieurs pensés. Chaque pièce est coulée, sculptée et finie à la main dans un petit atelier, une à une.",
     "heroCta": "Découvrir le catalogue",
     "philosophyEyebrow": "Philosophie",
-    "philosophyTitle": "Un objet doit mériter sa place, lentement.",
+    "philosophyTitle": "Nous croyons que la vraie force n'est pas toujours visible. Elle réside dans la capacité à continuer, à rester soi-même, et à prendre une nouvelle forme lorsque l'ancienne n'est plus possible.",
     "philosophyBody": "Nous croyons que la vraie force n'est pas toujours visible. Elle réside dans la capacité à continuer, à rester soi-même, et à prendre une nouvelle forme lorsque l'ancienne n'est plus possible.",
     "catalogEyebrow": "La collection",
     "catalogTitle": "Formes récentes",
@@ -822,7 +815,7 @@ cat > "messages/es.json" << '__VKV_PATCH_EOF__'
     "heroSubtitle": "Objetos escultóricos hechos a mano para interiores pensados con cuidado. Cada pieza se moldea, talla y termina a mano en un pequeño taller, una a una.",
     "heroCta": "Entrar al catálogo",
     "philosophyEyebrow": "Filosofía",
-    "philosophyTitle": "Un objeto debe ganarse su lugar, despacio.",
+    "philosophyTitle": "Creemos que la verdadera fuerza no siempre es visible. Vive en la capacidad de continuar, de seguir siendo uno mismo y de adoptar una nueva forma cuando la anterior ya no es posible.",
     "philosophyBody": "Creemos que la verdadera fuerza no siempre es visible. Vive en la capacidad de continuar, de seguir siendo uno mismo y de adoptar una nueva forma cuando la anterior ya no es posible.",
     "catalogEyebrow": "La colección",
     "catalogTitle": "Formas recientes",
@@ -1030,7 +1023,7 @@ cat > "messages/it.json" << '__VKV_PATCH_EOF__'
     "heroSubtitle": "Oggetti scultorei fatti a mano per interni curati. Ogni pezzo viene colato, scolpito e rifinito a mano in un piccolo studio, uno alla volta.",
     "heroCta": "Entra nel catalogo",
     "philosophyEyebrow": "Filosofia",
-    "philosophyTitle": "Un oggetto deve guadagnarsi il suo posto, lentamente.",
+    "philosophyTitle": "Crediamo che la vera forza non sia sempre visibile. Vive nella capacità di continuare, di restare se stessi e di assumere una nuova forma quando quella precedente non è più possibile.",
     "philosophyBody": "Crediamo che la vera forza non sia sempre visibile. Vive nella capacità di continuare, di restare se stessi e di assumere una nuova forma quando quella precedente non è più possibile.",
     "catalogEyebrow": "La collezione",
     "catalogTitle": "Forme recenti",
@@ -1238,7 +1231,7 @@ cat > "messages/de.json" << '__VKV_PATCH_EOF__'
     "heroSubtitle": "Handgefertigte, skulpturale Objekte für durchdachte Innenräume. Jedes Stück wird von Hand gegossen, geschnitzt und veredelt, eines nach dem anderen, in einem kleinen Atelier.",
     "heroCta": "Zum Katalog",
     "philosophyEyebrow": "Philosophie",
-    "philosophyTitle": "Ein Objekt sollte sich seinen Platz langsam verdienen.",
+    "philosophyTitle": "Wir glauben, dass wahre Stärke nicht immer sichtbar ist. Sie liegt in der Fähigkeit, weiterzumachen, sich selbst treu zu bleiben und eine neue Form anzunehmen, wenn die alte nicht mehr möglich ist.",
     "philosophyBody": "Wir glauben, dass wahre Stärke nicht immer sichtbar ist. Sie liegt in der Fähigkeit, weiterzumachen, sich selbst treu zu bleiben und eine neue Form anzunehmen, wenn die alte nicht mehr möglich ist.",
     "catalogEyebrow": "Die Kollektion",
     "catalogTitle": "Neueste Formen",
@@ -1446,7 +1439,7 @@ cat > "messages/lv.json" << '__VKV_PATCH_EOF__'
     "heroSubtitle": "Rokdarbā veidoti skulpturāli priekšmeti pārdomātām interjera telpām. Katrs darbs tiek liets, tēsts un apdarināts ar rokām nelielā darbnīcā, pa vienam.",
     "heroCta": "Skatīt katalogu",
     "philosophyEyebrow": "Filozofija",
-    "philosophyTitle": "Priekšmetam sava vieta jāizpelnās lēni.",
+    "philosophyTitle": "Mēs ticam, ka patiess spēks ne vienmēr ir redzams. Tas mīt spējā turpināt, palikt sev uzticīgam un iegūt jaunu formu, kad iepriekšējā vairs nav iespējama.",
     "philosophyBody": "Mēs ticam, ka patiess spēks ne vienmēr ir redzams. Tas mīt spējā turpināt, palikt sev uzticīgam un iegūt jaunu formu, kad iepriekšējā vairs nav iespējama.",
     "catalogEyebrow": "Kolekcija",
     "catalogTitle": "Jaunākās formas",
@@ -1635,4 +1628,4 @@ cat > "messages/lv.json" << '__VKV_PATCH_EOF__'
 __VKV_PATCH_EOF__
 echo "  updated: messages/lv.json"
 
-echo "Done. git add -A && git commit -m \"Reorder hero, strip main banner text, update philosophy text\" && git push"
+echo "Done. git add -A && git commit -m \"Philosophy section: single title-styled text, all locales\" && git push"

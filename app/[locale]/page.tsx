@@ -107,18 +107,11 @@ export default async function HomePage({
               {t('philosophyEyebrow')}
             </p>
           </Reveal>
-          <div className="mt-6 grid gap-10 md:grid-cols-2 md:gap-20">
-            <Reveal>
-              <h2 className="font-display text-4xl leading-[1.1] text-ink md:text-5xl">
-                {t('philosophyTitle')}
-              </h2>
-            </Reveal>
-            <Reveal delay={0.1}>
-              <p className="font-body text-lg leading-relaxed text-stone">
-                {t('philosophyBody')}
-              </p>
-            </Reveal>
-          </div>
+          <Reveal delay={0.1}>
+            <h2 className="mt-6 max-w-3xl font-display text-4xl leading-[1.15] text-ink md:text-5xl">
+              {t('philosophyTitle')}
+            </h2>
+          </Reveal>
         </div>
       </section>
 
