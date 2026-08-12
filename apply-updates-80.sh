@@ -1,3 +1,15 @@
+#!/usr/bin/env bash
+set -e
+
+if [ ! -f package.json ]; then
+  echo "ERROR: no package.json here. cd into the project root first."
+  exit 1
+fi
+
+echo "Applying vkv.form updates — detect and fix silent RLS failures on order updates..."
+
+mkdir -p "components"
+cat > "components/AdminOrdersPanel.tsx" << '__VKV_PATCH_EOF__'
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -135,3 +147,27 @@ export function AdminOrdersPanel() {
     </div>
   );
 }
+__VKV_PATCH_EOF__
+echo "  updated: components/AdminOrdersPanel.tsx"
+
+echo ""
+echo "=============================================================="
+echo "REQUIRED — run this in the Supabase SQL editor now:"
+echo "=============================================================="
+echo ""
+echo "create policy \"Admins can update orders\" on orders for update"
+echo "using (exists (select 1 from profiles where profiles.id = auth.uid() and profiles.role = 'admin'))"
+echo "with check (exists (select 1 from profiles where profiles.id = auth.uid() and profiles.role = 'admin'));"
+echo ""
+echo "create policy \"Admins can delete orders\" on orders for delete"
+echo "using (exists (select 1 from profiles where profiles.id = auth.uid() and profiles.role = 'admin'));"
+echo ""
+echo "If either policy already exists under a different name and errors"
+echo "out with 'policy already exists', that's fine — check its USING"
+echo "clause actually matches an admin role check like the one above."
+echo ""
+echo "Also add both policies to supabase/full-schema.sql yourself, since"
+echo "I don't have that file, so a fresh database setup includes them."
+echo "=============================================================="
+echo ""
+echo "Done. git add -A && git commit -m \"Surface silent RLS failures on order status update/delete\" && git push"
