@@ -16,7 +16,7 @@
     "heroCta": "Enter the catalogue",
     "philosophyEyebrow": "Philosophy",
     "philosophyTitle": "An object should earn its place slowly.",
-    "philosophyBody": "We work with raw, honest materials — unglazed clay, plaster, warm stone — and let their texture stay visible. Nothing is corrected into perfection. The imprint of the hand is the point, not the flaw.",
+    "philosophyBody": "We believe that real strength is not always visible. It lives in the ability to go on, to remain yourself, and to take on a new form when the old one is no longer possible.",
     "catalogEyebrow": "The Collection",
     "catalogTitle": "Recent forms",
     "catalogCta": "View all objects",
@@ -89,7 +89,7 @@
   },
   "contact": {
     "title": "Contact",
-    "intro": "For studio visits, press, stockist enquiries or anything else — write to us directly.",
+    "intro": "For studio visits, press, stockist enquiries or anything else — Please, write to us directly.",
     "formName": "Name",
     "formEmail": "Email",
     "formMessage": "Message",

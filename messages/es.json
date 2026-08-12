@@ -16,7 +16,7 @@
     "heroCta": "Entrar al catálogo",
     "philosophyEyebrow": "Filosofía",
     "philosophyTitle": "Un objeto debe ganarse su lugar, despacio.",
-    "philosophyBody": "Trabajamos con materiales honestos y sin pulir — arcilla sin esmaltar, yeso, piedra cálida — dejando visible su textura. Nada se corrige hasta la perfección. La huella de la mano es la esencia, no el defecto.",
+    "philosophyBody": "Creemos que la verdadera fuerza no siempre es visible. Vive en la capacidad de continuar, de seguir siendo uno mismo y de adoptar una nueva forma cuando la anterior ya no es posible.",
     "catalogEyebrow": "La colección",
     "catalogTitle": "Formas recientes",
     "catalogCta": "Ver todos los objetos",
@@ -89,7 +89,7 @@
   },
   "contact": {
     "title": "Contacto",
-    "intro": "Para visitas al taller, prensa, consultas de distribución o cualquier otra cosa — escríbenos directamente.",
+    "intro": "Para visitas al estudio, consultas de prensa, distribuidores o cualquier otro asunto, por favor, escríbenos directamente.",
     "formName": "Nombre",
     "formEmail": "Email",
     "formMessage": "Mensaje",

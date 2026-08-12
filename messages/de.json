@@ -16,7 +16,7 @@
     "heroCta": "Zum Katalog",
     "philosophyEyebrow": "Philosophie",
     "philosophyTitle": "Ein Objekt sollte sich seinen Platz langsam verdienen.",
-    "philosophyBody": "Wir arbeiten mit rohen, ehrlichen Materialien — unglasiertem Ton, Gips, warmem Stein — und lassen ihre Textur sichtbar. Nichts wird bis zur Perfektion korrigiert. Die Spur der Hand ist der Sinn, nicht der Makel.",
+    "philosophyBody": "Wir glauben, dass wahre Stärke nicht immer sichtbar ist. Sie liegt in der Fähigkeit, weiterzumachen, sich selbst treu zu bleiben und eine neue Form anzunehmen, wenn die alte nicht mehr möglich ist.",
     "catalogEyebrow": "Die Kollektion",
     "catalogTitle": "Neueste Formen",
     "catalogCta": "Alle Objekte ansehen",
@@ -89,7 +89,7 @@
   },
   "contact": {
     "title": "Kontakt",
-    "intro": "Für Atelierbesuche, Presse, Handelsanfragen oder alles andere — schreiben Sie uns direkt.",
+    "intro": "Bei Anfragen zu Atelierbesuchen, zur Presse, zu Händlern oder zu sonstigen Themen – bitte wenden Sie sich direkt an uns.",
     "formName": "Name",
     "formEmail": "E-Mail",
     "formMessage": "Nachricht",

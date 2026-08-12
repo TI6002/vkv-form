@@ -16,7 +16,7 @@
     "heroCta": "Skatīt katalogu",
     "philosophyEyebrow": "Filozofija",
     "philosophyTitle": "Priekšmetam sava vieta jāizpelnās lēni.",
-    "philosophyBody": "Mēs strādājam ar godīgiem, neapstrādātiem materiāliem — negleznotu mālu, ģipsi, siltu akmeni — un ļaujam to faktūrai palikt redzamai. Nekas netiek pilnveidots līdz perfekcijai. Rokas nospiedums ir jēga, nevis defekts.",
+    "philosophyBody": "Mēs ticam, ka patiess spēks ne vienmēr ir redzams. Tas mīt spējā turpināt, palikt sev uzticīgam un iegūt jaunu formu, kad iepriekšējā vairs nav iespējama.",
     "catalogEyebrow": "Kolekcija",
     "catalogTitle": "Jaunākās formas",
     "catalogCta": "Skatīt visus priekšmetus",
@@ -89,7 +89,7 @@
   },
   "contact": {
     "title": "Kontakti",
-    "intro": "Lai apmeklētu darbnīcu, presei, vairumtirdzniecības jautājumiem vai jebkam citam — rakstiet mums tieši.",
+    "intro": "Ja vēlaties apmeklēt mūsu darbnīcu, ja jums ir jautājumi par presi vai izplatītājiem, vai arī jebkādi citi jautājumi — lūdzu, rakstiet mums tieši.",
     "formName": "Vārds",
     "formEmail": "E-pasts",
     "formMessage": "Ziņa",
