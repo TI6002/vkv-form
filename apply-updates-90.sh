@@ -6,1252 +6,241 @@ if [ ! -f package.json ]; then
   exit 1
 fi
 
-echo "Applying vkv.form updates — move Orders button into the same row as Catalog/About/Collection..."
+echo "Applying vkv.form updates — live-refresh Saved items on the account page..."
 
 mkdir -p "components"
-cat > "components/AdminDashboard.tsx" << '__VKV_PATCH_EOF__'
+cat > "components/AccountFavoritesLive.tsx" << '__VKV_PATCH_EOF__'
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useLocale, useTranslations } from 'next-intl';
+import Image from 'next/image';
 import { createClient } from '@/lib/supabase/client';
+import { Link } from '@/lib/navigation';
+import { formatPrice } from '@/lib/format';
 import { pickLocalized } from '@/lib/localized';
-import { slugify } from '@/lib/slugify';
-import { sanitizeFileName } from '@/lib/sanitize-filename';
-import { locales, localeNames, type Locale } from '@/i18n';
-import { AdminOrdersPanel } from './AdminOrdersPanel';
-import { AdminAboutPanel } from './AdminAboutPanel';
-import { AdminCollectionPanel } from './AdminCollectionPanel';
-import type { Product } from '@/lib/types';
+import type { Favorite } from '@/lib/types';
 
-function emptyFormFor(sourceLocale: string) {
-  return {
-    id: '',
-    sourceLocale,
-    name: '',
-    slug: '',
-    price: '',
-    isAvailable: true,
-    description: '',
-    materials: '',
-    height: '',
-    width: '',
-    circumference: '',
-    depth: '',
-    weight: '',
-    images: [] as string[],
-  };
-}
+const POLL_INTERVAL_MS = 5000;
 
-function CatalogAdminPanel({ view }: { view: 'products' | 'orders' }) {
-  const t = useTranslations('admin');
-  const locale = useLocale();
+/**
+ * Renders the "Saved items" grid on /account and keeps it in sync with
+ * the database by polling every few seconds — the same approach used
+ * for order status on this page. Liking/unliking a product from the
+ * catalog is a separate page (and possibly a page the router already
+ * cached from an earlier visit), so this page's server-rendered data
+ * can otherwise sit stale until a manual refresh; polling fixes that
+ * without depending on any extra Supabase Realtime setup.
+ */
+export function AccountFavoritesLive({
+  userId,
+  locale,
+  initialFavorites,
+  savedTitle,
+  noSavedText,
+}: {
+  userId: string;
+  locale: string;
+  initialFavorites: Favorite[];
+  savedTitle: string;
+  noSavedText: string;
+}) {
   const supabase = createClient();
-
-  const [products, setProducts] = useState<Product[]>([]);
-  const [form, setForm] = useState(() => emptyFormFor(locale));
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [nameOverrides, setNameOverrides] = useState<Partial<Record<Locale, string>>>({});
-  const [savingOverrides, setSavingOverrides] = useState(false);
-  const [reordering, setReordering] = useState(false);
-  const [markingSoldId, setMarkingSoldId] = useState<string | null>(null);
-
-  async function loadProducts() {
-    // Same order as the public catalog: manual sort_order first (null
-    // last automatically), then newest first as a tie-breaker.
-    const { data } = await supabase
-      .from('products')
-      .select('*')
-      .order('sort_order', { ascending: true, nullsFirst: false })
-      .order('created_at', { ascending: false });
-    setProducts((data as Product[]) ?? []);
-  }
+  const [favorites, setFavorites] = useState<Favorite[]>(initialFavorites);
 
   useEffect(() => {
-    loadProducts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    let cancelled = false;
 
-  function resetForm() {
-    setForm(emptyFormFor(locale));
-    setEditingId(null);
-    setNameOverrides({});
-  }
-
-  function startEdit(p: Product) {
-    setEditingId(p.id);
-    setNameOverrides(p.name ?? {});
-    setForm({
-      id: p.id,
-      sourceLocale: locale,
-      name: pickLocalized(p.name, locale),
-      slug: p.slug,
-      price: (p.price_cents / 100).toString(),
-      isAvailable: p.available,
-      description: pickLocalized(p.description, locale),
-      materials: pickLocalized(p.materials, locale),
-      height: pickLocalized(p.height, locale),
-      width: pickLocalized(p.width, locale),
-      circumference: pickLocalized(p.circumference, locale),
-      depth: pickLocalized(p.depth, locale),
-      weight: pickLocalized(p.weight, locale),
-      images: p.images ?? [],
-    });
-  }
-
-  async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const files = Array.from(e.target.files ?? []);
-    if (files.length === 0) return;
-    setUploading(true);
-
-    const uploadedUrls: string[] = [];
-    const errors: string[] = [];
-    for (const file of files) {
-      const path = `${Date.now()}-${sanitizeFileName(file.name)}`;
-      const { error } = await supabase.storage
-        .from('product-images')
-        .upload(path, file, { cacheControl: '3600', upsert: false });
+    async function refetch() {
+      const { data, error } = await supabase
+        .from('favorites')
+        .select('*, products(*)')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+      if (cancelled) return;
       if (error) {
-        console.error('Product image upload failed:', file.name, error);
-        errors.push(`${file.name}: ${error.message}`);
-      } else {
-        const { data } = supabase.storage.from('product-images').getPublicUrl(path);
-        uploadedUrls.push(data.publicUrl);
+        console.error('Could not refresh saved items:', error);
+        return;
       }
+      setFavorites((data as Favorite[]) ?? []);
     }
 
-    if (uploadedUrls.length > 0) {
-      setForm((f) => ({ ...f, images: [...f.images, ...uploadedUrls] }));
+    // Refresh right away (covers "just navigated back to this page"),
+    // then keep polling, and also refresh whenever the tab regains
+    // focus so switching back to it feels instant.
+    refetch();
+    const interval = setInterval(refetch, POLL_INTERVAL_MS);
+
+    function handleVisibility() {
+      if (document.visibilityState === 'visible') refetch();
     }
-    setUploading(false);
-    e.target.value = '';
-    if (errors.length > 0) {
-      alert(`Could not upload:\n\n${errors.join('\n')}`);
-    }
-  }
+    document.addEventListener('visibilitychange', handleVisibility);
 
-  function removeImage(index: number) {
-    setForm((f) => ({ ...f, images: f.images.filter((_, i) => i !== index) }));
-  }
-
-  function moveImage(index: number, direction: 'left' | 'right') {
-    setForm((f) => {
-      const target = direction === 'left' ? index - 1 : index + 1;
-      if (target < 0 || target >= f.images.length) return f;
-      const images = [...f.images];
-      [images[index], images[target]] = [images[target], images[index]];
-      return { ...f, images };
-    });
-  }
-
-  async function handleSave(e: React.FormEvent) {
-    e.preventDefault();
-    setSaving(true);
-
-    try {
-      const nameField: Partial<Record<Locale, string>> = {
-        ...nameOverrides,
-        [form.sourceLocale]: form.name,
-      };
-
-      const res = await fetch('/api/admin/translate-product', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: form.name,
-          description: form.description,
-          materials: form.materials || null,
-          height: form.height || null,
-          width: form.width || null,
-          circumference: form.circumference || null,
-          depth: form.depth || null,
-          weight: form.weight || null,
-          sourceLocale: form.sourceLocale,
-        }),
-      });
-
-      if (!res.ok) throw new Error('Translation request failed');
-      const translated = await res.json();
-
-      const payload = {
-        name: nameField,
-        slug:
-          slugify(form.slug) ||
-          slugify(form.name) ||
-          `object-${Date.now()}`,
-        price_cents: Math.round(parseFloat(form.price || '0') * 100),
-        stock: form.isAvailable ? 1 : 0,
-        available: form.isAvailable,
-        description: translated.description,
-        materials: translated.materials,
-        height: translated.height,
-        width: translated.width,
-        circumference: translated.circumference,
-        depth: translated.depth,
-        weight: translated.weight,
-        images: form.images,
-        currency: 'EUR',
-      };
-
-      if (editingId) {
-        const { error } = await supabase.from('products').update(payload).eq('id', editingId);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.from('products').insert(payload);
-        if (error) throw error;
-      }
-
-      resetForm();
-      await loadProducts();
-
-      if (translated.failedLocales && translated.failedLocales.length > 0) {
-        const reason =
-          translated.deeplConfigured === false
-            ? 'DEEPL_API_KEY is not set (or the server wasn\'t restarted after adding it) — translation cannot run at all right now.'
-            : 'usually the free translator\'s daily limit — try again in a bit.';
-        alert(
-          `Saved — but translating the description/materials/dimensions failed for: ${translated.failedLocales.join(', ')}.\n\n` +
-            `Reason: ${reason}\n\n` +
-            `(The name itself is never auto-translated, so this doesn't affect it.)`
-        );
-      }
-    } catch (err) {
-      console.error('Save product error:', err);
-      const message = err instanceof Error ? err.message : JSON.stringify(err);
-      alert(`Could not save this object:\n\n${message}\n\n(Also check the browser console for the full details.)`);
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  async function handleDelete(id: string) {
-    if (!confirm(t('confirmDelete'))) return;
-    const { error } = await supabase.from('products').delete().eq('id', id);
-    if (error) {
-      console.error(error);
-      alert('Could not delete this object — check the console.');
-      return;
-    }
-    loadProducts();
-  }
-
-  async function markAsSold(p: Product) {
-    const displayName = pickLocalized(p.name, locale) || 'this object';
-    if (
-      !confirm(
-        `Mark "${displayName}" as sold?\n\n` +
-          'It will be added to the Collection Book (archive) and removed ' +
-          'from the catalogue.'
-      )
-    ) {
-      return;
-    }
-
-    setMarkingSoldId(p.id);
-    const soldYear = new Date().getFullYear().toString();
-
-    const { error: insertError } = await supabase.from('collection_items').insert({
-      name: p.name,
-      description: p.description,
-      images: p.images,
-      materials: p.materials,
-      height: p.height,
-      width: p.width,
-      circumference: p.circumference,
-      depth: p.depth,
-      weight: p.weight,
-      sold_year: soldYear,
-    });
-
-    if (insertError) {
-      console.error(insertError);
-      setMarkingSoldId(null);
-      alert(
-        'Could not add this to the Collection Book — check the console. ' +
-          'The product was NOT removed from the catalogue.'
-      );
-      return;
-    }
-
-    const { error: deleteError } = await supabase.from('products').delete().eq('id', p.id);
-    setMarkingSoldId(null);
-
-    if (deleteError) {
-      console.error(deleteError);
-      alert(
-        'This was added to the Collection Book, but could not be removed ' +
-          'from the catalogue — check the console and delete it manually ' +
-          'from the product list below.'
-      );
-    }
-
-    await loadProducts();
-  }
-
-  async function handleSaveOverrides() {
-    if (!editingId) return;
-    setSavingOverrides(true);
-    const { error } = await supabase
-      .from('products')
-      .update({ name: nameOverrides })
-      .eq('id', editingId);
-    await loadProducts();
-    setSavingOverrides(false);
-    if (error) {
-      console.error(error);
-      alert('Could not save these names — check the console.');
-    }
-  }
-
-  // Moves this product up/down and re-saves EVERY product's sort_order
-  // as its new position (0, 1, 2, ...). Only swapping the two moved
-  // items' sort_order used to leave stale/null/duplicate values mixed
-  // in whenever not every product had a real sort_order yet — which
-  // could make the public site's order (a fresh query straight from
-  // the database) quietly disagree with what the admin list showed.
-  // Renumbering everything on every move removes that possibility
-  // entirely, at the cost of a few more requests per click.
-  async function moveProduct(index: number, direction: 'up' | 'down') {
-    const targetIndex = direction === 'up' ? index - 1 : index + 1;
-    if (targetIndex < 0 || targetIndex >= products.length || reordering) return;
-
-    const next = [...products];
-    [next[index], next[targetIndex]] = [next[targetIndex], next[index]];
-
-    const previous = products;
-    setReordering(true);
-
-    const results = await Promise.all(
-      next.map((p, i) => supabase.from('products').update({ sort_order: i }).eq('id', p.id))
-    );
-    setReordering(false);
-
-    const failed = results.find((r) => r.error);
-    if (failed?.error) {
-      console.error(failed.error);
-      setProducts(previous);
-      alert('Could not reorder these objects — check the console.');
-      return;
-    }
-
-    setProducts(next.map((p, i) => ({ ...p, sort_order: i })));
-  }
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId]);
 
   return (
-    <div>
-      {view === 'orders' ? (
-        <AdminOrdersPanel />
+    <div className="bg-white p-8">
+      <p className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
+        {savedTitle}
+      </p>
+      {favorites.length === 0 ? (
+        <p className="mt-6 font-body text-stone">{noSavedText}</p>
       ) : (
-    <div className="mt-10 grid gap-16 lg:grid-cols-[1fr_1.2fr]">
-      <div>
-        <h2 className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
-          {t('productsTab')}
-        </h2>
-        <p className="mt-2 max-w-sm font-body text-xs leading-relaxed text-taupe">
-          Use the ↑ / ↓ buttons to set the order objects appear in on the
-          public catalogue page. New objects are added to the end of the
-          list until you move them.
-        </p>
-        {products.length === 0 ? (
-          <p className="mt-6 font-body text-stone">{t('noProducts')}</p>
-        ) : (
-          <ul className="mt-6 divide-y divide-line border-t border-line">
-            {products.map((p, i) => (
-              <li key={p.id} className="flex flex-wrap items-center justify-between gap-4 py-4">
-                <div className="flex items-center gap-4">
-                  <div className="flex flex-col">
-                    <button
-                      type="button"
-                      onClick={() => moveProduct(i, 'up')}
-                      disabled={i === 0 || reordering}
-                      aria-label="Move up"
-                      className="px-1 font-mono text-sm leading-none text-taupe transition-colors hover:text-ink disabled:cursor-not-allowed disabled:opacity-25"
-                    >
-                      ↑
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => moveProduct(i, 'down')}
-                      disabled={i === products.length - 1 || reordering}
-                      aria-label="Move down"
-                      className="px-1 font-mono text-sm leading-none text-taupe transition-colors hover:text-ink disabled:cursor-not-allowed disabled:opacity-25"
-                    >
-                      ↓
-                    </button>
-                  </div>
-                  <div className="h-14 w-12 shrink-0 bg-sand">
-                    {p.images?.[0] && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={p.images[0]} alt="" className="h-full w-full object-cover" />
-                    )}
-                  </div>
-                  <div>
-                    <p className="font-body text-sm text-ink">{pickLocalized(p.name, locale)}</p>
-                    <p className="font-mono text-[11px] text-taupe">
-                      {(p.price_cents / 100).toFixed(2)} €{!p.available && ' · unavailable'}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex flex-wrap gap-4">
-                  <button
-                    onClick={() => startEdit(p)}
-                    className="font-mono text-[11px] uppercase tracking-widest2 text-ink underline underline-offset-4"
-                  >
-                    {t('edit')}
-                  </button>
-                  <button
-                    onClick={() => markAsSold(p)}
-                    disabled={markingSoldId === p.id}
-                    className="font-mono text-[11px] uppercase tracking-widest2 text-cocoa underline underline-offset-4 disabled:opacity-50"
-                  >
-                    {markingSoldId === p.id ? 'Moving…' : 'Mark as sold'}
-                  </button>
-                  <button
-                    onClick={() => handleDelete(p.id)}
-                    className="font-mono text-[11px] uppercase tracking-widest2 text-red-800 underline underline-offset-4"
-                  >
-                    {t('delete')}
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-
-      <div>
-        <h2 className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
-          {editingId ? t('edit') : t('newProduct')}
-        </h2>
-        <p className="mt-2 max-w-sm font-body text-xs leading-relaxed text-taupe">
-          The name is never auto-translated — set it for each language
-          yourself in &quot;Set the name in each language&quot; below.
-          Everything else (description, materials, dimensions) gets
-          translated into all 7 languages automatically from whatever
-          language you pick here.
-        </p>
-        <form onSubmit={handleSave} className="mt-6 flex flex-col gap-5">
-          <Field label="Text language (what you're typing below)">
-            <select
-              value={form.sourceLocale}
-              onChange={(e) => setForm((f) => ({ ...f, sourceLocale: e.target.value }))}
-              className="input"
-            >
-              {locales.map((l) => (
-                <option key={l} value={l}>
-                  {localeNames[l as Locale]} ({l})
-                </option>
-              ))}
-            </select>
-          </Field>
-          <Field label={`${t('name')} (${form.sourceLocale})`}>
-            <input
-              required
-              value={form.name}
-              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-              className="input"
-            />
-          </Field>
-          <Field label={t('slug')}>
-            <input
-              value={form.slug}
-              onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))}
-              placeholder="auto-generated from name if left blank"
-              className="input"
-            />
-          </Field>
-          <Field label={t('price')}>
-            <input
-              required
-              type="number"
-              step="0.01"
-              value={form.price}
-              onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
-              className="input"
-            />
-          </Field>
-          <label className="flex items-center gap-2 font-body text-sm text-ink">
-            <input
-              type="checkbox"
-              checked={form.isAvailable}
-              onChange={(e) => setForm((f) => ({ ...f, isAvailable: e.target.checked }))}
-            />
-            Available for order
-          </label>
-          <Field label={t('description')}>
-            <textarea
-              required
-              rows={4}
-              value={form.description}
-              onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-              className="input"
-            />
-          </Field>
-          <Field label={t('materials')}>
-            <input
-              value={form.materials}
-              onChange={(e) => setForm((f) => ({ ...f, materials: e.target.value }))}
-              className="input"
-            />
-          </Field>
-          <Field label="Height">
-            <input
-              value={form.height}
-              onChange={(e) => setForm((f) => ({ ...f, height: e.target.value }))}
-              placeholder="e.g. 30 cm"
-              className="input"
-            />
-          </Field>
-          <Field label="Width">
-            <input
-              value={form.width}
-              onChange={(e) => setForm((f) => ({ ...f, width: e.target.value }))}
-              placeholder="e.g. 20 cm"
-              className="input"
-            />
-          </Field>
-          <Field label="Circumference">
-            <input
-              value={form.circumference}
-              onChange={(e) => setForm((f) => ({ ...f, circumference: e.target.value }))}
-              placeholder="e.g. 86 cm"
-              className="input"
-            />
-          </Field>
-          <Field label="Depth">
-            <input
-              value={form.depth}
-              onChange={(e) => setForm((f) => ({ ...f, depth: e.target.value }))}
-              placeholder="e.g. 12 cm"
-              className="input"
-            />
-          </Field>
-          <Field label="Weight">
-            <input
-              value={form.weight}
-              onChange={(e) => setForm((f) => ({ ...f, weight: e.target.value }))}
-              placeholder="e.g. 1.2 kg"
-              className="input"
-            />
-          </Field>
-
-          <Field label={t('images')}>
-            <div className="flex flex-wrap gap-3">
-              {form.images.map((src, i) => (
-                <div key={i} className="group relative h-20 w-16 bg-sand">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={src} alt="" className="h-full w-full object-cover" />
-                  {i > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => moveImage(i, 'left')}
-                      aria-label="Move photo earlier"
-                      className="absolute -left-1.5 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full bg-ink text-[10px] text-cream opacity-0 transition-opacity group-hover:opacity-100"
-                    >
-                      ‹
-                    </button>
+        <div className="mt-8 grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3">
+          {favorites.map((fav) => {
+            const product = fav.products;
+            if (!product) return null;
+            const name = pickLocalized(product.name, locale);
+            return (
+              <Link key={fav.id} href={`/catalog/${product.slug}`} className="group block">
+                <div className="relative aspect-[4/5] overflow-hidden bg-sand">
+                  {product.images?.[0] && (
+                    <Image
+                      src={product.images[0]}
+                      alt={name}
+                      fill
+                      sizes="(min-width: 768px) 20vw, 33vw"
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
                   )}
-                  {i < form.images.length - 1 && (
-                    <button
-                      type="button"
-                      onClick={() => moveImage(i, 'right')}
-                      aria-label="Move photo later"
-                      className="absolute -right-1.5 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full bg-ink text-[10px] text-cream opacity-0 transition-opacity group-hover:opacity-100"
-                    >
-                      ›
-                    </button>
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => removeImage(i)}
-                    aria-label="Remove photo"
-                    className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-ink text-[10px] text-cream opacity-0 transition-opacity group-hover:opacity-100"
-                  >
-                    ×
-                  </button>
                 </div>
-              ))}
-            </div>
-            <label className="mt-3 inline-block cursor-pointer font-mono text-[11px] uppercase tracking-widest2 text-ink underline underline-offset-4">
-              {uploading ? t('saving') : t('uploadImage')}
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={handleUpload}
-                className="hidden"
-              />
-            </label>
-            <p className="mt-2 font-body text-xs text-taupe">
-              Hover a photo and use the ‹ › arrows to reorder it — the
-              first photo is used as the thumbnail everywhere on the
-              site. Photos upload right away, but you still need to
-              click &quot;{t('save')}&quot; below afterwards for changes
-              to actually attach to this object.
-            </p>
-          </Field>
-
-          <div className="mt-2 flex gap-4">
-            <button
-              type="submit"
-              disabled={saving}
-              className="bg-ink px-8 py-3.5 font-mono text-[11px] uppercase tracking-widest2 text-cream transition-opacity hover:opacity-90 disabled:opacity-50"
-            >
-              {saving ? 'Saving…' : t('save')}
-            </button>
-            {editingId && (
-              <button
-                type="button"
-                onClick={resetForm}
-                className="font-mono text-[11px] uppercase tracking-widest2 text-stone underline underline-offset-4"
-              >
-                {t('cancel')}
-              </button>
-            )}
-          </div>
-        </form>
-
-        <div className="mt-12 border-t border-line pt-8">
-          <h3 className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
-            Set the name in each language
-          </h3>
-          <p className="mt-2 max-w-sm font-body text-xs leading-relaxed text-taupe">
-            The name is never auto-translated. Fill it in for every
-            language you want to support — languages left blank here
-            will fall back to whatever you typed in &quot;{t('name')}&quot;
-            above.
-          </p>
-          <div className="mt-5 flex flex-col gap-3">
-            {locales.map((l) => (
-              <div key={l} className="flex items-center gap-3">
-                <span className="w-28 shrink-0 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
-                  {localeNames[l as Locale]}
-                </span>
-                <input
-                  value={nameOverrides[l as Locale] ?? ''}
-                  onChange={(e) =>
-                    setNameOverrides((prev) => ({ ...prev, [l]: e.target.value }))
-                  }
-                  placeholder={form.sourceLocale === l ? form.name : ''}
-                  className="input"
-                />
-              </div>
-            ))}
-          </div>
-          {editingId ? (
-            <button
-              type="button"
-              onClick={handleSaveOverrides}
-              disabled={savingOverrides}
-              className="mt-5 border border-ink px-6 py-3 font-mono text-[11px] uppercase tracking-widest2 text-ink transition-colors hover:bg-ink hover:text-cream disabled:opacity-50"
-            >
-              {savingOverrides ? 'Saving…' : 'Save these names'}
-            </button>
-          ) : (
-            <p className="mt-5 font-body text-xs text-taupe">
-              These are saved automatically together with the rest of
-              the form when you click &quot;{t('save')}&quot; above for
-              a new object.
-            </p>
-          )}
+                <p className="mt-3 font-body text-sm text-ink">{name}</p>
+                <p className="font-mono text-xs text-stone">
+                  {formatPrice(product.price_cents, product.currency)}
+                </p>
+              </Link>
+            );
+          })}
         </div>
-      </div>
-
-      <style jsx global>{`
-        .input {
-          width: 100%;
-          border-bottom: 1px solid #dcd0bc;
-          background: transparent;
-          padding: 0.5rem 0;
-          font-family: var(--font-body);
-          color: #211e1a;
-        }
-        .input:focus {
-          outline: none;
-          border-color: #211e1a;
-        }
-      `}</style>
-    </div>
       )}
     </div>
   );
 }
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <label className="block">
-      <span className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
-        {label}
-      </span>
-      <div className="mt-2">{children}</div>
-    </label>
-  );
-}
-
-export function AdminDashboard() {
-  const [section, setSection] = useState<'catalog' | 'about' | 'collection'>('catalog');
-  const [catalogView, setCatalogView] = useState<'products' | 'orders'>('products');
-
-  const sections: { id: typeof section; label: string }[] = [
-    { id: 'catalog', label: 'Catalog' },
-    { id: 'about', label: 'About page' },
-    { id: 'collection', label: 'Collection Book' },
-  ];
-
-  return (
-    <div>
-      <div className="flex flex-wrap gap-3">
-        {sections.map((s) => (
-          <button
-            key={s.id}
-            onClick={() => setSection(s.id)}
-            className={`border px-5 py-2.5 font-mono text-[11px] uppercase tracking-widest2 transition-colors ${
-              section === s.id
-                ? 'border-ink bg-ink text-cream'
-                : 'border-line text-stone hover:border-ink hover:text-ink'
-            }`}
-          >
-            {s.label}
-          </button>
-        ))}
-        {/* Orders lives in the same row as the section buttons, but
-            only makes sense while viewing Catalog — toggles between
-            the product list and the orders list. */}
-        {section === 'catalog' && (
-          <button
-            onClick={() => setCatalogView((v) => (v === 'orders' ? 'products' : 'orders'))}
-            className={`border px-5 py-2.5 font-mono text-[11px] uppercase tracking-widest2 transition-colors ${
-              catalogView === 'orders'
-                ? 'border-ink bg-ink text-cream'
-                : 'border-line text-stone hover:border-ink hover:text-ink'
-            }`}
-          >
-            Orders
-          </button>
-        )}
-      </div>
-
-      {section === 'catalog' && <CatalogAdminPanel view={catalogView} />}
-      {section === 'about' && <AdminAboutPanel />}
-      {section === 'collection' && <AdminCollectionPanel />}
-    </div>
-  );
-}
 __VKV_PATCH_EOF__
-echo "  updated: components/AdminDashboard.tsx"
+echo "  created: components/AccountFavoritesLive.tsx"
 
-cat > "components/AdminCollectionPanel.tsx" << '__VKV_PATCH_EOF__'
-'use client';
+mkdir -p "app/[locale]/account"
+cat > "app/[locale]/account/page.tsx" << '__VKV_PATCH_EOF__'
+import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
+import { createClient } from '@/lib/supabase/server';
+import { AuthForm } from '@/components/AuthForm';
+import { SignOutButton } from '@/components/SignOutButton';
+import { AccountOrdersLive } from '@/components/AccountOrdersLive';
+import { AccountFavoritesLive } from '@/components/AccountFavoritesLive';
+import { Reveal } from '@/components/Reveal';
+import { Link } from '@/lib/navigation';
+import type { Order, Favorite } from '@/lib/types';
 
-import { useEffect, useState } from 'react';
-import { useLocale } from 'next-intl';
-import { createClient } from '@/lib/supabase/client';
-import { pickLocalized } from '@/lib/localized';
-import { sanitizeFileName } from '@/lib/sanitize-filename';
-import { locales, localeNames, type Locale } from '@/i18n';
-import type { CollectionItem } from '@/lib/types';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
-function emptyForm(sourceLocale: string) {
-  return {
-    sourceLocale,
-    name: '',
-    description: '',
-    materials: '',
-    height: '',
-    width: '',
-    circumference: '',
-    depth: '',
-    weight: '',
-    soldYear: '',
-    images: [] as string[],
-  };
-}
+export default async function AccountPage({
+  params: { locale },
+  searchParams,
+}: {
+  params: { locale: string };
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
+  unstable_setRequestLocale(locale);
+  const t = await getTranslations('account');
+  const authRequired = searchParams?.authRequired === '1';
 
-export function AdminCollectionPanel() {
-  const locale = useLocale();
   const supabase = createClient();
-
-  const [items, setItems] = useState<CollectionItem[]>([]);
-  const [form, setForm] = useState(() => emptyForm(locale));
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [reordering, setReordering] = useState(false);
-
-  async function load() {
-    const { data } = await supabase
-      .from('collection_items')
-      .select('*')
-      .order('sort_order', { ascending: true, nullsFirst: false })
-      .order('created_at', { ascending: false });
-    setItems((data as CollectionItem[]) ?? []);
+  let user = null;
+  try {
+    const {
+      data: { user: authUser },
+    } = await supabase.auth.getUser();
+    user = authUser;
+  } catch {
+    user = null;
   }
 
-  useEffect(() => {
-    load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  let orders: Order[] = [];
+  let favorites: Favorite[] = [];
+  let isAdmin = false;
 
-  function resetForm() {
-    setForm(emptyForm(locale));
-    setEditingId(null);
-  }
-
-  function startEdit(item: CollectionItem) {
-    setEditingId(item.id);
-    setForm({
-      sourceLocale: locale,
-      name: pickLocalized(item.name, locale),
-      description: pickLocalized(item.description, locale),
-      materials: pickLocalized(item.materials, locale),
-      height: pickLocalized(item.height, locale),
-      width: pickLocalized(item.width, locale),
-      circumference: pickLocalized(item.circumference, locale),
-      depth: pickLocalized(item.depth, locale),
-      weight: pickLocalized(item.weight, locale),
-      soldYear: item.sold_year ?? '',
-      images: item.images ?? [],
-    });
-  }
-
-  async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const files = Array.from(e.target.files ?? []);
-    if (files.length === 0) return;
-    setUploading(true);
-    const urls: string[] = [];
-    const errors: string[] = [];
-    for (const file of files) {
-      const path = `collection-${Date.now()}-${sanitizeFileName(file.name)}`;
-      const { error } = await supabase.storage
-        .from('product-images')
-        .upload(path, file, { cacheControl: '3600', upsert: false });
-      if (error) {
-        console.error('Collection image upload failed:', file.name, error);
-        errors.push(`${file.name}: ${error.message}`);
-      } else {
-        const { data } = supabase.storage.from('product-images').getPublicUrl(path);
-        urls.push(data.publicUrl);
-      }
-    }
-    if (urls.length > 0) {
-      setForm((f) => ({ ...f, images: [...f.images, ...urls] }));
-    }
-    setUploading(false);
-    e.target.value = '';
-    if (errors.length > 0) {
-      alert(`Could not upload:\n\n${errors.join('\n')}`);
-    }
-  }
-
-  function removeImage(index: number) {
-    setForm((f) => ({ ...f, images: f.images.filter((_, i) => i !== index) }));
-  }
-
-  function moveImage(index: number, direction: 'left' | 'right') {
-    setForm((f) => {
-      const target = direction === 'left' ? index - 1 : index + 1;
-      if (target < 0 || target >= f.images.length) return f;
-      const images = [...f.images];
-      [images[index], images[target]] = [images[target], images[index]];
-      return { ...f, images };
-    });
-  }
-
-  // Moves this item up/down and re-saves EVERY item's sort_order as
-  // its new position (0, 1, 2, ...) — see the matching comment on
-  // moveProduct in the catalogue admin for why this renumbers
-  // everything instead of only swapping the two moved items.
-  async function moveItem(index: number, direction: 'up' | 'down') {
-    const targetIndex = direction === 'up' ? index - 1 : index + 1;
-    if (targetIndex < 0 || targetIndex >= items.length || reordering) return;
-
-    const next = [...items];
-    [next[index], next[targetIndex]] = [next[targetIndex], next[index]];
-
-    const previous = items;
-    setReordering(true);
-
-    const results = await Promise.all(
-      next.map((item, i) =>
-        supabase.from('collection_items').update({ sort_order: i }).eq('id', item.id)
-      )
-    );
-    setReordering(false);
-
-    const failed = results.find((r) => r.error);
-    if (failed?.error) {
-      console.error(failed.error);
-      setItems(previous);
-      alert('Could not reorder these items — check the console.');
-      return;
-    }
-
-    setItems(next.map((item, i) => ({ ...item, sort_order: i })));
-  }
-
-  async function handleSave(e: React.FormEvent) {
-    e.preventDefault();
-    setSaving(true);
-    try {
-      const res = await fetch('/api/admin/translate-fields', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          fields: {
-            name: form.name,
-            description: form.description,
-            materials: form.materials || null,
-            height: form.height || null,
-            width: form.width || null,
-            circumference: form.circumference || null,
-            depth: form.depth || null,
-            weight: form.weight || null,
-          },
-          sourceLocale: form.sourceLocale,
-        }),
-      });
-      if (!res.ok) throw new Error('translate failed');
-      const translated = await res.json();
-
-      const payload = {
-        name: translated.name,
-        description: translated.description ?? {},
-        materials: translated.materials ?? null,
-        height: translated.height ?? null,
-        width: translated.width ?? null,
-        circumference: translated.circumference ?? null,
-        depth: translated.depth ?? null,
-        weight: translated.weight ?? null,
-        sold_year: form.soldYear || null,
-        images: form.images,
-      };
-
-      if (editingId) {
-        const { error } = await supabase
-          .from('collection_items')
-          .update(payload)
-          .eq('id', editingId);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.from('collection_items').insert(payload);
-        if (error) throw error;
-      }
-
-      resetForm();
-      await load();
-
-      const failedLocales: string[] = translated.failedLocales ?? [];
-      if (failedLocales.length > 0) {
-        const reason =
-          translated.deeplConfigured === false
-            ? "DEEPL_API_KEY is not set (or the server wasn't restarted after adding it)."
-            : "usually the free translator's daily limit — try again in a bit.";
-        alert(`Saved — but translation failed for: ${failedLocales.join(', ')}.\n\nReason: ${reason}`);
-      }
-    } catch (err) {
-      console.error(err);
-      alert('Could not save — check the console.');
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  async function handleDelete(id: string) {
-    if (!confirm('Delete this collection item?')) return;
-    const { error } = await supabase.from('collection_items').delete().eq('id', id);
-    if (error) {
-      console.error(error);
-      alert('Could not delete this item — check the console.');
-      return;
-    }
-    load();
+  if (user) {
+    const [{ data: orderRows }, { data: favoriteRows }, { data: profileRow }] = await Promise.all([
+      supabase.from('orders').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
+      supabase
+        .from('favorites')
+        .select('*, products(*)')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false }),
+      supabase.from('profiles').select('role').eq('id', user.id).single(),
+    ]);
+    orders = (orderRows as Order[]) ?? [];
+    favorites = (favoriteRows as Favorite[]) ?? [];
+    isAdmin = profileRow?.role === 'admin';
   }
 
   return (
-    <div className="mt-10 grid gap-16 lg:grid-cols-[1fr_1.2fr]">
-      <div>
-        <h2 className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
-          Collection Book items
-        </h2>
-        <p className="mt-2 max-w-sm font-body text-xs leading-relaxed text-taupe">
-          Use the ↑ / ↓ buttons to set the order items appear in on the
-          public Collection Book page. Newly archived pieces are added
-          to the end of the list until you move them.
-        </p>
-        {items.length === 0 ? (
-          <p className="mt-6 font-body text-stone">Nothing archived yet.</p>
-        ) : (
-          <ul className="mt-6 divide-y divide-line border-t border-line">
-            {items.map((item, i) => (
-              <li key={item.id} className="flex items-center justify-between gap-4 py-4">
-                <div className="flex items-center gap-4">
-                  <div className="flex flex-col">
-                    <button
-                      type="button"
-                      onClick={() => moveItem(i, 'up')}
-                      disabled={i === 0 || reordering}
-                      aria-label="Move up"
-                      className="px-1 font-mono text-sm leading-none text-taupe transition-colors hover:text-ink disabled:cursor-not-allowed disabled:opacity-25"
-                    >
-                      ↑
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => moveItem(i, 'down')}
-                      disabled={i === items.length - 1 || reordering}
-                      aria-label="Move down"
-                      className="px-1 font-mono text-sm leading-none text-taupe transition-colors hover:text-ink disabled:cursor-not-allowed disabled:opacity-25"
-                    >
-                      ↓
-                    </button>
-                  </div>
-                  <div className="h-14 w-12 shrink-0 bg-sand">
-                    {item.images?.[0] && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={item.images[0]} alt="" className="h-full w-full object-cover" />
-                    )}
-                  </div>
-                  <div>
-                    <p className="font-body text-sm text-ink">
-                      {pickLocalized(item.name, locale)}
-                    </p>
-                    {item.sold_year && (
-                      <p className="font-mono text-[11px] text-taupe">Sold {item.sold_year}</p>
-                    )}
-                  </div>
-                </div>
-                <div className="flex gap-4">
-                  <button
-                    onClick={() => startEdit(item)}
-                    className="font-mono text-[11px] uppercase tracking-widest2 text-ink underline underline-offset-4"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(item.id)}
-                    className="font-mono text-[11px] uppercase tracking-widest2 text-red-800 underline underline-offset-4"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-
-      <div>
-        <h2 className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
-          {editingId ? 'Edit item' : 'Add item to the collection book'}
-        </h2>
-        <form onSubmit={handleSave} className="mt-6 flex flex-col gap-5">
-          <label className="block">
-            <span className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
-              Text language
-            </span>
-            <select
-              value={form.sourceLocale}
-              onChange={(e) => setForm((f) => ({ ...f, sourceLocale: e.target.value }))}
-              className="input"
-            >
-              {locales.map((l) => (
-                <option key={l} value={l}>
-                  {localeNames[l as Locale]} ({l})
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="block">
-            <span className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
-              Name
-            </span>
-            <input
-              required
-              value={form.name}
-              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-              className="input"
-            />
-          </label>
-          <label className="block">
-            <span className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
-              Description
-            </span>
-            <textarea
-              rows={3}
-              value={form.description}
-              onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-              className="input"
-            />
-          </label>
-          <label className="block">
-            <span className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
-              Materials
-            </span>
-            <input
-              value={form.materials}
-              onChange={(e) => setForm((f) => ({ ...f, materials: e.target.value }))}
-              className="input"
-            />
-          </label>
-          <label className="block">
-            <span className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
-              Height
-            </span>
-            <input
-              value={form.height}
-              onChange={(e) => setForm((f) => ({ ...f, height: e.target.value }))}
-              placeholder="e.g. 30 cm"
-              className="input"
-            />
-          </label>
-          <label className="block">
-            <span className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
-              Width
-            </span>
-            <input
-              value={form.width}
-              onChange={(e) => setForm((f) => ({ ...f, width: e.target.value }))}
-              placeholder="e.g. 20 cm"
-              className="input"
-            />
-          </label>
-          <label className="block">
-            <span className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
-              Circumference
-            </span>
-            <input
-              value={form.circumference}
-              onChange={(e) => setForm((f) => ({ ...f, circumference: e.target.value }))}
-              placeholder="e.g. 86 cm"
-              className="input"
-            />
-          </label>
-          <label className="block">
-            <span className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
-              Depth
-            </span>
-            <input
-              value={form.depth}
-              onChange={(e) => setForm((f) => ({ ...f, depth: e.target.value }))}
-              placeholder="e.g. 12 cm"
-              className="input"
-            />
-          </label>
-          <label className="block">
-            <span className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
-              Weight
-            </span>
-            <input
-              value={form.weight}
-              onChange={(e) => setForm((f) => ({ ...f, weight: e.target.value }))}
-              placeholder="e.g. 1.2 kg"
-              className="input"
-            />
-          </label>
-          <label className="block">
-            <span className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
-              Sold year (optional, kept for your own records — not shown publicly)
-            </span>
-            <input
-              value={form.soldYear}
-              onChange={(e) => setForm((f) => ({ ...f, soldYear: e.target.value }))}
-              placeholder="e.g. 2025"
-              className="input"
-            />
-          </label>
-
-          <div className="flex flex-wrap gap-3">
-            {form.images.map((src, i) => (
-              <div key={i} className="group relative h-20 w-16 bg-sand">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={src} alt="" className="h-full w-full object-cover" />
-                {i > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => moveImage(i, 'left')}
-                    aria-label="Move photo earlier"
-                    className="absolute -left-1.5 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full bg-ink text-[10px] text-cream opacity-0 transition-opacity group-hover:opacity-100"
-                  >
-                    ‹
-                  </button>
-                )}
-                {i < form.images.length - 1 && (
-                  <button
-                    type="button"
-                    onClick={() => moveImage(i, 'right')}
-                    aria-label="Move photo later"
-                    className="absolute -right-1.5 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full bg-ink text-[10px] text-cream opacity-0 transition-opacity group-hover:opacity-100"
-                  >
-                    ›
-                  </button>
-                )}
-                <button
-                  type="button"
-                  onClick={() => removeImage(i)}
-                  className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-ink text-[10px] text-cream opacity-0 transition-opacity group-hover:opacity-100"
+    <div className="mx-auto max-w-[1100px] px-6 py-20 md:px-10 md:py-28">
+      {!user ? (
+        <Reveal>
+          {authRequired && (
+            <p className="mb-8 max-w-sm border border-cocoa/40 bg-cocoa/5 px-5 py-4 font-body text-sm text-cocoa">
+              {t('signInRequired')}
+            </p>
+          )}
+          <AuthForm />
+        </Reveal>
+      ) : (
+        <div className="flex flex-col gap-8">
+          <div className="flex items-center justify-between">
+            <h1 className="font-display text-4xl italic text-ink md:text-5xl">{t('ordersTitle')}</h1>
+            <div className="flex items-center gap-6">
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  className="font-mono text-[11px] uppercase tracking-widest2 text-ink underline underline-offset-4"
                 >
-                  ×
-                </button>
-              </div>
-            ))}
+                  Open studio admin
+                </Link>
+              )}
+              <SignOutButton />
+            </div>
           </div>
-          <label className="inline-block w-fit cursor-pointer font-mono text-[11px] uppercase tracking-widest2 text-ink underline underline-offset-4">
-            {uploading ? 'Uploading…' : 'Upload photo(s)'}
-            <input
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={handleUpload}
-              className="hidden"
+
+          {/* Active + past orders update live: if an admin changes an
+              order's status while this page is open (e.g. marks it
+              Delivered or Cancelled), it moves between these sections
+              immediately, no refresh needed. */}
+          <AccountOrdersLive
+            userId={user.id}
+            locale={locale}
+            initialOrders={orders}
+            activeOrdersTitle={t('activeOrdersTitle')}
+            pastOrdersTitle={t('pastOrdersTitle')}
+            noOrdersText={t('noActiveOrders')}
+            noPastOrdersText={t('noPastOrders')}
+          />
+
+          {/* Saved items also update live: liking/unliking a product on
+              another page shows up here without needing a manual
+              refresh of this page. */}
+          <Reveal delay={0.1}>
+            <AccountFavoritesLive
+              userId={user.id}
+              locale={locale}
+              initialFavorites={favorites}
+              savedTitle={t('savedTitle')}
+              noSavedText={t('noSaved')}
             />
-          </label>
-          <p className="-mt-2 font-body text-xs text-taupe">
-            Hover a photo and use the ‹ › arrows to reorder it — the
-            first photo is used as the thumbnail.
-          </p>
-
-          <div className="mt-2 flex gap-4">
-            <button
-              type="submit"
-              disabled={saving}
-              className="bg-ink px-8 py-3.5 font-mono text-[11px] uppercase tracking-widest2 text-cream transition-opacity hover:opacity-90 disabled:opacity-50"
-            >
-              {saving ? 'Translating & saving…' : 'Save item'}
-            </button>
-            {editingId && (
-              <button
-                type="button"
-                onClick={resetForm}
-                className="font-mono text-[11px] uppercase tracking-widest2 text-stone underline underline-offset-4"
-              >
-                Cancel
-              </button>
-            )}
-          </div>
-        </form>
-      </div>
-
-      <style jsx global>{`
-        .input {
-          width: 100%;
-          border-bottom: 1px solid #dcd0bc;
-          background: transparent;
-          padding: 0.5rem 0;
-          font-family: var(--font-body);
-          color: #211e1a;
-        }
-        .input:focus {
-          outline: none;
-          border-color: #211e1a;
-        }
-      `}</style>
+          </Reveal>
+        </div>
+      )}
     </div>
   );
 }
 __VKV_PATCH_EOF__
-echo "  updated: components/AdminCollectionPanel.tsx"
+echo "  updated: app/[locale]/account/page.tsx"
 
 echo ""
-echo "Done. git add -A && git commit -m \"Move Orders button into the same row as the other section buttons\" && git push"
+echo "Done. git add -A && git commit -m \"Live-refresh Saved items on account page\" && git push"

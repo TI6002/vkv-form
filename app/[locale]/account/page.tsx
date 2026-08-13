@@ -1,13 +1,11 @@
 import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
-import Image from 'next/image';
 import { createClient } from '@/lib/supabase/server';
 import { AuthForm } from '@/components/AuthForm';
 import { SignOutButton } from '@/components/SignOutButton';
 import { AccountOrdersLive } from '@/components/AccountOrdersLive';
+import { AccountFavoritesLive } from '@/components/AccountFavoritesLive';
 import { Reveal } from '@/components/Reveal';
 import { Link } from '@/lib/navigation';
-import { formatPrice } from '@/lib/format';
-import { pickLocalized } from '@/lib/localized';
 import type { Order, Favorite } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
@@ -96,42 +94,17 @@ export default async function AccountPage({
             noPastOrdersText={t('noPastOrders')}
           />
 
+          {/* Saved items also update live: liking/unliking a product on
+              another page shows up here without needing a manual
+              refresh of this page. */}
           <Reveal delay={0.1}>
-            <div className="bg-white p-8">
-              <p className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
-                {t('savedTitle')}
-              </p>
-              {favorites.length === 0 ? (
-                <p className="mt-6 font-body text-stone">{t('noSaved')}</p>
-              ) : (
-                <div className="mt-8 grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3">
-                  {favorites.map((fav) => {
-                    const product = fav.products;
-                    if (!product) return null;
-                    const name = pickLocalized(product.name, locale);
-                    return (
-                      <Link key={fav.id} href={`/catalog/${product.slug}`} className="group block">
-                        <div className="relative aspect-[4/5] overflow-hidden bg-sand">
-                          {product.images?.[0] && (
-                            <Image
-                              src={product.images[0]}
-                              alt={name}
-                              fill
-                              sizes="(min-width: 768px) 20vw, 33vw"
-                              className="object-cover transition-transform duration-700 group-hover:scale-105"
-                            />
-                          )}
-                        </div>
-                        <p className="mt-3 font-body text-sm text-ink">{name}</p>
-                        <p className="font-mono text-xs text-stone">
-                          {formatPrice(product.price_cents, product.currency)}
-                        </p>
-                      </Link>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
+            <AccountFavoritesLive
+              userId={user.id}
+              locale={locale}
+              initialFavorites={favorites}
+              savedTitle={t('savedTitle')}
+              noSavedText={t('noSaved')}
+            />
           </Reveal>
         </div>
       )}
