@@ -269,6 +269,12 @@ function CatalogAdminPanel() {
       name: p.name,
       description: p.description,
       images: p.images,
+      materials: p.materials,
+      height: p.height,
+      width: p.width,
+      circumference: p.circumference,
+      depth: p.depth,
+      weight: p.weight,
       sold_year: soldYear,
     });
 

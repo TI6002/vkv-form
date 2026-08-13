@@ -29,6 +29,12 @@ export type CollectionItem = {
   name: LocalizedText;
   description: LocalizedText;
   images: string[];
+  materials: LocalizedText | null;
+  height: LocalizedText | null;
+  width: LocalizedText | null;
+  circumference: LocalizedText | null;
+  depth: LocalizedText | null;
+  weight: LocalizedText | null;
   sold_year: string | null;
   created_at: string;
 };

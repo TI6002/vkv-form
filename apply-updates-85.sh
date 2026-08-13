@@ -1,3 +1,44 @@
+#!/usr/bin/env bash
+set -e
+
+if [ ! -f package.json ]; then
+  echo "ERROR: no package.json here. cd into the project root first."
+  exit 1
+fi
+
+echo "Applying vkv.form updates — materials & dimensions for Collection Book items..."
+
+# --- 1. lib/types.ts: add materials/dimensions to CollectionItem ---
+FILE="lib/types.ts"
+if [ ! -f "$FILE" ]; then
+  echo "ERROR: $FILE not found — run this from the project root."
+  exit 1
+fi
+if grep -q "materials: LocalizedText | null;" "$FILE" && grep -A2 "sold_year: string | null;" "$FILE" | grep -q "created_at"; then
+  # crude check: if materials already appears right before sold_year, skip
+  :
+fi
+if grep -qF "sold_year: string | null;" "$FILE"; then
+  if grep -B1 "sold_year: string | null;" "$FILE" | grep -q "weight: LocalizedText | null;"; then
+    echo "  $FILE already has materials/dimensions on CollectionItem — skipping type edit."
+  else
+    sed -i '/sold_year: string | null;/i\  materials: LocalizedText | null;\n  height: LocalizedText | null;\n  width: LocalizedText | null;\n  circumference: LocalizedText | null;\n  depth: LocalizedText | null;\n  weight: LocalizedText | null;' "$FILE"
+    echo "  updated: $FILE"
+  fi
+else
+  echo "WARNING: could not find \"sold_year: string | null;\" in $FILE."
+  echo "  Open lib/types.ts yourself and add these fields to the CollectionItem type:"
+  echo "    materials: LocalizedText | null;"
+  echo "    height: LocalizedText | null;"
+  echo "    width: LocalizedText | null;"
+  echo "    circumference: LocalizedText | null;"
+  echo "    depth: LocalizedText | null;"
+  echo "    weight: LocalizedText | null;"
+fi
+
+# --- 2. AdminCollectionPanel: materials/dimensions fields, translated and saved ---
+mkdir -p "components"
+cat > "components/AdminCollectionPanel.tsx" << '__VKV_PATCH_EOF__'
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -448,3 +489,161 @@ export function AdminCollectionPanel() {
     </div>
   );
 }
+__VKV_PATCH_EOF__
+echo "  updated: components/AdminCollectionPanel.tsx"
+
+# --- 3. AdminDashboard: markAsSold now carries materials/dimensions over too ---
+FILE="components/AdminDashboard.tsx"
+if [ -f "$FILE" ] && grep -q "images: p.images," "$FILE"; then
+  sed -i "s/images: p.images,/images: p.images,\n      materials: p.materials,\n      height: p.height,\n      width: p.width,\n      circumference: p.circumference,\n      depth: p.depth,\n      weight: p.weight,/" "$FILE"
+  echo "  updated: components/AdminDashboard.tsx (markAsSold now carries materials/dimensions)"
+else
+  echo "WARNING: could not find \"images: p.images,\" in components/AdminDashboard.tsx."
+  echo "  Open the markAsSold() function yourself and add these lines to the"
+  echo "  collection_items insert payload, alongside images: p.images:"
+  echo "    materials: p.materials,"
+  echo "    height: p.height,"
+  echo "    width: p.width,"
+  echo "    circumference: p.circumference,"
+  echo "    depth: p.depth,"
+  echo "    weight: p.weight,"
+fi
+
+# --- 4. Collection item detail page: show materials/dimensions like a normal product ---
+mkdir -p "app/[locale]/collection/[id]"
+cat > "app/[locale]/collection/[id]/page.tsx" << '__VKV_PATCH_EOF__'
+import { notFound } from 'next/navigation';
+import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
+import { Link } from '@/lib/navigation';
+import { Reveal } from '@/components/Reveal';
+import { ProductGallery } from '@/components/ProductGallery';
+import { getCollectionItemById } from '@/lib/collection-item';
+import { pickLocalized } from '@/lib/localized';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+export default async function CollectionItemPage({
+  params: { locale, id },
+}: {
+  params: { locale: string; id: string };
+}) {
+  unstable_setRequestLocale(locale);
+  const t = await getTranslations('collection');
+  const tp = await getTranslations('product');
+  const item = await getCollectionItemById(id);
+  if (!item) notFound();
+
+  const name = pickLocalized(item.name, locale);
+  const description = pickLocalized(item.description, locale);
+  const materials = pickLocalized(item.materials, locale);
+  const height = pickLocalized(item.height, locale);
+  const width = pickLocalized(item.width, locale);
+  const circumference = pickLocalized(item.circumference, locale);
+  const depth = pickLocalized(item.depth, locale);
+  const weight = pickLocalized(item.weight, locale);
+
+  return (
+    <div className="mx-auto max-w-[1400px] px-6 py-16 md:px-10 md:py-24">
+      <Link
+        href="/collection"
+        className="font-mono text-[11px] uppercase tracking-widest2 text-stone hover:text-ink"
+      >
+        ← {t('title')}
+      </Link>
+
+      <div className="mt-8 grid gap-14 md:grid-cols-2 md:gap-20">
+        <Reveal>
+          <ProductGallery images={item.images ?? []} name={name} />
+        </Reveal>
+
+        <Reveal delay={0.1}>
+          <h1 className="font-display text-4xl text-ink md:text-5xl">{name}</h1>
+
+          {/* No price, no buy button, no year — this piece has already
+              found its home; this badge is the only status shown. */}
+          <span className="mt-5 inline-block bg-sand px-3.5 py-2 font-mono text-[11px] uppercase tracking-widest2 text-ink">
+            {t('sold')}
+          </span>
+
+          {description && (
+            <p className="mt-8 font-body text-base leading-relaxed text-stone">
+              {description}
+            </p>
+          )}
+
+          {(materials || height || width || circumference || depth || weight) && (
+            <dl className="mt-8 space-y-3 border-t border-line pt-6">
+              {materials && (
+                <div className="flex gap-4">
+                  <dt className="w-32 shrink-0 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
+                    {tp('materialsLabel')}
+                  </dt>
+                  <dd className="font-body text-sm text-ink">{materials}</dd>
+                </div>
+              )}
+              {height && (
+                <div className="flex gap-4">
+                  <dt className="w-32 shrink-0 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
+                    {tp('heightLabel')}
+                  </dt>
+                  <dd className="font-body text-sm text-ink">{height}</dd>
+                </div>
+              )}
+              {width && (
+                <div className="flex gap-4">
+                  <dt className="w-32 shrink-0 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
+                    {tp('widthLabel')}
+                  </dt>
+                  <dd className="font-body text-sm text-ink">{width}</dd>
+                </div>
+              )}
+              {circumference && (
+                <div className="flex gap-4">
+                  <dt className="w-32 shrink-0 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
+                    {tp('circumferenceLabel')}
+                  </dt>
+                  <dd className="font-body text-sm text-ink">{circumference}</dd>
+                </div>
+              )}
+              {depth && (
+                <div className="flex gap-4">
+                  <dt className="w-32 shrink-0 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
+                    {tp('depthLabel')}
+                  </dt>
+                  <dd className="font-body text-sm text-ink">{depth}</dd>
+                </div>
+              )}
+              {weight && (
+                <div className="flex gap-4">
+                  <dt className="w-32 shrink-0 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
+                    {tp('weightLabel')}
+                  </dt>
+                  <dd className="font-body text-sm text-ink">{weight}</dd>
+                </div>
+              )}
+            </dl>
+          )}
+        </Reveal>
+      </div>
+    </div>
+  );
+}
+__VKV_PATCH_EOF__
+echo "  updated: app/[locale]/collection/[id]/page.tsx"
+
+echo ""
+echo "IMPORTANT — one-time SQL to run in the Supabase SQL editor before this works:"
+echo ""
+echo "  alter table collection_items"
+echo "    add column if not exists materials jsonb,"
+echo "    add column if not exists height jsonb,"
+echo "    add column if not exists width jsonb,"
+echo "    add column if not exists circumference jsonb,"
+echo "    add column if not exists depth jsonb,"
+echo "    add column if not exists weight jsonb;"
+echo ""
+echo "Also add these columns to supabase/full-schema.sql yourself, since I"
+echo "don't have that file, so a fresh database setup includes them too."
+echo ""
+echo "Done. git add -A && git commit -m \"Add materials/dimensions to Collection Book items\" && git push"
