@@ -45,6 +45,7 @@ function CatalogAdminPanel() {
   const [nameOverrides, setNameOverrides] = useState<Partial<Record<Locale, string>>>({});
   const [savingOverrides, setSavingOverrides] = useState(false);
   const [reordering, setReordering] = useState(false);
+  const [markingSoldId, setMarkingSoldId] = useState<string | null>(null);
 
   async function loadProducts() {
     // Same order as the public catalog: manual sort_order first (null
@@ -243,6 +244,59 @@ function CatalogAdminPanel() {
     loadProducts();
   }
 
+  // Copies this product into the Collection Book (as a sold, archived
+  // piece) and removes it from the catalogue. Note: collection_items
+  // only has name/description/images/sold_year columns — materials
+  // and dimensions are NOT carried over, since there's nowhere to put
+  // them yet. If that's needed, those columns can be added later.
+  async function markAsSold(p: Product) {
+    const displayName = pickLocalized(p.name, locale) || 'this object';
+    if (
+      !confirm(
+        `Mark "${displayName}" as sold?\n\n` +
+          'It will be added to the Collection Book (archive) and removed ' +
+          'from the catalogue. Note: materials and dimensions are not ' +
+          'carried over — only the name, description and photos.'
+      )
+    ) {
+      return;
+    }
+
+    setMarkingSoldId(p.id);
+    const soldYear = new Date().getFullYear().toString();
+
+    const { error: insertError } = await supabase.from('collection_items').insert({
+      name: p.name,
+      description: p.description,
+      images: p.images,
+      sold_year: soldYear,
+    });
+
+    if (insertError) {
+      console.error(insertError);
+      setMarkingSoldId(null);
+      alert(
+        'Could not add this to the Collection Book — check the console. ' +
+          'The product was NOT removed from the catalogue.'
+      );
+      return;
+    }
+
+    const { error: deleteError } = await supabase.from('products').delete().eq('id', p.id);
+    setMarkingSoldId(null);
+
+    if (deleteError) {
+      console.error(deleteError);
+      alert(
+        'This was added to the Collection Book, but could not be removed ' +
+          'from the catalogue — check the console and delete it manually ' +
+          'from the product list below.'
+      );
+    }
+
+    await loadProducts();
+  }
+
   async function handleSaveOverrides() {
     if (!editingId) return;
     setSavingOverrides(true);
@@ -331,7 +385,7 @@ function CatalogAdminPanel() {
         ) : (
           <ul className="mt-6 divide-y divide-line border-t border-line">
             {products.map((p, i) => (
-              <li key={p.id} className="flex items-center justify-between gap-4 py-4">
+              <li key={p.id} className="flex flex-wrap items-center justify-between gap-4 py-4">
                 <div className="flex items-center gap-4">
                   <div className="flex flex-col">
                     <button
@@ -366,12 +420,19 @@ function CatalogAdminPanel() {
                     </p>
                   </div>
                 </div>
-                <div className="flex gap-4">
+                <div className="flex flex-wrap gap-4">
                   <button
                     onClick={() => startEdit(p)}
                     className="font-mono text-[11px] uppercase tracking-widest2 text-ink underline underline-offset-4"
                   >
                     {t('edit')}
+                  </button>
+                  <button
+                    onClick={() => markAsSold(p)}
+                    disabled={markingSoldId === p.id}
+                    className="font-mono text-[11px] uppercase tracking-widest2 text-cocoa underline underline-offset-4 disabled:opacity-50"
+                  >
+                    {markingSoldId === p.id ? 'Moving…' : 'Mark as sold'}
                   </button>
                   <button
                     onClick={() => handleDelete(p.id)}

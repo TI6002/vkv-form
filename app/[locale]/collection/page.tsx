@@ -1,6 +1,7 @@
 import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
 import Image from 'next/image';
 import { Reveal } from '@/components/Reveal';
+import { Link } from '@/lib/navigation';
 import { getCollectionItems } from '@/lib/content';
 import { pickLocalized } from '@/lib/localized';
 
@@ -39,26 +40,28 @@ export default async function CollectionPage({
             const description = pickLocalized(item.description, locale);
             return (
               <Reveal key={item.id} delay={(i % 3) * 0.06}>
-                <div className="relative aspect-[4/5] overflow-hidden bg-sand">
-                  {item.images?.[0] && (
-                    <Image
-                      src={item.images[0]}
-                      alt={name}
-                      fill
-                      sizes="(min-width: 768px) 33vw, 50vw"
-                      className="object-cover grayscale-[15%]"
-                    />
-                  )}
-                  {item.sold_year && (
+                <Link href={`/collection/${item.id}`} className="group block">
+                  <div className="relative aspect-[4/5] overflow-hidden bg-sand">
+                    {item.images?.[0] && (
+                      <Image
+                        src={item.images[0]}
+                        alt={name}
+                        fill
+                        sizes="(min-width: 768px) 33vw, 50vw"
+                        className="object-cover grayscale-[15%] transition-transform duration-700 group-hover:scale-105"
+                      />
+                    )}
+                    {/* Just "Sold" — no year shown publicly, even if one
+                        was entered in the admin for internal reference. */}
                     <span className="absolute left-4 top-4 bg-cream/85 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest2 text-ink">
-                      {t('soldIn')} {item.sold_year}
+                      {t('sold')}
                     </span>
+                  </div>
+                  <h3 className="mt-4 font-display text-lg text-ink">{name}</h3>
+                  {description && (
+                    <p className="mt-1 font-body text-sm text-stone">{description}</p>
                   )}
-                </div>
-                <h3 className="mt-4 font-display text-lg text-ink">{name}</h3>
-                {description && (
-                  <p className="mt-1 font-body text-sm text-stone">{description}</p>
-                )}
+                </Link>
               </Reveal>
             );
           })}

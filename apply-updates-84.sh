@@ -6,8 +6,177 @@ if [ ! -f package.json ]; then
   exit 1
 fi
 
-echo "Applying vkv.form updates — product names no longer auto-translated, reorder photos in admin..."
+echo "Applying vkv.form updates — clickable Collection Book items + Mark as sold..."
 
+# --- 1. New helper: fetch a single collection item by id ---
+mkdir -p "lib"
+cat > "lib/collection-item.ts" << '__VKV_PATCH_EOF__'
+import { createClient } from '@/lib/supabase/server';
+import type { CollectionItem } from '@/lib/types';
+
+export async function getCollectionItemById(id: string): Promise<CollectionItem | null> {
+  try {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from('collection_items')
+      .select('*')
+      .eq('id', id)
+      .single();
+    if (error) {
+      console.error(`[getCollectionItemById:${id}] Supabase error:`, error);
+      return null;
+    }
+    return (data as CollectionItem) ?? null;
+  } catch (err) {
+    console.error(`[getCollectionItemById:${id}] Unexpected error:`, err);
+    return null;
+  }
+}
+__VKV_PATCH_EOF__
+echo "  created: lib/collection-item.ts"
+
+# --- 2. Collection Book listing: cards are now clickable, "Sold" tag has no year ---
+mkdir -p "app/[locale]/collection"
+cat > "app/[locale]/collection/page.tsx" << '__VKV_PATCH_EOF__'
+import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
+import Image from 'next/image';
+import { Reveal } from '@/components/Reveal';
+import { Link } from '@/lib/navigation';
+import { getCollectionItems } from '@/lib/content';
+import { pickLocalized } from '@/lib/localized';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+export default async function CollectionPage({
+  params: { locale },
+}: {
+  params: { locale: string };
+}) {
+  unstable_setRequestLocale(locale);
+  const t = await getTranslations('collection');
+  const items = await getCollectionItems();
+
+  return (
+    <div className="mx-auto max-w-[1400px] px-6 py-20 md:px-10 md:py-28">
+      <Reveal>
+        <p className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
+          {t('eyebrow')}
+        </p>
+        <h1 className="mt-4 font-display text-4xl italic text-ink md:text-5xl">
+          {t('title')}
+        </h1>
+        <p className="mt-6 max-w-lg font-body text-base leading-relaxed text-stone">
+          {t('intro')}
+        </p>
+      </Reveal>
+
+      {items.length === 0 ? (
+        <p className="mt-20 font-body text-stone">{t('empty')}</p>
+      ) : (
+        <div className="mt-16 grid grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 md:grid-cols-3">
+          {items.map((item, i) => {
+            const name = pickLocalized(item.name, locale);
+            const description = pickLocalized(item.description, locale);
+            return (
+              <Reveal key={item.id} delay={(i % 3) * 0.06}>
+                <Link href={`/collection/${item.id}`} className="group block">
+                  <div className="relative aspect-[4/5] overflow-hidden bg-sand">
+                    {item.images?.[0] && (
+                      <Image
+                        src={item.images[0]}
+                        alt={name}
+                        fill
+                        sizes="(min-width: 768px) 33vw, 50vw"
+                        className="object-cover grayscale-[15%] transition-transform duration-700 group-hover:scale-105"
+                      />
+                    )}
+                    {/* Just "Sold" — no year shown publicly, even if one
+                        was entered in the admin for internal reference. */}
+                    <span className="absolute left-4 top-4 bg-cream/85 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest2 text-ink">
+                      {t('sold')}
+                    </span>
+                  </div>
+                  <h3 className="mt-4 font-display text-lg text-ink">{name}</h3>
+                  {description && (
+                    <p className="mt-1 font-body text-sm text-stone">{description}</p>
+                  )}
+                </Link>
+              </Reveal>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+__VKV_PATCH_EOF__
+echo "  updated: app/[locale]/collection/page.tsx"
+
+# --- 3. New: Collection Book item detail page ---
+mkdir -p "app/[locale]/collection/[id]"
+cat > "app/[locale]/collection/[id]/page.tsx" << '__VKV_PATCH_EOF__'
+import { notFound } from 'next/navigation';
+import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
+import { Link } from '@/lib/navigation';
+import { Reveal } from '@/components/Reveal';
+import { ProductGallery } from '@/components/ProductGallery';
+import { getCollectionItemById } from '@/lib/collection-item';
+import { pickLocalized } from '@/lib/localized';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+export default async function CollectionItemPage({
+  params: { locale, id },
+}: {
+  params: { locale: string; id: string };
+}) {
+  unstable_setRequestLocale(locale);
+  const t = await getTranslations('collection');
+  const item = await getCollectionItemById(id);
+  if (!item) notFound();
+
+  const name = pickLocalized(item.name, locale);
+  const description = pickLocalized(item.description, locale);
+
+  return (
+    <div className="mx-auto max-w-[1400px] px-6 py-16 md:px-10 md:py-24">
+      <Link
+        href="/collection"
+        className="font-mono text-[11px] uppercase tracking-widest2 text-stone hover:text-ink"
+      >
+        ← {t('title')}
+      </Link>
+
+      <div className="mt-8 grid gap-14 md:grid-cols-2 md:gap-20">
+        <Reveal>
+          <ProductGallery images={item.images ?? []} name={name} />
+        </Reveal>
+
+        <Reveal delay={0.1}>
+          <h1 className="font-display text-4xl text-ink md:text-5xl">{name}</h1>
+
+          {/* No price, no buy button, no year — this piece has already
+              found its home; this badge is the only status shown. */}
+          <span className="mt-5 inline-block bg-sand px-3.5 py-2 font-mono text-[11px] uppercase tracking-widest2 text-ink">
+            {t('sold')}
+          </span>
+
+          {description && (
+            <p className="mt-8 font-body text-base leading-relaxed text-stone">
+              {description}
+            </p>
+          )}
+        </Reveal>
+      </div>
+    </div>
+  );
+}
+__VKV_PATCH_EOF__
+echo "  created: app/[locale]/collection/[id]/page.tsx"
+
+# --- 4. AdminDashboard: add "Mark as sold" button next to Edit/Delete ---
 mkdir -p "components"
 cat > "components/AdminDashboard.tsx" << '__VKV_PATCH_EOF__'
 'use client';
@@ -57,6 +226,7 @@ function CatalogAdminPanel() {
   const [nameOverrides, setNameOverrides] = useState<Partial<Record<Locale, string>>>({});
   const [savingOverrides, setSavingOverrides] = useState(false);
   const [reordering, setReordering] = useState(false);
+  const [markingSoldId, setMarkingSoldId] = useState<string | null>(null);
 
   async function loadProducts() {
     // Same order as the public catalog: manual sort_order first (null
@@ -255,6 +425,59 @@ function CatalogAdminPanel() {
     loadProducts();
   }
 
+  // Copies this product into the Collection Book (as a sold, archived
+  // piece) and removes it from the catalogue. Note: collection_items
+  // only has name/description/images/sold_year columns — materials
+  // and dimensions are NOT carried over, since there's nowhere to put
+  // them yet. If that's needed, those columns can be added later.
+  async function markAsSold(p: Product) {
+    const displayName = pickLocalized(p.name, locale) || 'this object';
+    if (
+      !confirm(
+        `Mark "${displayName}" as sold?\n\n` +
+          'It will be added to the Collection Book (archive) and removed ' +
+          'from the catalogue. Note: materials and dimensions are not ' +
+          'carried over — only the name, description and photos.'
+      )
+    ) {
+      return;
+    }
+
+    setMarkingSoldId(p.id);
+    const soldYear = new Date().getFullYear().toString();
+
+    const { error: insertError } = await supabase.from('collection_items').insert({
+      name: p.name,
+      description: p.description,
+      images: p.images,
+      sold_year: soldYear,
+    });
+
+    if (insertError) {
+      console.error(insertError);
+      setMarkingSoldId(null);
+      alert(
+        'Could not add this to the Collection Book — check the console. ' +
+          'The product was NOT removed from the catalogue.'
+      );
+      return;
+    }
+
+    const { error: deleteError } = await supabase.from('products').delete().eq('id', p.id);
+    setMarkingSoldId(null);
+
+    if (deleteError) {
+      console.error(deleteError);
+      alert(
+        'This was added to the Collection Book, but could not be removed ' +
+          'from the catalogue — check the console and delete it manually ' +
+          'from the product list below.'
+      );
+    }
+
+    await loadProducts();
+  }
+
   async function handleSaveOverrides() {
     if (!editingId) return;
     setSavingOverrides(true);
@@ -343,7 +566,7 @@ function CatalogAdminPanel() {
         ) : (
           <ul className="mt-6 divide-y divide-line border-t border-line">
             {products.map((p, i) => (
-              <li key={p.id} className="flex items-center justify-between gap-4 py-4">
+              <li key={p.id} className="flex flex-wrap items-center justify-between gap-4 py-4">
                 <div className="flex items-center gap-4">
                   <div className="flex flex-col">
                     <button
@@ -378,12 +601,19 @@ function CatalogAdminPanel() {
                     </p>
                   </div>
                 </div>
-                <div className="flex gap-4">
+                <div className="flex flex-wrap gap-4">
                   <button
                     onClick={() => startEdit(p)}
                     className="font-mono text-[11px] uppercase tracking-widest2 text-ink underline underline-offset-4"
                   >
                     {t('edit')}
+                  </button>
+                  <button
+                    onClick={() => markAsSold(p)}
+                    disabled={markingSoldId === p.id}
+                    className="font-mono text-[11px] uppercase tracking-widest2 text-cocoa underline underline-offset-4 disabled:opacity-50"
+                  >
+                    {markingSoldId === p.id ? 'Moving…' : 'Mark as sold'}
                   </button>
                   <button
                     onClick={() => handleDelete(p.id)}
@@ -704,367 +934,39 @@ export function AdminDashboard() {
 __VKV_PATCH_EOF__
 echo "  updated: components/AdminDashboard.tsx"
 
-cat > "components/AdminCollectionPanel.tsx" << '__VKV_PATCH_EOF__'
-'use client';
-
-import { useEffect, useState } from 'react';
-import { useLocale } from 'next-intl';
-import { createClient } from '@/lib/supabase/client';
-import { pickLocalized } from '@/lib/localized';
-import { sanitizeFileName } from '@/lib/sanitize-filename';
-import { locales, localeNames, type Locale } from '@/i18n';
-import type { CollectionItem } from '@/lib/types';
-
-function emptyForm(sourceLocale: string) {
-  return {
-    sourceLocale,
-    name: '',
-    description: '',
-    soldYear: '',
-    images: [] as string[],
-  };
+# --- 5. Add the "sold" (no year) translation key to all 7 locale files ---
+add_sold_key() {
+  file="$1"
+  old_line="$2"
+  new_line="$3"
+  if [ ! -f "$file" ]; then
+    echo "  WARNING: $file not found — skipped."
+    return
+  fi
+  if grep -qF "\"sold\":" "$file"; then
+    echo "  $file already has a \"sold\" key — skipped."
+    return
+  fi
+  if grep -qF "$old_line" "$file"; then
+    sed -i "s/$(printf '%s' "$old_line" | sed -e 's/[\/&]/\\&/g')/$(printf '%s' "$new_line" | sed -e 's/[\/&]/\\&/g')/" "$file"
+    echo "  updated: $file"
+  else
+    echo "  WARNING: could not find matching line in $file — add manually:"
+    echo "    $new_line"
+  fi
 }
 
-export function AdminCollectionPanel() {
-  const locale = useLocale();
-  const supabase = createClient();
-
-  const [items, setItems] = useState<CollectionItem[]>([]);
-  const [form, setForm] = useState(() => emptyForm(locale));
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
-
-  async function load() {
-    const { data } = await supabase
-      .from('collection_items')
-      .select('*')
-      .order('created_at', { ascending: false });
-    setItems((data as CollectionItem[]) ?? []);
-  }
-
-  useEffect(() => {
-    load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  function resetForm() {
-    setForm(emptyForm(locale));
-    setEditingId(null);
-  }
-
-  function startEdit(item: CollectionItem) {
-    setEditingId(item.id);
-    setForm({
-      sourceLocale: locale,
-      name: pickLocalized(item.name, locale),
-      description: pickLocalized(item.description, locale),
-      soldYear: item.sold_year ?? '',
-      images: item.images ?? [],
-    });
-  }
-
-  async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const files = Array.from(e.target.files ?? []);
-    if (files.length === 0) return;
-    setUploading(true);
-    const urls: string[] = [];
-    const errors: string[] = [];
-    for (const file of files) {
-      const path = `collection-${Date.now()}-${sanitizeFileName(file.name)}`;
-      const { error } = await supabase.storage
-        .from('product-images')
-        .upload(path, file, { cacheControl: '3600', upsert: false });
-      if (error) {
-        console.error('Collection image upload failed:', file.name, error);
-        errors.push(`${file.name}: ${error.message}`);
-      } else {
-        const { data } = supabase.storage.from('product-images').getPublicUrl(path);
-        urls.push(data.publicUrl);
-      }
-    }
-    if (urls.length > 0) {
-      setForm((f) => ({ ...f, images: [...f.images, ...urls] }));
-    }
-    setUploading(false);
-    e.target.value = '';
-    if (errors.length > 0) {
-      alert(`Could not upload:\n\n${errors.join('\n')}`);
-    }
-  }
-
-  function removeImage(index: number) {
-    setForm((f) => ({ ...f, images: f.images.filter((_, i) => i !== index) }));
-  }
-
-  // Swaps a photo with its neighbour so the admin can control the
-  // order they appear in — the first photo is used as the thumbnail.
-  function moveImage(index: number, direction: 'left' | 'right') {
-    setForm((f) => {
-      const target = direction === 'left' ? index - 1 : index + 1;
-      if (target < 0 || target >= f.images.length) return f;
-      const images = [...f.images];
-      [images[index], images[target]] = [images[target], images[index]];
-      return { ...f, images };
-    });
-  }
-
-  async function handleSave(e: React.FormEvent) {
-    e.preventDefault();
-    setSaving(true);
-    try {
-      const res = await fetch('/api/admin/translate-fields', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          fields: { name: form.name, description: form.description },
-          sourceLocale: form.sourceLocale,
-        }),
-      });
-      if (!res.ok) throw new Error('translate failed');
-      const translated = await res.json();
-
-      const payload = {
-        name: translated.name,
-        description: translated.description ?? {},
-        sold_year: form.soldYear || null,
-        images: form.images,
-      };
-
-      if (editingId) {
-        const { error } = await supabase
-          .from('collection_items')
-          .update(payload)
-          .eq('id', editingId);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.from('collection_items').insert(payload);
-        if (error) throw error;
-      }
-
-      resetForm();
-      await load();
-
-      const failedLocales: string[] = translated.failedLocales ?? [];
-      if (failedLocales.length > 0) {
-        const reason =
-          translated.deeplConfigured === false
-            ? "DEEPL_API_KEY is not set (or the server wasn't restarted after adding it)."
-            : "usually the free translator's daily limit — try again in a bit.";
-        alert(`Saved — but translation failed for: ${failedLocales.join(', ')}.\n\nReason: ${reason}`);
-      }
-    } catch (err) {
-      console.error(err);
-      alert('Could not save — check the console.');
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  async function handleDelete(id: string) {
-    if (!confirm('Delete this collection item?')) return;
-    const { error } = await supabase.from('collection_items').delete().eq('id', id);
-    if (error) {
-      console.error(error);
-      alert('Could not delete this item — check the console.');
-      return;
-    }
-    load();
-  }
-
-  return (
-    <div className="mt-10 grid gap-16 lg:grid-cols-[1fr_1.2fr]">
-      <div>
-        <h2 className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
-          Collection Book items
-        </h2>
-        {items.length === 0 ? (
-          <p className="mt-6 font-body text-stone">Nothing archived yet.</p>
-        ) : (
-          <ul className="mt-6 divide-y divide-line border-t border-line">
-            {items.map((item) => (
-              <li key={item.id} className="flex items-center justify-between gap-4 py-4">
-                <div className="flex items-center gap-4">
-                  <div className="h-14 w-12 shrink-0 bg-sand">
-                    {item.images?.[0] && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={item.images[0]} alt="" className="h-full w-full object-cover" />
-                    )}
-                  </div>
-                  <div>
-                    <p className="font-body text-sm text-ink">
-                      {pickLocalized(item.name, locale)}
-                    </p>
-                    {item.sold_year && (
-                      <p className="font-mono text-[11px] text-taupe">Sold {item.sold_year}</p>
-                    )}
-                  </div>
-                </div>
-                <div className="flex gap-4">
-                  <button
-                    onClick={() => startEdit(item)}
-                    className="font-mono text-[11px] uppercase tracking-widest2 text-ink underline underline-offset-4"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(item.id)}
-                    className="font-mono text-[11px] uppercase tracking-widest2 text-red-800 underline underline-offset-4"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-
-      <div>
-        <h2 className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
-          {editingId ? 'Edit item' : 'Add item to the collection book'}
-        </h2>
-        <form onSubmit={handleSave} className="mt-6 flex flex-col gap-5">
-          <label className="block">
-            <span className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
-              Text language
-            </span>
-            <select
-              value={form.sourceLocale}
-              onChange={(e) => setForm((f) => ({ ...f, sourceLocale: e.target.value }))}
-              className="input"
-            >
-              {locales.map((l) => (
-                <option key={l} value={l}>
-                  {localeNames[l as Locale]} ({l})
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="block">
-            <span className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
-              Name
-            </span>
-            <input
-              required
-              value={form.name}
-              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-              className="input"
-            />
-          </label>
-          <label className="block">
-            <span className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
-              Description
-            </span>
-            <textarea
-              rows={3}
-              value={form.description}
-              onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-              className="input"
-            />
-          </label>
-          <label className="block">
-            <span className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
-              Sold year (optional)
-            </span>
-            <input
-              value={form.soldYear}
-              onChange={(e) => setForm((f) => ({ ...f, soldYear: e.target.value }))}
-              placeholder="e.g. 2025"
-              className="input"
-            />
-          </label>
-
-          <div className="flex flex-wrap gap-3">
-            {form.images.map((src, i) => (
-              <div key={i} className="group relative h-20 w-16 bg-sand">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={src} alt="" className="h-full w-full object-cover" />
-                {i > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => moveImage(i, 'left')}
-                    aria-label="Move photo earlier"
-                    className="absolute -left-1.5 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full bg-ink text-[10px] text-cream opacity-0 transition-opacity group-hover:opacity-100"
-                  >
-                    ‹
-                  </button>
-                )}
-                {i < form.images.length - 1 && (
-                  <button
-                    type="button"
-                    onClick={() => moveImage(i, 'right')}
-                    aria-label="Move photo later"
-                    className="absolute -right-1.5 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full bg-ink text-[10px] text-cream opacity-0 transition-opacity group-hover:opacity-100"
-                  >
-                    ›
-                  </button>
-                )}
-                <button
-                  type="button"
-                  onClick={() => removeImage(i)}
-                  className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-ink text-[10px] text-cream opacity-0 transition-opacity group-hover:opacity-100"
-                >
-                  ×
-                </button>
-              </div>
-            ))}
-          </div>
-          <label className="inline-block w-fit cursor-pointer font-mono text-[11px] uppercase tracking-widest2 text-ink underline underline-offset-4">
-            {uploading ? 'Uploading…' : 'Upload photo(s)'}
-            <input
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={handleUpload}
-              className="hidden"
-            />
-          </label>
-          <p className="-mt-2 font-body text-xs text-taupe">
-            Hover a photo and use the ‹ › arrows to reorder it — the
-            first photo is used as the thumbnail.
-          </p>
-
-          <div className="mt-2 flex gap-4">
-            <button
-              type="submit"
-              disabled={saving}
-              className="bg-ink px-8 py-3.5 font-mono text-[11px] uppercase tracking-widest2 text-cream transition-opacity hover:opacity-90 disabled:opacity-50"
-            >
-              {saving ? 'Translating & saving…' : 'Save item'}
-            </button>
-            {editingId && (
-              <button
-                type="button"
-                onClick={resetForm}
-                className="font-mono text-[11px] uppercase tracking-widest2 text-stone underline underline-offset-4"
-              >
-                Cancel
-              </button>
-            )}
-          </div>
-        </form>
-      </div>
-
-      <style jsx global>{`
-        .input {
-          width: 100%;
-          border-bottom: 1px solid #dcd0bc;
-          background: transparent;
-          padding: 0.5rem 0;
-          font-family: var(--font-body);
-          color: #211e1a;
-        }
-        .input:focus {
-          outline: none;
-          border-color: #211e1a;
-        }
-      `}</style>
-    </div>
-  );
-}
-__VKV_PATCH_EOF__
-echo "  updated: components/AdminCollectionPanel.tsx"
+add_sold_key "messages/en.json" '"soldIn": "Sold in"' '"soldIn": "Sold in",\n    "sold": "Sold"'
+add_sold_key "messages/ru.json" '"soldIn": "Продано в"' '"soldIn": "Продано в",\n    "sold": "Продано"'
+add_sold_key "messages/de.json" '"soldIn": "Verkauft im Jahr"' '"soldIn": "Verkauft im Jahr",\n    "sold": "Verkauft"'
+add_sold_key "messages/es.json" '"soldIn": "Vendido en"' '"soldIn": "Vendido en",\n    "sold": "Vendido"'
+add_sold_key "messages/fr.json" '"soldIn": "Vendu en"' '"soldIn": "Vendu en",\n    "sold": "Vendu"'
+add_sold_key "messages/it.json" '"soldIn": "Venduto nel"' '"soldIn": "Venduto nel",\n    "sold": "Venduto"'
+add_sold_key "messages/lv.json" '"soldIn": "Pārdots"' '"soldIn": "Pārdots",\n    "sold": "Pārdots"'
 
 echo ""
-echo "Done. git add -A && git commit -m \"Stop auto-translating product names; add photo reordering in admin\" && git push"
+echo "IMPORTANT — check the output above for any WARNING lines, and check"
+echo "each messages/*.json still parses as valid JSON after the sed edits"
+echo "(the automated insert is line-based)."
+echo ""
+echo "Done. git add -A && git commit -m \"Clickable Collection Book items, Mark as sold action, plain Sold label\" && git push"

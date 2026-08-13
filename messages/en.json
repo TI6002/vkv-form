@@ -178,7 +178,7 @@
     "title": "Collection Book",
     "intro": "A record of pieces that have already found their homes — kept here as an archive rather than offered for sale again.",
     "empty": "The collection book is empty for now.",
-    "soldIn": "Sold in"
+    "soldIn": "Sold in",\n    "sold": "Sold"
   },
   "cookies": {
     "message": "This site uses a small number of essential cookies to keep you signed in and remember your cart — nothing is used for advertising or tracking.",

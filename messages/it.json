@@ -178,7 +178,7 @@
     "title": "Libro della collezione",
     "intro": "Un registro di pezzi che hanno già trovato casa — conservato qui come archivio, non in vendita.",
     "empty": "Il libro della collezione è vuoto per ora.",
-    "soldIn": "Venduto nel"
+    "soldIn": "Venduto nel",\n    "sold": "Venduto"
   },
   "cookies": {
     "message": "Questo sito utilizza un piccolo numero di cookie essenziali per mantenerti connesso(a) e ricordare il tuo carrello — nulla viene usato per pubblicità o tracciamento.",
