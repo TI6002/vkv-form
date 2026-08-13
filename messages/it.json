@@ -39,7 +39,7 @@
   },
   "catalog": {
     "title": "Catalogo",
-    "subtitle": "Tutti gli oggetti attualmente in studio.",
+    "subtitle": "Tutte le opere d'arte attualmente presenti nell'atelier.",
     "empty": "Nessuna forma corrisponde ancora a questo filtro.",
     "priceLabel": "Prezzo",
     "viewProduct": "Vedi l'oggetto",

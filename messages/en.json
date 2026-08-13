@@ -39,7 +39,7 @@
   },
   "catalog": {
     "title": "Catalogue",
-    "subtitle": "Every object currently in the studio.",
+    "subtitle": "All the works of art currently in the studio.",
     "empty": "No forms match this filter yet.",
     "priceLabel": "Price",
     "viewProduct": "View object",

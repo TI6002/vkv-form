@@ -39,7 +39,7 @@
   },
   "catalog": {
     "title": "Catálogo",
-    "subtitle": "Todos los objetos que hay ahora mismo en el taller.",
+    "subtitle": "Todas las obras de arte que hay ahora mismo en el taller.",
     "empty": "Ningún objeto coincide todavía con este filtro.",
     "priceLabel": "Precio",
     "viewProduct": "Ver objeto",
