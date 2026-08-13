@@ -1256,4 +1256,4 @@ __VKV_PATCH_EOF__
 echo "  updated: components/AdminCollectionPanel.tsx"
 
 echo ""
-echo "Done. git add -A && git commit -m \"Remove Objects tab; restyle Orders button to match section buttons\" && git push"
+echo "Done. git add -A && git commit -m \"Remove Objects tab; restyle Orders button to match section buttons\" && git push" 

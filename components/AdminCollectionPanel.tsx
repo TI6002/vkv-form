@@ -334,13 +334,12 @@ export function AdminCollectionPanel() {
               Description
             </span>
             <textarea
-              rows={6}
+              rows={3}
               value={form.description}
               onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
               className="input"
             />
           </label>
-          <p className="-mt-2 font-body text-xs text-taupe">Press Enter twice for a new paragraph. Spaces and tabs you type are preserved on the item page (e.g. for indenting a line).</p>
           <label className="block">
             <span className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
               Materials

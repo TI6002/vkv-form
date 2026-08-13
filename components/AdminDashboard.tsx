@@ -330,19 +330,17 @@ function CatalogAdminPanel() {
 
   return (
     <div>
-      <div className="flex gap-6 border-b border-line pb-4">
+      <div className="flex gap-3 border-b border-line pb-4">
+        {/* "Objects" removed — Products is the default view for this
+            section. Orders is a toggle styled like the Catalog/About/
+            Collection buttons above: click to view orders, click again
+            to go back to the product list. */}
         <button
-          onClick={() => setTab('products')}
-          className={`font-mono text-[11px] uppercase tracking-widest2 ${
-            tab === 'products' ? 'text-ink' : 'text-stone hover:text-ink'
-          }`}
-        >
-          {t('productsTab')}
-        </button>
-        <button
-          onClick={() => setTab('orders')}
-          className={`font-mono text-[11px] uppercase tracking-widest2 ${
-            tab === 'orders' ? 'text-ink' : 'text-stone hover:text-ink'
+          onClick={() => setTab(tab === 'orders' ? 'products' : 'orders')}
+          className={`border px-5 py-2.5 font-mono text-[11px] uppercase tracking-widest2 transition-colors ${
+            tab === 'orders'
+              ? 'border-ink bg-ink text-cream'
+              : 'border-line text-stone hover:border-ink hover:text-ink'
           }`}
         >
           {t('ordersTab')}
