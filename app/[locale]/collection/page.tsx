@@ -37,9 +37,11 @@ export default async function CollectionPage({
         <div className="mt-16 grid grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 md:grid-cols-3">
           {items.map((item, i) => {
             const name = pickLocalized(item.name, locale);
-            const description = pickLocalized(item.description, locale);
             return (
               <Reveal key={item.id} delay={(i % 3) * 0.06}>
+                {/* Description is deliberately not shown here — only on
+                    the item's own page (/collection/[id]). The grid is
+                    just name + photo + status, kept short on purpose. */}
                 <Link href={`/collection/${item.id}`} className="group block">
                   <div className="relative aspect-[4/5] overflow-hidden bg-sand">
                     {item.images?.[0] && (
@@ -58,9 +60,6 @@ export default async function CollectionPage({
                     </span>
                   </div>
                   <h3 className="mt-4 font-display text-lg text-ink">{name}</h3>
-                  {description && (
-                    <p className="mt-1 font-body text-sm text-stone">{description}</p>
-                  )}
                 </Link>
               </Reveal>
             );
