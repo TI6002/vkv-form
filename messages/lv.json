@@ -178,7 +178,8 @@
     "title": "Kolekcijas grāmata",
     "intro": "Pieraksts par priekšmetiem, kas jau atraduši savas mājas — glabāts šeit kā arhīvs, nevis atkārtotai pārdošanai.",
     "empty": "Kolekcijas grāmata pagaidām ir tukša.",
-    "soldIn": "Pārdots",\n    "sold": "Pārdots"
+    "soldIn": "Pārdots",
+    "sold": "Pārdots"
   },
   "cookies": {
     "message": "Šī vietne izmanto nelielu skaitu nepieciešamo sīkdatņu, lai saglabātu jūsu pieslēgšanos un grozu — nekas netiek izmantots reklāmai vai izsekošanai.",

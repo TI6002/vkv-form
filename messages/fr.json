@@ -178,7 +178,8 @@
     "title": "Livre de collection",
     "intro": "Un registre des pièces qui ont déjà trouvé leur foyer — conservé ici comme archive plutôt que remis en vente.",
     "empty": "Le livre de collection est vide pour l'instant.",
-    "soldIn": "Vendu en",\n    "sold": "Vendu"
+    "soldIn": "Vendu en",
+    "sold": "Vendu"
   },
   "cookies": {
     "message": "Ce site utilise un petit nombre de cookies essentiels pour vous garder connecté(e) et mémoriser votre panier — rien n'est utilisé pour la publicité ou le suivi.",

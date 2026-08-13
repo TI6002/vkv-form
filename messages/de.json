@@ -178,7 +178,8 @@
     "title": "Sammlungsbuch",
     "intro": "Ein Verzeichnis von Stücken, die bereits ein neues Zuhause gefunden haben — hier als Archiv geführt, nicht zum erneuten Verkauf.",
     "empty": "Das Sammlungsbuch ist derzeit leer.",
-    "soldIn": "Verkauft im Jahr",\n    "sold": "Verkauft"
+    "soldIn": "Verkauft im Jahr",
+    "sold": "Verkauft"
   },
   "cookies": {
     "message": "Diese Website verwendet eine kleine Anzahl notwendiger Cookies, um Sie angemeldet zu halten und Ihren Warenkorb zu merken — nichts wird für Werbung oder Tracking verwendet.",
