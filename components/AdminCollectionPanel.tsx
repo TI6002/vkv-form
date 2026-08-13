@@ -36,8 +36,6 @@ export function AdminCollectionPanel() {
   const [reordering, setReordering] = useState(false);
 
   async function load() {
-    // Same order as the public Collection Book page: manual sort_order
-    // first (null last automatically), then newest first as a tie-breaker.
     const { data } = await supabase
       .from('collection_items')
       .select('*')
@@ -106,8 +104,6 @@ export function AdminCollectionPanel() {
     setForm((f) => ({ ...f, images: f.images.filter((_, i) => i !== index) }));
   }
 
-  // Swaps a photo with its neighbour so the admin can control the
-  // order they appear in — the first photo is used as the thumbnail.
   function moveImage(index: number, direction: 'left' | 'right') {
     setForm((f) => {
       const target = direction === 'left' ? index - 1 : index + 1;
@@ -118,38 +114,36 @@ export function AdminCollectionPanel() {
     });
   }
 
-  // Swaps this item's position with the one above/below it in the
-  // currently displayed list, by swapping their sort_order values —
-  // exactly like the up/down buttons in the catalogue admin.
+  // Moves this item up/down and re-saves EVERY item's sort_order as
+  // its new position (0, 1, 2, ...) — see the matching comment on
+  // moveProduct in the catalogue admin for why this renumbers
+  // everything instead of only swapping the two moved items.
   async function moveItem(index: number, direction: 'up' | 'down') {
     const targetIndex = direction === 'up' ? index - 1 : index + 1;
     if (targetIndex < 0 || targetIndex >= items.length || reordering) return;
 
-    const current = items[index];
-    const target = items[targetIndex];
-    const currentOrder = current.sort_order ?? index;
-    const targetOrder = target.sort_order ?? targetIndex;
-
     const next = [...items];
-    next[index] = { ...current, sort_order: targetOrder };
-    next[targetIndex] = { ...target, sort_order: currentOrder };
-    next.sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+    [next[index], next[targetIndex]] = [next[targetIndex], next[index]];
 
     const previous = items;
-    setItems(next);
     setReordering(true);
 
-    const [{ error: err1 }, { error: err2 }] = await Promise.all([
-      supabase.from('collection_items').update({ sort_order: targetOrder }).eq('id', current.id),
-      supabase.from('collection_items').update({ sort_order: currentOrder }).eq('id', target.id),
-    ]);
+    const results = await Promise.all(
+      next.map((item, i) =>
+        supabase.from('collection_items').update({ sort_order: i }).eq('id', item.id)
+      )
+    );
     setReordering(false);
 
-    if (err1 || err2) {
-      console.error(err1, err2);
+    const failed = results.find((r) => r.error);
+    if (failed?.error) {
+      console.error(failed.error);
       setItems(previous);
       alert('Could not reorder these items — check the console.');
+      return;
     }
+
+    setItems(next.map((item, i) => ({ ...item, sort_order: i })));
   }
 
   async function handleSave(e: React.FormEvent) {
@@ -187,9 +181,6 @@ export function AdminCollectionPanel() {
         weight: translated.weight ?? null,
         sold_year: form.soldYear || null,
         images: form.images,
-        // sort_order is intentionally left untouched here — new items
-        // stay null (which sorts last, landing at the end of the
-        // Collection Book) until moved with the up/down buttons.
       };
 
       if (editingId) {
