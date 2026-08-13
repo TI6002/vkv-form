@@ -90,6 +90,18 @@ export function AdminCollectionPanel() {
     setForm((f) => ({ ...f, images: f.images.filter((_, i) => i !== index) }));
   }
 
+  // Swaps a photo with its neighbour so the admin can control the
+  // order they appear in — the first photo is used as the thumbnail.
+  function moveImage(index: number, direction: 'left' | 'right') {
+    setForm((f) => {
+      const target = direction === 'left' ? index - 1 : index + 1;
+      if (target < 0 || target >= f.images.length) return f;
+      const images = [...f.images];
+      [images[index], images[target]] = [images[target], images[index]];
+      return { ...f, images };
+    });
+  }
+
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
@@ -261,6 +273,26 @@ export function AdminCollectionPanel() {
               <div key={i} className="group relative h-20 w-16 bg-sand">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={src} alt="" className="h-full w-full object-cover" />
+                {i > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => moveImage(i, 'left')}
+                    aria-label="Move photo earlier"
+                    className="absolute -left-1.5 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full bg-ink text-[10px] text-cream opacity-0 transition-opacity group-hover:opacity-100"
+                  >
+                    ‹
+                  </button>
+                )}
+                {i < form.images.length - 1 && (
+                  <button
+                    type="button"
+                    onClick={() => moveImage(i, 'right')}
+                    aria-label="Move photo later"
+                    className="absolute -right-1.5 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full bg-ink text-[10px] text-cream opacity-0 transition-opacity group-hover:opacity-100"
+                  >
+                    ›
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={() => removeImage(i)}
@@ -281,6 +313,10 @@ export function AdminCollectionPanel() {
               className="hidden"
             />
           </label>
+          <p className="-mt-2 font-body text-xs text-taupe">
+            Hover a photo and use the ‹ › arrows to reorder it — the
+            first photo is used as the thumbnail.
+          </p>
 
           <div className="mt-2 flex gap-4">
             <button
