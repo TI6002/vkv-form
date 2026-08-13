@@ -31,13 +31,12 @@ function emptyFormFor(sourceLocale: string) {
   };
 }
 
-function CatalogAdminPanel() {
+function CatalogAdminPanel({ view }: { view: 'products' | 'orders' }) {
   const t = useTranslations('admin');
   const locale = useLocale();
   const supabase = createClient();
 
   const [products, setProducts] = useState<Product[]>([]);
-  const [tab, setTab] = useState<'products' | 'orders'>('products');
   const [form, setForm] = useState(() => emptyFormFor(locale));
   const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -330,24 +329,7 @@ function CatalogAdminPanel() {
 
   return (
     <div>
-      <div className="flex gap-3 border-b border-line pb-4">
-        {/* "Objects" removed — Products is the default view for this
-            section. Orders is a toggle styled like the Catalog/About/
-            Collection buttons above: click to view orders, click again
-            to go back to the product list. */}
-        <button
-          onClick={() => setTab(tab === 'orders' ? 'products' : 'orders')}
-          className={`border px-5 py-2.5 font-mono text-[11px] uppercase tracking-widest2 transition-colors ${
-            tab === 'orders'
-              ? 'border-ink bg-ink text-cream'
-              : 'border-line text-stone hover:border-ink hover:text-ink'
-          }`}
-        >
-          {t('ordersTab')}
-        </button>
-      </div>
-
-      {tab === 'orders' ? (
+      {view === 'orders' ? (
         <AdminOrdersPanel />
       ) : (
     <div className="mt-10 grid gap-16 lg:grid-cols-[1fr_1.2fr]">
@@ -698,6 +680,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 export function AdminDashboard() {
   const [section, setSection] = useState<'catalog' | 'about' | 'collection'>('catalog');
+  const [catalogView, setCatalogView] = useState<'products' | 'orders'>('products');
 
   const sections: { id: typeof section; label: string }[] = [
     { id: 'catalog', label: 'Catalog' },
@@ -721,9 +704,24 @@ export function AdminDashboard() {
             {s.label}
           </button>
         ))}
+        {/* Orders lives in the same row as the section buttons, but
+            only makes sense while viewing Catalog — toggles between
+            the product list and the orders list. */}
+        {section === 'catalog' && (
+          <button
+            onClick={() => setCatalogView((v) => (v === 'orders' ? 'products' : 'orders'))}
+            className={`border px-5 py-2.5 font-mono text-[11px] uppercase tracking-widest2 transition-colors ${
+              catalogView === 'orders'
+                ? 'border-ink bg-ink text-cream'
+                : 'border-line text-stone hover:border-ink hover:text-ink'
+            }`}
+          >
+            Orders
+          </button>
+        )}
       </div>
 
-      {section === 'catalog' && <CatalogAdminPanel />}
+      {section === 'catalog' && <CatalogAdminPanel view={catalogView} />}
       {section === 'about' && <AdminAboutPanel />}
       {section === 'collection' && <AdminCollectionPanel />}
     </div>
