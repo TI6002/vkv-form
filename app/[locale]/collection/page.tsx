@@ -2,7 +2,7 @@ import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
 import Image from 'next/image';
 import { Reveal } from '@/components/Reveal';
 import { Link } from '@/lib/navigation';
-import { getCollectionItems } from '@/lib/content';
+import { getCollectionItems } from '@/lib/collection-items';
 import { pickLocalized } from '@/lib/localized';
 
 export const dynamic = 'force-dynamic';

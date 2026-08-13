@@ -35,6 +35,7 @@ export type CollectionItem = {
   circumference: LocalizedText | null;
   depth: LocalizedText | null;
   weight: LocalizedText | null;
+  sort_order?: number | null;
   sold_year: string | null;
   created_at: string;
 };

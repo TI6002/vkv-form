@@ -6,37 +6,140 @@ if [ ! -f package.json ]; then
   exit 1
 fi
 
-echo "Applying vkv.form updates — materials & dimensions for Collection Book items..."
+echo "Applying vkv.form updates — manual ordering for Collection Book items..."
 
-# --- 1. lib/types.ts: add materials/dimensions to CollectionItem ---
+# --- 1. lib/types.ts: add sort_order to CollectionItem ---
 FILE="lib/types.ts"
 if [ ! -f "$FILE" ]; then
   echo "ERROR: $FILE not found — run this from the project root."
   exit 1
 fi
-if grep -q "materials: LocalizedText | null;" "$FILE" && grep -A2 "sold_year: string | null;" "$FILE" | grep -q "created_at"; then
-  # crude check: if materials already appears right before sold_year, skip
-  :
-fi
-if grep -qF "sold_year: string | null;" "$FILE"; then
-  if grep -B1 "sold_year: string | null;" "$FILE" | grep -q "weight: LocalizedText | null;"; then
-    echo "  $FILE already has materials/dimensions on CollectionItem — skipping type edit."
-  else
-    sed -i '/sold_year: string | null;/i\  materials: LocalizedText | null;\n  height: LocalizedText | null;\n  width: LocalizedText | null;\n  circumference: LocalizedText | null;\n  depth: LocalizedText | null;\n  weight: LocalizedText | null;' "$FILE"
-    echo "  updated: $FILE"
-  fi
+if grep -B1 "sold_year: string | null;" "$FILE" | grep -q "sort_order?: number | null;"; then
+  echo "  $FILE already has sort_order on CollectionItem — skipping type edit."
+elif grep -qF "sold_year: string | null;" "$FILE"; then
+  sed -i '/sold_year: string | null;/i\  sort_order?: number | null;' "$FILE"
+  echo "  updated: $FILE"
 else
   echo "WARNING: could not find \"sold_year: string | null;\" in $FILE."
-  echo "  Open lib/types.ts yourself and add these fields to the CollectionItem type:"
-  echo "    materials: LocalizedText | null;"
-  echo "    height: LocalizedText | null;"
-  echo "    width: LocalizedText | null;"
-  echo "    circumference: LocalizedText | null;"
-  echo "    depth: LocalizedText | null;"
-  echo "    weight: LocalizedText | null;"
+  echo "  Open lib/types.ts yourself and add this field to the CollectionItem type:"
+  echo "    sort_order?: number | null;"
 fi
 
-# --- 2. AdminCollectionPanel: materials/dimensions fields, translated and saved ---
+# --- 2. New lib helper: fetch collection items ordered by sort_order ---
+mkdir -p "lib"
+cat > "lib/collection-items.ts" << '__VKV_PATCH_EOF__'
+import { createClient } from '@/lib/supabase/server';
+import type { CollectionItem } from '@/lib/types';
+export const dynamic = 'force-dynamic';
+
+/**
+ * Fetches Collection Book items in the admin-controlled manual order
+ * (sort_order — set by the up/down buttons in /admin). Items that
+ * haven't been manually ordered yet have sort_order = null, which
+ * Postgres places last in ascending order automatically — so newly
+ * archived pieces always land at the end until the admin moves them.
+ * Among those, newest first.
+ */
+export async function getCollectionItems(): Promise<CollectionItem[]> {
+  try {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from('collection_items')
+      .select('*')
+      .order('sort_order', { ascending: true, nullsFirst: false })
+      .order('created_at', { ascending: false });
+    if (error) {
+      console.error('[getCollectionItems] Supabase error:', error);
+      return [];
+    }
+    return (data as CollectionItem[]) ?? [];
+  } catch (err) {
+    console.error('[getCollectionItems] Unexpected error:', err);
+    return [];
+  }
+}
+__VKV_PATCH_EOF__
+echo "  created: lib/collection-items.ts"
+
+# --- 3. Collection Book listing page: use the new ordered fetch ---
+mkdir -p "app/[locale]/collection"
+cat > "app/[locale]/collection/page.tsx" << '__VKV_PATCH_EOF__'
+import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
+import Image from 'next/image';
+import { Reveal } from '@/components/Reveal';
+import { Link } from '@/lib/navigation';
+import { getCollectionItems } from '@/lib/collection-items';
+import { pickLocalized } from '@/lib/localized';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+export default async function CollectionPage({
+  params: { locale },
+}: {
+  params: { locale: string };
+}) {
+  unstable_setRequestLocale(locale);
+  const t = await getTranslations('collection');
+  const items = await getCollectionItems();
+
+  return (
+    <div className="mx-auto max-w-[1400px] px-6 py-20 md:px-10 md:py-28">
+      <Reveal>
+        <p className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
+          {t('eyebrow')}
+        </p>
+        <h1 className="mt-4 font-display text-4xl italic text-ink md:text-5xl">
+          {t('title')}
+        </h1>
+        <p className="mt-6 max-w-lg font-body text-base leading-relaxed text-stone">
+          {t('intro')}
+        </p>
+      </Reveal>
+
+      {items.length === 0 ? (
+        <p className="mt-20 font-body text-stone">{t('empty')}</p>
+      ) : (
+        <div className="mt-16 grid grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 md:grid-cols-3">
+          {items.map((item, i) => {
+            const name = pickLocalized(item.name, locale);
+            const description = pickLocalized(item.description, locale);
+            return (
+              <Reveal key={item.id} delay={(i % 3) * 0.06}>
+                <Link href={`/collection/${item.id}`} className="group block">
+                  <div className="relative aspect-[4/5] overflow-hidden bg-sand">
+                    {item.images?.[0] && (
+                      <Image
+                        src={item.images[0]}
+                        alt={name}
+                        fill
+                        sizes="(min-width: 768px) 33vw, 50vw"
+                        className="object-cover grayscale-[15%] transition-transform duration-700 group-hover:scale-105"
+                      />
+                    )}
+                    {/* Just "Sold" — no year shown publicly, even if one
+                        was entered in the admin for internal reference. */}
+                    <span className="absolute left-4 top-4 bg-cream/85 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest2 text-ink">
+                      {t('sold')}
+                    </span>
+                  </div>
+                  <h3 className="mt-4 font-display text-lg text-ink">{name}</h3>
+                  {description && (
+                    <p className="mt-1 font-body text-sm text-stone">{description}</p>
+                  )}
+                </Link>
+              </Reveal>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+__VKV_PATCH_EOF__
+echo "  updated: app/[locale]/collection/page.tsx"
+
+# --- 4. AdminCollectionPanel: same order as public page + up/down buttons ---
 mkdir -p "components"
 cat > "components/AdminCollectionPanel.tsx" << '__VKV_PATCH_EOF__'
 'use client';
@@ -74,11 +177,15 @@ export function AdminCollectionPanel() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [reordering, setReordering] = useState(false);
 
   async function load() {
+    // Same order as the public Collection Book page: manual sort_order
+    // first (null last automatically), then newest first as a tie-breaker.
     const { data } = await supabase
       .from('collection_items')
       .select('*')
+      .order('sort_order', { ascending: true, nullsFirst: false })
       .order('created_at', { ascending: false });
     setItems((data as CollectionItem[]) ?? []);
   }
@@ -155,6 +262,40 @@ export function AdminCollectionPanel() {
     });
   }
 
+  // Swaps this item's position with the one above/below it in the
+  // currently displayed list, by swapping their sort_order values —
+  // exactly like the up/down buttons in the catalogue admin.
+  async function moveItem(index: number, direction: 'up' | 'down') {
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= items.length || reordering) return;
+
+    const current = items[index];
+    const target = items[targetIndex];
+    const currentOrder = current.sort_order ?? index;
+    const targetOrder = target.sort_order ?? targetIndex;
+
+    const next = [...items];
+    next[index] = { ...current, sort_order: targetOrder };
+    next[targetIndex] = { ...target, sort_order: currentOrder };
+    next.sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+
+    const previous = items;
+    setItems(next);
+    setReordering(true);
+
+    const [{ error: err1 }, { error: err2 }] = await Promise.all([
+      supabase.from('collection_items').update({ sort_order: targetOrder }).eq('id', current.id),
+      supabase.from('collection_items').update({ sort_order: currentOrder }).eq('id', target.id),
+    ]);
+    setReordering(false);
+
+    if (err1 || err2) {
+      console.error(err1, err2);
+      setItems(previous);
+      alert('Could not reorder these items — check the console.');
+    }
+  }
+
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
@@ -190,6 +331,9 @@ export function AdminCollectionPanel() {
         weight: translated.weight ?? null,
         sold_year: form.soldYear || null,
         images: form.images,
+        // sort_order is intentionally left untouched here — new items
+        // stay null (which sorts last, landing at the end of the
+        // Collection Book) until moved with the up/down buttons.
       };
 
       if (editingId) {
@@ -239,13 +383,38 @@ export function AdminCollectionPanel() {
         <h2 className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
           Collection Book items
         </h2>
+        <p className="mt-2 max-w-sm font-body text-xs leading-relaxed text-taupe">
+          Use the ↑ / ↓ buttons to set the order items appear in on the
+          public Collection Book page. Newly archived pieces are added
+          to the end of the list until you move them.
+        </p>
         {items.length === 0 ? (
           <p className="mt-6 font-body text-stone">Nothing archived yet.</p>
         ) : (
           <ul className="mt-6 divide-y divide-line border-t border-line">
-            {items.map((item) => (
+            {items.map((item, i) => (
               <li key={item.id} className="flex items-center justify-between gap-4 py-4">
                 <div className="flex items-center gap-4">
+                  <div className="flex flex-col">
+                    <button
+                      type="button"
+                      onClick={() => moveItem(i, 'up')}
+                      disabled={i === 0 || reordering}
+                      aria-label="Move up"
+                      className="px-1 font-mono text-sm leading-none text-taupe transition-colors hover:text-ink disabled:cursor-not-allowed disabled:opacity-25"
+                    >
+                      ↑
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => moveItem(i, 'down')}
+                      disabled={i === items.length - 1 || reordering}
+                      aria-label="Move down"
+                      className="px-1 font-mono text-sm leading-none text-taupe transition-colors hover:text-ink disabled:cursor-not-allowed disabled:opacity-25"
+                    >
+                      ↓
+                    </button>
+                  </div>
                   <div className="h-14 w-12 shrink-0 bg-sand">
                     {item.images?.[0] && (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -492,158 +661,23 @@ export function AdminCollectionPanel() {
 __VKV_PATCH_EOF__
 echo "  updated: components/AdminCollectionPanel.tsx"
 
-# --- 3. AdminDashboard: markAsSold now carries materials/dimensions over too ---
-FILE="components/AdminDashboard.tsx"
-if [ -f "$FILE" ] && grep -q "images: p.images," "$FILE"; then
-  sed -i "s/images: p.images,/images: p.images,\n      materials: p.materials,\n      height: p.height,\n      width: p.width,\n      circumference: p.circumference,\n      depth: p.depth,\n      weight: p.weight,/" "$FILE"
-  echo "  updated: components/AdminDashboard.tsx (markAsSold now carries materials/dimensions)"
-else
-  echo "WARNING: could not find \"images: p.images,\" in components/AdminDashboard.tsx."
-  echo "  Open the markAsSold() function yourself and add these lines to the"
-  echo "  collection_items insert payload, alongside images: p.images:"
-  echo "    materials: p.materials,"
-  echo "    height: p.height,"
-  echo "    width: p.width,"
-  echo "    circumference: p.circumference,"
-  echo "    depth: p.depth,"
-  echo "    weight: p.weight,"
-fi
-
-# --- 4. Collection item detail page: show materials/dimensions like a normal product ---
-mkdir -p "app/[locale]/collection/[id]"
-cat > "app/[locale]/collection/[id]/page.tsx" << '__VKV_PATCH_EOF__'
-import { notFound } from 'next/navigation';
-import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
-import { Link } from '@/lib/navigation';
-import { Reveal } from '@/components/Reveal';
-import { ProductGallery } from '@/components/ProductGallery';
-import { getCollectionItemById } from '@/lib/collection-item';
-import { pickLocalized } from '@/lib/localized';
-
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
-
-export default async function CollectionItemPage({
-  params: { locale, id },
-}: {
-  params: { locale: string; id: string };
-}) {
-  unstable_setRequestLocale(locale);
-  const t = await getTranslations('collection');
-  const tp = await getTranslations('product');
-  const item = await getCollectionItemById(id);
-  if (!item) notFound();
-
-  const name = pickLocalized(item.name, locale);
-  const description = pickLocalized(item.description, locale);
-  const materials = pickLocalized(item.materials, locale);
-  const height = pickLocalized(item.height, locale);
-  const width = pickLocalized(item.width, locale);
-  const circumference = pickLocalized(item.circumference, locale);
-  const depth = pickLocalized(item.depth, locale);
-  const weight = pickLocalized(item.weight, locale);
-
-  return (
-    <div className="mx-auto max-w-[1400px] px-6 py-16 md:px-10 md:py-24">
-      <Link
-        href="/collection"
-        className="font-mono text-[11px] uppercase tracking-widest2 text-stone hover:text-ink"
-      >
-        ← {t('title')}
-      </Link>
-
-      <div className="mt-8 grid gap-14 md:grid-cols-2 md:gap-20">
-        <Reveal>
-          <ProductGallery images={item.images ?? []} name={name} />
-        </Reveal>
-
-        <Reveal delay={0.1}>
-          <h1 className="font-display text-4xl text-ink md:text-5xl">{name}</h1>
-
-          {/* No price, no buy button, no year — this piece has already
-              found its home; this badge is the only status shown. */}
-          <span className="mt-5 inline-block bg-sand px-3.5 py-2 font-mono text-[11px] uppercase tracking-widest2 text-ink">
-            {t('sold')}
-          </span>
-
-          {description && (
-            <p className="mt-8 font-body text-base leading-relaxed text-stone">
-              {description}
-            </p>
-          )}
-
-          {(materials || height || width || circumference || depth || weight) && (
-            <dl className="mt-8 space-y-3 border-t border-line pt-6">
-              {materials && (
-                <div className="flex gap-4">
-                  <dt className="w-32 shrink-0 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
-                    {tp('materialsLabel')}
-                  </dt>
-                  <dd className="font-body text-sm text-ink">{materials}</dd>
-                </div>
-              )}
-              {height && (
-                <div className="flex gap-4">
-                  <dt className="w-32 shrink-0 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
-                    {tp('heightLabel')}
-                  </dt>
-                  <dd className="font-body text-sm text-ink">{height}</dd>
-                </div>
-              )}
-              {width && (
-                <div className="flex gap-4">
-                  <dt className="w-32 shrink-0 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
-                    {tp('widthLabel')}
-                  </dt>
-                  <dd className="font-body text-sm text-ink">{width}</dd>
-                </div>
-              )}
-              {circumference && (
-                <div className="flex gap-4">
-                  <dt className="w-32 shrink-0 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
-                    {tp('circumferenceLabel')}
-                  </dt>
-                  <dd className="font-body text-sm text-ink">{circumference}</dd>
-                </div>
-              )}
-              {depth && (
-                <div className="flex gap-4">
-                  <dt className="w-32 shrink-0 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
-                    {tp('depthLabel')}
-                  </dt>
-                  <dd className="font-body text-sm text-ink">{depth}</dd>
-                </div>
-              )}
-              {weight && (
-                <div className="flex gap-4">
-                  <dt className="w-32 shrink-0 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
-                    {tp('weightLabel')}
-                  </dt>
-                  <dd className="font-body text-sm text-ink">{weight}</dd>
-                </div>
-              )}
-            </dl>
-          )}
-        </Reveal>
-      </div>
-    </div>
-  );
-}
-__VKV_PATCH_EOF__
-echo "  updated: app/[locale]/collection/[id]/page.tsx"
-
 echo ""
 echo "IMPORTANT — one-time SQL to run in the Supabase SQL editor before this works:"
 echo ""
-echo "  alter table collection_items"
-echo "    add column if not exists materials jsonb,"
-echo "    add column if not exists height jsonb,"
-echo "    add column if not exists width jsonb,"
-echo "    add column if not exists circumference jsonb,"
-echo "    add column if not exists depth jsonb,"
-echo "    add column if not exists weight jsonb;"
+echo "  alter table collection_items add column if not exists sort_order integer;"
 echo ""
-echo "Also add these columns to supabase/full-schema.sql yourself, since I"
-echo "don't have that file, so a fresh database setup includes them too."
+echo "  -- Backfill so existing items keep their current visual order"
+echo "  -- right after the migration:"
+echo "  with ranked as ("
+echo "    select id, row_number() over (order by created_at asc) - 1 as rn"
+echo "    from collection_items"
+echo "  )"
+echo "  update collection_items c"
+echo "  set sort_order = ranked.rn"
+echo "  from ranked"
+echo "  where c.id = ranked.id;"
 echo ""
-echo "Done. git add -A && git commit -m \"Add materials/dimensions to Collection Book items\" && git push"
+echo "Also add this column to supabase/full-schema.sql yourself, since I"
+echo "don't have that file, so a fresh database setup includes it too."
+echo ""
+echo "Done. git add -A && git commit -m \"Add manual ordering (up/down) for Collection Book items\" && git push"

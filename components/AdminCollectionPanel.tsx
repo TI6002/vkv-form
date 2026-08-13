@@ -33,11 +33,15 @@ export function AdminCollectionPanel() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [reordering, setReordering] = useState(false);
 
   async function load() {
+    // Same order as the public Collection Book page: manual sort_order
+    // first (null last automatically), then newest first as a tie-breaker.
     const { data } = await supabase
       .from('collection_items')
       .select('*')
+      .order('sort_order', { ascending: true, nullsFirst: false })
       .order('created_at', { ascending: false });
     setItems((data as CollectionItem[]) ?? []);
   }
@@ -114,6 +118,40 @@ export function AdminCollectionPanel() {
     });
   }
 
+  // Swaps this item's position with the one above/below it in the
+  // currently displayed list, by swapping their sort_order values —
+  // exactly like the up/down buttons in the catalogue admin.
+  async function moveItem(index: number, direction: 'up' | 'down') {
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= items.length || reordering) return;
+
+    const current = items[index];
+    const target = items[targetIndex];
+    const currentOrder = current.sort_order ?? index;
+    const targetOrder = target.sort_order ?? targetIndex;
+
+    const next = [...items];
+    next[index] = { ...current, sort_order: targetOrder };
+    next[targetIndex] = { ...target, sort_order: currentOrder };
+    next.sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+
+    const previous = items;
+    setItems(next);
+    setReordering(true);
+
+    const [{ error: err1 }, { error: err2 }] = await Promise.all([
+      supabase.from('collection_items').update({ sort_order: targetOrder }).eq('id', current.id),
+      supabase.from('collection_items').update({ sort_order: currentOrder }).eq('id', target.id),
+    ]);
+    setReordering(false);
+
+    if (err1 || err2) {
+      console.error(err1, err2);
+      setItems(previous);
+      alert('Could not reorder these items — check the console.');
+    }
+  }
+
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
@@ -149,6 +187,9 @@ export function AdminCollectionPanel() {
         weight: translated.weight ?? null,
         sold_year: form.soldYear || null,
         images: form.images,
+        // sort_order is intentionally left untouched here — new items
+        // stay null (which sorts last, landing at the end of the
+        // Collection Book) until moved with the up/down buttons.
       };
 
       if (editingId) {
@@ -198,13 +239,38 @@ export function AdminCollectionPanel() {
         <h2 className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
           Collection Book items
         </h2>
+        <p className="mt-2 max-w-sm font-body text-xs leading-relaxed text-taupe">
+          Use the ↑ / ↓ buttons to set the order items appear in on the
+          public Collection Book page. Newly archived pieces are added
+          to the end of the list until you move them.
+        </p>
         {items.length === 0 ? (
           <p className="mt-6 font-body text-stone">Nothing archived yet.</p>
         ) : (
           <ul className="mt-6 divide-y divide-line border-t border-line">
-            {items.map((item) => (
+            {items.map((item, i) => (
               <li key={item.id} className="flex items-center justify-between gap-4 py-4">
                 <div className="flex items-center gap-4">
+                  <div className="flex flex-col">
+                    <button
+                      type="button"
+                      onClick={() => moveItem(i, 'up')}
+                      disabled={i === 0 || reordering}
+                      aria-label="Move up"
+                      className="px-1 font-mono text-sm leading-none text-taupe transition-colors hover:text-ink disabled:cursor-not-allowed disabled:opacity-25"
+                    >
+                      ↑
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => moveItem(i, 'down')}
+                      disabled={i === items.length - 1 || reordering}
+                      aria-label="Move down"
+                      className="px-1 font-mono text-sm leading-none text-taupe transition-colors hover:text-ink disabled:cursor-not-allowed disabled:opacity-25"
+                    >
+                      ↓
+                    </button>
+                  </div>
                   <div className="h-14 w-12 shrink-0 bg-sand">
                     {item.images?.[0] && (
                       // eslint-disable-next-line @next/next/no-img-element
