@@ -1,3 +1,15 @@
+#!/usr/bin/env bash
+set -e
+
+if [ ! -f package.json ]; then
+  echo "ERROR: no package.json here. cd into the project root first."
+  exit 1
+fi
+
+echo "Applying vkv.form updates — fix mobile horizontal overflow on product/collection item pages..."
+
+mkdir -p "components"
+cat > "components/ProductGallery.tsx" << '__VKV_PATCH_EOF__'
 'use client';
 
 import { useState } from 'react';
@@ -87,3 +99,8 @@ export function ProductGallery({ images, name }: { images: string[]; name: strin
     </div>
   );
 }
+__VKV_PATCH_EOF__
+echo "  updated: components/ProductGallery.tsx"
+
+echo ""
+echo "Done. git add -A && git commit -m \"Fix mobile horizontal overflow on product/collection item pages\" && git push"
