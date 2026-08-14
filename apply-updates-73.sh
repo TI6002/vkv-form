@@ -1,3 +1,15 @@
+#!/usr/bin/env bash
+set -e
+
+if [ ! -f package.json ]; then
+  echo "ERROR: no package.json here. cd into the project root first."
+  exit 1
+fi
+
+echo "Applying vkv.form updates — fix product page mobile overflow..."
+
+mkdir -p "app/[locale]/catalog/[slug]"
+cat > "app/[locale]/catalog/[slug]/page.tsx" << '__VKV_PATCH_EOF__'
 import { notFound } from 'next/navigation';
 import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
 import { AddToCartForm } from '@/components/AddToCartForm';
@@ -135,3 +147,93 @@ export default async function ProductPage({
     </div>
   );
 }
+__VKV_PATCH_EOF__
+echo "  updated: app/[locale]/catalog/[slug]/page.tsx"
+
+mkdir -p "components"
+cat > "components/ProductGallery.tsx" << '__VKV_PATCH_EOF__'
+'use client';
+
+import { useState } from 'react';
+import Image from 'next/image';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+
+export function ProductGallery({ images, name }: { images: string[]; name: string }) {
+  const [index, setIndex] = useState(0);
+  const hasMultiple = images.length > 1;
+
+  function prev() {
+    setIndex((i) => (i - 1 + images.length) % images.length);
+  }
+  function next() {
+    setIndex((i) => (i + 1) % images.length);
+  }
+
+  if (images.length === 0) {
+    return <div className="aspect-[4/5] w-full bg-sand" />;
+  }
+
+  return (
+    // w-full + max-w-full: the gallery must never be wider than its
+    // parent grid column. Without this, on some phones the main image
+    // (or the horizontally-scrolling thumbnail strip) was reported to
+    // spill past the right edge of the screen instead of staying
+    // within it.
+    <div className="w-full max-w-full">
+      <div className="relative aspect-[4/5] w-full max-w-full overflow-hidden bg-sand">
+        <Image
+          key={images[index]}
+          src={images[index]}
+          alt={name}
+          fill
+          priority
+          sizes="(min-width: 768px) 50vw, 100vw"
+          className="object-cover"
+        />
+
+        {hasMultiple && (
+          <>
+            <button
+              onClick={prev}
+              aria-label="Previous photo"
+              className="absolute left-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center bg-cream/85 text-ink transition-colors hover:bg-cream"
+            >
+              <ChevronLeft size={18} />
+            </button>
+            <button
+              onClick={next}
+              aria-label="Next photo"
+              className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center bg-cream/85 text-ink transition-colors hover:bg-cream"
+            >
+              <ChevronRight size={18} />
+            </button>
+            <span className="absolute bottom-3 right-3 bg-cream/85 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest2 text-ink">
+              {index + 1} / {images.length}
+            </span>
+          </>
+        )}
+      </div>
+
+      {hasMultiple && (
+        <div className="mt-3 flex w-full max-w-full gap-3 overflow-x-auto">
+          {images.map((src, i) => (
+            <button
+              key={src}
+              onClick={() => setIndex(i)}
+              className={`relative h-20 w-16 shrink-0 overflow-hidden bg-sand transition-opacity ${
+                i === index ? 'opacity-100 ring-1 ring-ink' : 'opacity-60 hover:opacity-90'
+              }`}
+              aria-label={`Photo ${i + 1}`}
+            >
+              <Image src={src} alt="" fill sizes="64px" className="object-cover" />
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+__VKV_PATCH_EOF__
+echo "  updated: components/ProductGallery.tsx"
+
+echo "Done. git add -A && git commit -m \"Fix product page mobile overflow\" && git push"

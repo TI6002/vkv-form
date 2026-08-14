@@ -16,25 +16,17 @@ export function ProductGallery({ images, name }: { images: string[]; name: strin
   }
 
   if (images.length === 0) {
-    return <div className="aspect-[4/5] bg-sand" />;
+    return <div className="aspect-[4/5] w-full bg-sand" />;
   }
 
   return (
-    // min-w-0 lets this column shrink inside its parent CSS grid
-    // (product/collection pages use `grid md:grid-cols-2`) — grid
-    // items default to min-width: auto and otherwise refuse to shrink
-    // below their content's natural width.
-    <div className="min-w-0">
-      {/* w-full (not w-auto) is the key fix here: combined with
-          aspect-[4/5] and max-h-[65vh], "w-auto" let the browser size
-          this box's width FROM the height on tall/narrow mobile
-          screens — which could come out wider than the actual screen,
-          pushing the whole page (photo, text, buttons) sideways off
-          the edge. w-full guarantees the box is never wider than its
-          own container; object-cover on the photo still fills
-          whatever box shape results without distorting or leaving
-          gaps. */}
-      <div className="relative mx-auto aspect-[4/5] max-h-[65vh] w-full max-w-full overflow-hidden bg-sand">
+    // w-full + max-w-full: the gallery must never be wider than its
+    // parent grid column. Without this, on some phones the main image
+    // (or the horizontally-scrolling thumbnail strip) was reported to
+    // spill past the right edge of the screen instead of staying
+    // within it.
+    <div className="w-full max-w-full">
+      <div className="relative aspect-[4/5] w-full max-w-full overflow-hidden bg-sand">
         <Image
           key={images[index]}
           src={images[index]}
@@ -69,7 +61,7 @@ export function ProductGallery({ images, name }: { images: string[]; name: strin
       </div>
 
       {hasMultiple && (
-        <div className="mt-3 flex min-w-0 gap-3 overflow-x-auto">
+        <div className="mt-3 flex w-full max-w-full gap-3 overflow-x-auto">
           {images.map((src, i) => (
             <button
               key={src}
