@@ -1,3 +1,15 @@
+#!/usr/bin/env bash
+set -e
+
+if [ ! -f package.json ]; then
+  echo "ERROR: no package.json here. cd into the project root first."
+  exit 1
+fi
+
+echo "Applying vkv.form updates — move hero title near the top, centered horizontally..."
+
+mkdir -p "app/[locale]"
+cat > "app/[locale]/page.tsx" << '__VKV_PATCH_EOF__'
 import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
 import Image from 'next/image';
 import { Link } from '@/lib/navigation';
@@ -166,3 +178,8 @@ export default async function HomePage({
     </div>
   );
 }
+__VKV_PATCH_EOF__
+echo "  updated: app/[locale]/page.tsx"
+
+echo ""
+echo "Done. git add -A && git commit -m \"Move hero title near the top and center it horizontally\" && git push"
