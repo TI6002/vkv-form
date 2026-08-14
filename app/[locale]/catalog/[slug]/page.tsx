@@ -51,79 +51,88 @@ export default async function ProductPage({
         </Reveal>
 
         <Reveal delay={0.1}>
-          <div className="flex items-start justify-between gap-4">
-            <h1 className="font-display text-4xl text-ink md:text-5xl">{name}</h1>
+          {/* min-w-0: this is a grid column, which by default refuses
+              to shrink below the width of its content. Auto-translated
+              text sometimes contains a non-breaking space around a
+              dash (typography DeepL applies) that glues two words into
+              one unbreakable run — without min-w-0 + break-words that
+              run can force this whole column, and the page with it,
+              wider than the screen on mobile. */}
+          <div className="min-w-0">
+            <div className="flex items-start justify-between gap-4">
+              <h1 className="break-words font-display text-4xl text-ink md:text-5xl">{name}</h1>
+            </div>
+            <p className="mt-3 font-mono text-xl text-stone">
+              {formatPrice(product.price_cents, product.currency)}
+            </p>
+
+            <AvailabilityBadge productId={product.id} initialAvailable={available} />
+
+            <p className="mt-8 break-words font-body text-base leading-relaxed text-stone">
+              {description}
+            </p>
+
+            <dl className="mt-8 space-y-3 border-t border-line pt-6">
+              {materials && (
+                <div className="flex gap-4">
+                  <dt className="w-32 shrink-0 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
+                    {t('materialsLabel')}
+                  </dt>
+                  <dd className="break-words font-body text-sm text-ink">{materials}</dd>
+                </div>
+              )}
+              {height && (
+                <div className="flex gap-4">
+                  <dt className="w-32 shrink-0 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
+                    {t('heightLabel')}
+                  </dt>
+                  <dd className="break-words font-body text-sm text-ink">{height}</dd>
+                </div>
+              )}
+              {width && (
+                <div className="flex gap-4">
+                  <dt className="w-32 shrink-0 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
+                    {t('widthLabel')}
+                  </dt>
+                  <dd className="break-words font-body text-sm text-ink">{width}</dd>
+                </div>
+              )}
+              {circumference && (
+                <div className="flex gap-4">
+                  <dt className="w-32 shrink-0 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
+                    {t('circumferenceLabel')}
+                  </dt>
+                  <dd className="break-words font-body text-sm text-ink">{circumference}</dd>
+                </div>
+              )}
+              {depth && (
+                <div className="flex gap-4">
+                  <dt className="w-32 shrink-0 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
+                    {t('depthLabel')}
+                  </dt>
+                  <dd className="break-words font-body text-sm text-ink">{depth}</dd>
+                </div>
+              )}
+              {weight && (
+                <div className="flex gap-4">
+                  <dt className="w-32 shrink-0 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
+                    {t('weightLabel')}
+                  </dt>
+                  <dd className="break-words font-body text-sm text-ink">{weight}</dd>
+                </div>
+              )}
+            </dl>
+
+            <AddToCartForm product={product} name={name} />
+
+            <div className="mt-3">
+              <LikeButton productId={product.id} />
+            </div>
+
+            <p className="mt-6 break-words font-body text-xs leading-relaxed text-taupe">
+              {t('shippingNote')}
+            </p>
           </div>
-          <p className="mt-3 font-mono text-xl text-stone">
-            {formatPrice(product.price_cents, product.currency)}
-          </p>
-
-          <AvailabilityBadge productId={product.id} initialAvailable={available} />
-
-          <p className="mt-8 font-body text-base leading-relaxed text-stone">
-            {description}
-          </p>
-
-          <dl className="mt-8 space-y-3 border-t border-line pt-6">
-            {materials && (
-              <div className="flex gap-4">
-                <dt className="w-32 shrink-0 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
-                  {t('materialsLabel')}
-                </dt>
-                <dd className="font-body text-sm text-ink">{materials}</dd>
-              </div>
-            )}
-            {height && (
-              <div className="flex gap-4">
-                <dt className="w-32 shrink-0 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
-                  {t('heightLabel')}
-                </dt>
-                <dd className="font-body text-sm text-ink">{height}</dd>
-              </div>
-            )}
-            {width && (
-              <div className="flex gap-4">
-                <dt className="w-32 shrink-0 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
-                  {t('widthLabel')}
-                </dt>
-                <dd className="font-body text-sm text-ink">{width}</dd>
-              </div>
-            )}
-            {circumference && (
-              <div className="flex gap-4">
-                <dt className="w-32 shrink-0 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
-                  {t('circumferenceLabel')}
-                </dt>
-                <dd className="font-body text-sm text-ink">{circumference}</dd>
-              </div>
-            )}
-            {depth && (
-              <div className="flex gap-4">
-                <dt className="w-32 shrink-0 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
-                  {t('depthLabel')}
-                </dt>
-                <dd className="font-body text-sm text-ink">{depth}</dd>
-              </div>
-            )}
-            {weight && (
-              <div className="flex gap-4">
-                <dt className="w-32 shrink-0 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
-                  {t('weightLabel')}
-                </dt>
-                <dd className="font-body text-sm text-ink">{weight}</dd>
-              </div>
-            )}
-          </dl>
-
-          <AddToCartForm product={product} name={name} />
-
-          <div className="mt-3">
-            <LikeButton productId={product.id} />
-          </div>
-
-          <p className="mt-6 font-body text-xs leading-relaxed text-taupe">
-            {t('shippingNote')}
-          </p>
         </Reveal>
       </div>
     </div>
