@@ -39,10 +39,12 @@ export default async function CollectionPage({
             const name = pickLocalized(item.name, locale);
             return (
               <Reveal key={item.id} delay={(i % 3) * 0.06}>
-                {/* Description is deliberately not shown here — only on
-                    the item's own page (/collection/[id]). The grid is
-                    just name + photo + status, kept short on purpose. */}
-                <Link href={`/collection/${item.id}`} className="group block">
+                {/* min-w-0 + break-words: a card's grid column otherwise
+                    refuses to shrink below its content's natural width —
+                    if the name contains a non-breaking space (glued-
+                    together words), it could force this column, and the
+                    whole page, wider than the screen on mobile. */}
+                <Link href={`/collection/${item.id}`} className="group block min-w-0">
                   <div className="relative aspect-[4/5] overflow-hidden bg-sand">
                     {item.images?.[0] && (
                       <Image
@@ -59,7 +61,7 @@ export default async function CollectionPage({
                       {t('sold')}
                     </span>
                   </div>
-                  <h3 className="mt-4 font-display text-lg text-ink">{name}</h3>
+                  <h3 className="mt-4 break-words font-display text-lg text-ink">{name}</h3>
                 </Link>
               </Reveal>
             );
