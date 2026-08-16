@@ -1,3 +1,15 @@
+#!/usr/bin/env bash
+set -e
+
+if [ ! -f package.json ]; then
+  echo "ERROR: no package.json here. cd into the project root first."
+  exit 1
+fi
+
+echo "Applying vkv.form updates — fix cart drawer overflowing narrow phone screens..."
+
+mkdir -p "components"
+cat > "components/CartDrawer.tsx" << '__VKV_PATCH_EOF__'
 'use client';
 
 import Image from 'next/image';
@@ -122,3 +134,7 @@ export function CartDrawer() {
     </>
   );
 }
+__VKV_PATCH_EOF__
+echo "  updated: components/CartDrawer.tsx"
+
+echo "Done. git add -A && git commit -m \"Fix cart drawer width overflowing narrow phones\" && git push"
