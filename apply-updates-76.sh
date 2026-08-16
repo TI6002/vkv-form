@@ -1,3 +1,15 @@
+#!/usr/bin/env bash
+set -e
+
+if [ ! -f package.json ]; then
+  echo "ERROR: no package.json here. cd into the project root first."
+  exit 1
+fi
+
+echo "Applying vkv.form updates — remove Sold year field from Collection Book admin..."
+
+mkdir -p "components"
+cat > "components/AdminCollectionPanel.tsx" << '__VKV_PATCH_EOF__'
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -348,3 +360,7 @@ export function AdminCollectionPanel() {
     </div>
   );
 }
+__VKV_PATCH_EOF__
+echo "  updated: components/AdminCollectionPanel.tsx"
+
+echo "Done. git add -A && git commit -m \"Remove Sold year field from Collection Book admin\" && git push"
