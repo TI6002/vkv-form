@@ -60,14 +60,14 @@ export default async function ProductPage({
           </div>
 
           <div className="min-w-0">
-            <h1 className="font-display text-3xl text-ink md:text-4xl">{name}</h1>
+            <h1 className="break-words font-display text-3xl text-ink md:text-4xl">{name}</h1>
             <p className="mt-3 font-mono text-xl text-ink">
               {formatPrice(product.price_cents, product.currency)}
             </p>
 
             <AvailabilityBadge productId={product.id} initialAvailable={available} />
 
-            <p className="mt-6 font-body text-base leading-relaxed text-stone">
+            <p className="mt-6 break-words font-body text-base leading-relaxed text-stone">
               {description}
             </p>
 
@@ -77,7 +77,7 @@ export default async function ProductPage({
                   <dt className="w-32 shrink-0 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
                     {t('materialsLabel')}
                   </dt>
-                  <dd className="min-w-0 flex-1 font-body text-sm text-ink">{materials}</dd>
+                  <dd className="min-w-0 flex-1 break-words font-body text-sm text-ink">{materials}</dd>
                 </div>
               )}
               {height && (
@@ -85,7 +85,7 @@ export default async function ProductPage({
                   <dt className="w-32 shrink-0 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
                     {t('heightLabel')}
                   </dt>
-                  <dd className="min-w-0 flex-1 font-body text-sm text-ink">{height}</dd>
+                  <dd className="min-w-0 flex-1 break-words font-body text-sm text-ink">{height}</dd>
                 </div>
               )}
               {width && (
@@ -93,7 +93,7 @@ export default async function ProductPage({
                   <dt className="w-32 shrink-0 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
                     {t('widthLabel')}
                   </dt>
-                  <dd className="min-w-0 flex-1 font-body text-sm text-ink">{width}</dd>
+                  <dd className="min-w-0 flex-1 break-words font-body text-sm text-ink">{width}</dd>
                 </div>
               )}
               {circumference && (
@@ -101,7 +101,7 @@ export default async function ProductPage({
                   <dt className="w-32 shrink-0 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
                     {t('circumferenceLabel')}
                   </dt>
-                  <dd className="min-w-0 flex-1 font-body text-sm text-ink">{circumference}</dd>
+                  <dd className="min-w-0 flex-1 break-words font-body text-sm text-ink">{circumference}</dd>
                 </div>
               )}
               {depth && (
@@ -109,7 +109,7 @@ export default async function ProductPage({
                   <dt className="w-32 shrink-0 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
                     {t('depthLabel')}
                   </dt>
-                  <dd className="min-w-0 flex-1 font-body text-sm text-ink">{depth}</dd>
+                  <dd className="min-w-0 flex-1 break-words font-body text-sm text-ink">{depth}</dd>
                 </div>
               )}
               {weight && (
@@ -117,7 +117,7 @@ export default async function ProductPage({
                   <dt className="w-32 shrink-0 font-mono text-[11px] uppercase tracking-widest2 text-taupe">
                     {t('weightLabel')}
                   </dt>
-                  <dd className="min-w-0 flex-1 font-body text-sm text-ink">{weight}</dd>
+                  <dd className="min-w-0 flex-1 break-words font-body text-sm text-ink">{weight}</dd>
                 </div>
               )}
             </dl>
