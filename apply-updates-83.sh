@@ -1,3 +1,15 @@
+#!/usr/bin/env bash
+set -e
+
+if [ ! -f package.json ]; then
+  echo "ERROR: no package.json here. cd into the project root first."
+  exit 1
+fi
+
+echo "Applying vkv.form updates — fix implicit any in webhook map callback..."
+
+mkdir -p "app/api/webhooks/stripe"
+cat > "app/api/webhooks/stripe/route.ts" << '__VKV_PATCH_EOF__'
 import { NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import { stripe } from '@/lib/stripe';
@@ -174,3 +186,7 @@ export async function POST(req: Request) {
 
   return NextResponse.json({ received: true });
 }
+__VKV_PATCH_EOF__
+echo "  updated: app/api/webhooks/stripe/route.ts"
+
+echo "Done. git add -A && git commit -m \"Fix implicit any in webhook\" && git push"
