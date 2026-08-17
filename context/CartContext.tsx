@@ -18,6 +18,7 @@ type CartContextValue = {
   addItem: (line: Omit<CartLine, 'quantity'>, quantity?: number) => void;
   removeItem: (productId: string) => void;
   setQuantity: (productId: string, quantity: number) => void;
+  clearCart: () => void;
   subtotalCents: number;
   count: number;
 };
@@ -72,6 +73,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
         : prev.map((l) => (l.productId === productId ? { ...l, quantity } : l))
     );
 
+  // Called once payment succeeds (see ClearCartOnSuccess), so a piece
+  // that's just been bought doesn't linger in the cart — and, since
+  // it's now sold, can't accidentally be "bought" again by re-checking
+  // out with a stale cart.
+  const clearCart = () => setLines([]);
+
   const subtotalCents = useMemo(
     () => lines.reduce((sum, l) => sum + l.priceCents * l.quantity, 0),
     [lines]
@@ -91,6 +98,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         addItem,
         removeItem,
         setQuantity,
+        clearCart,
         subtotalCents,
         count,
       }}

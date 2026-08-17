@@ -1,11 +1,14 @@
 import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
+import Image from 'next/image';
 import { createClient } from '@/lib/supabase/server';
 import { AuthForm } from '@/components/AuthForm';
 import { SignOutButton } from '@/components/SignOutButton';
-import { AccountOrdersLive } from '@/components/AccountOrdersLive';
-import { AccountFavoritesLive } from '@/components/AccountFavoritesLive';
+import { OrderCard } from '@/components/OrderCard';
+import { ClearCartOnSuccess } from '@/components/ClearCartOnSuccess';
 import { Reveal } from '@/components/Reveal';
 import { Link } from '@/lib/navigation';
+import { formatPrice } from '@/lib/format';
+import { pickLocalized } from '@/lib/localized';
 import type { Order, Favorite } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
@@ -52,6 +55,9 @@ export default async function AccountPage({
     isAdmin = profileRow?.role === 'admin';
   }
 
+  const activeOrders = orders.filter((o) => o.status === 'pending' || o.status === 'paid');
+  const pastOrders = orders.filter((o) => o.status === 'shipped' || o.status === 'cancelled');
+
   return (
     <div className="mx-auto max-w-[1100px] px-6 py-20 md:px-10 md:py-28">
       {!user ? (
@@ -65,6 +71,7 @@ export default async function AccountPage({
         </Reveal>
       ) : (
         <div className="flex flex-col gap-8">
+          <ClearCartOnSuccess />
           <div className="flex items-center justify-between">
             <h1 className="font-display text-4xl italic text-ink md:text-5xl">{t('ordersTitle')}</h1>
             <div className="flex items-center gap-6">
@@ -80,31 +87,94 @@ export default async function AccountPage({
             </div>
           </div>
 
-          {/* Active + past orders update live: if an admin changes an
-              order's status while this page is open (e.g. marks it
-              Delivered or Cancelled), it moves between these sections
-              immediately, no refresh needed. */}
-          <AccountOrdersLive
-            userId={user.id}
-            locale={locale}
-            initialOrders={orders}
-            activeOrdersTitle={t('activeOrdersTitle')}
-            pastOrdersTitle={t('pastOrdersTitle')}
-            noOrdersText={t('noActiveOrders')}
-            noPastOrdersText={t('noPastOrders')}
-          />
+          <Reveal>
+            <div className="bg-white p-8">
+              <p className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
+                {t('activeOrdersTitle')}
+              </p>
+              {activeOrders.length === 0 ? (
+                <p className="mt-6 font-body text-stone">{t('noActiveOrders')}</p>
+              ) : (
+                <div className="mt-6 flex flex-col gap-4">
+                  {activeOrders.map((order) => (
+                    <OrderCard key={order.id} order={order} locale={locale} />
+                  ))}
+                </div>
+              )}
+            </div>
+          </Reveal>
 
-          {/* Saved items also update live: liking/unliking a product on
-              another page shows up here without needing a manual
-              refresh of this page. */}
+          <Reveal delay={0.05}>
+            <div className="bg-paper p-8">
+              <p className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
+                {t('pastOrdersTitle')}
+              </p>
+              {pastOrders.length === 0 ? (
+                <p className="mt-6 font-body text-stone">
+                  {t('noActiveOrders') /* reused: "no orders yet" copy */}
+                </p>
+              ) : (
+                <div className="mt-6 flex flex-col gap-4">
+                  {pastOrders.map((order) => (
+                    <OrderCard key={order.id} order={order} locale={locale} />
+                  ))}
+                </div>
+              )}
+            </div>
+          </Reveal>
+
           <Reveal delay={0.1}>
-            <AccountFavoritesLive
-              userId={user.id}
-              locale={locale}
-              initialFavorites={favorites}
-              savedTitle={t('savedTitle')}
-              noSavedText={t('noSaved')}
-            />
+            <div className="bg-white p-8">
+              <p className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
+                {t('savedTitle')}
+              </p>
+              {favorites.length === 0 ? (
+                <p className="mt-6 font-body text-stone">{t('noSaved')}</p>
+              ) : (
+                <div className="mt-8 grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3">
+                  {favorites.map((fav) => {
+                    const product = fav.products;
+                    if (!product) return null;
+                    const name = pickLocalized(product.name, locale);
+                    const sold = !product.available;
+                    return (
+                      <Link
+                        key={fav.id}
+                        href={`/catalog/${product.slug}`}
+                        className="group block"
+                      >
+                        <div className="relative aspect-[4/5] overflow-hidden bg-sand">
+                          {product.images?.[0] && (
+                            <Image
+                              src={product.images[0]}
+                              alt={name}
+                              fill
+                              sizes="(min-width: 768px) 20vw, 33vw"
+                              className={`object-cover transition-transform duration-700 ${
+                                sold ? 'grayscale' : 'group-hover:scale-105'
+                              }`}
+                            />
+                          )}
+                          {sold && (
+                            <span className="absolute left-2 top-2 bg-cream/90 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest2 text-ink">
+                              Sold
+                            </span>
+                          )}
+                        </div>
+                        <p className="mt-3 font-body text-sm text-ink">{name}</p>
+                        {sold ? (
+                          <p className="font-mono text-xs text-taupe">No longer available</p>
+                        ) : (
+                          <p className="font-mono text-xs text-stone">
+                            {formatPrice(product.price_cents, product.currency)}
+                          </p>
+                        )}
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </Reveal>
         </div>
       )}

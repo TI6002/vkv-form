@@ -34,6 +34,7 @@ export async function POST(req: Request) {
     try {
       const lineItems = await stripe.checkout.sessions.listLineItems(session.id, {
         limit: 100,
+        expand: ['data.price.product'],
       });
 
       const items = lineItems.data.map((line) => ({
@@ -87,6 +88,41 @@ export async function POST(req: Request) {
         items: order.items,
         customer_details: order.customer_details,
       });
+
+      // Mark each purchased piece as sold. Every product here is a
+      // one-of-a-kind handmade object — there's no "quantity in
+      // stock" concept, so a completed purchase always means that
+      // exact piece is gone. product_id was attached as metadata on
+      // the ephemeral Stripe Product created from price_data at
+      // checkout time (see /api/checkout), which is why price.product
+      // needs to be expanded above to read it back here.
+      const productIds = lineItems.data
+        .map((line) => {
+          const product = line.price?.product;
+          if (product && typeof product === 'object' && 'metadata' in product) {
+            return (product.metadata as Record<string, string>)?.product_id;
+          }
+          return undefined;
+        })
+        .filter((id): id is string => Boolean(id));
+
+      if (productIds.length > 0) {
+        const { error: availabilityError } = await supabase
+          .from('products')
+          .update({ available: false })
+          .in('id', productIds);
+
+        if (availabilityError) {
+          // Don't fail the whole webhook over this — the order itself
+          // is already saved and the customer already paid. Log it
+          // loudly so it can be fixed manually in /admin if needed.
+          console.error(
+            'Stripe webhook: order saved, but failed to mark product(s) as sold:',
+            productIds,
+            availabilityError
+          );
+        }
+      }
     } catch (err) {
       console.error('Stripe webhook: unexpected error while processing session:', err);
       return NextResponse.json({ error: 'Processing failed' }, { status: 500 });

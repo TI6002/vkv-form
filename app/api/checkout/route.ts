@@ -38,6 +38,34 @@ export async function POST(req: Request) {
       data: { user },
     } = await supabase.auth.getUser();
 
+    // Every piece is one-of-a-kind — re-check availability right before
+    // charging anyone, not just when it was added to the cart. Someone
+    // could easily have this in their cart from a while ago, and it may
+    // have sold to someone else in the meantime.
+    const { data: freshProducts, error: availabilityCheckError } = await supabase
+      .from('products')
+      .select('id, name, available')
+      .in(
+        'id',
+        lines.map((l) => l.productId)
+      );
+
+    if (availabilityCheckError) {
+      console.error('Checkout: failed to verify product availability:', availabilityCheckError);
+      return NextResponse.json({ error: 'Could not verify availability' }, { status: 500 });
+    }
+
+    const soldItems = (freshProducts ?? []).filter((p) => !p.available);
+    if (soldItems.length > 0) {
+      return NextResponse.json(
+        {
+          error: 'sold_out',
+          soldProductIds: soldItems.map((p) => p.id),
+        },
+        { status: 409 }
+      );
+    }
+
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
     console.log('Checkout: NEXT_PUBLIC_SITE_URL resolved to:', JSON.stringify(siteUrl));
 
