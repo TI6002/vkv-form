@@ -1,3 +1,15 @@
+#!/usr/bin/env bash
+set -e
+
+if [ ! -f package.json ]; then
+  echo "ERROR: no package.json here. cd into the project root first."
+  exit 1
+fi
+
+echo "Applying vkv.form updates — apply strong overflow fix to Collection Book item page..."
+
+mkdir -p "app/[locale]/collection/[id]"
+cat > "app/[locale]/collection/[id]/page.tsx" << '__VKV_PATCH_EOF__'
 import { notFound } from 'next/navigation';
 import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
 import { Link } from '@/lib/navigation';
@@ -169,3 +181,7 @@ export default async function CollectionItemPage({
     </div>
   );
 }
+__VKV_PATCH_EOF__
+echo "  updated: app/[locale]/collection/[id]/page.tsx"
+
+echo "Done. git add -A && git commit -m \"Fix mobile overflow on Collection Book item page\" && git push"
