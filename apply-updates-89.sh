@@ -6,7 +6,7 @@ if [ ! -f package.json ]; then
   exit 1
 fi
 
-echo "Applying vkv.form updates — taller gallery photos, less cropping..."
+echo "Applying vkv.form updates — make the top gallery photo less dominant/shorter..."
 
 mkdir -p "app/[locale]"
 cat > "app/[locale]/page.tsx" << '__VKV_PATCH_EOF__'
@@ -143,7 +143,7 @@ export default async function HomePage({
         <div className="mx-auto max-w-[1400px] px-6 py-20 md:px-10 md:py-28">
           <div className="flex flex-col gap-6 md:gap-8">
             <Reveal>
-              <div className="relative aspect-[4/3] overflow-hidden bg-sand md:aspect-[16/9]">
+              <div className="relative aspect-[16/10] overflow-hidden bg-sand md:aspect-[21/9]">
                 <Image
                   src="/images/gallery-1.jpg"
                   alt=""
@@ -226,4 +226,4 @@ export default async function HomePage({
 __VKV_PATCH_EOF__
 echo "  updated: app/[locale]/page.tsx"
 
-echo "Done. git add -A && git commit -m \"Taller gallery photos to reduce cropping\" && git push"
+echo "Done. git add -A && git commit -m \"Reduce height of top gallery photo\" && git push"
