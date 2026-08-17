@@ -42,7 +42,13 @@ export async function POST(req: Request) {
     // charging anyone, not just when it was added to the cart. Someone
     // could easily have this in their cart from a while ago, and it may
     // have sold to someone else in the meantime.
-    const { data: freshProducts, error: availabilityCheckError } = await supabase
+    type ProductAvailabilityRow = {
+      id: string;
+      name: string;
+      available: boolean;
+    };
+
+    const { data: rawFreshProducts, error: availabilityCheckError } = await supabase
       .from('products')
       .select('id, name, available')
       .in(
@@ -55,7 +61,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Could not verify availability' }, { status: 500 });
     }
 
-    const soldItems = (freshProducts ?? []).filter((p) => !p.available);
+    const freshProducts: ProductAvailabilityRow[] = (rawFreshProducts ?? []) as ProductAvailabilityRow[];
+    const soldItems = freshProducts.filter((p: ProductAvailabilityRow) => !p.available);
     if (soldItems.length > 0) {
       return NextResponse.json(
         {
