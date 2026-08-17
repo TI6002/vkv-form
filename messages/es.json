@@ -26,8 +26,8 @@
     "title": "Sobre nosotros",
     "authorEyebrow": "La autora",
     "authorTitle": "Sobre la autora",
-    "authorBody1": "vkv.form comenzó como una serie de estudios sobre el equilibrio — pequeñas formas de arcilla hechas entre otros trabajos, guardadas en un alféizar en lugar de venderse. Con el tiempo, los estudios se convirtieron en una práctica, y la práctica en un pequeño taller que produce objetos en tiradas cortas y meditadas.",
-    "authorBody2": "Cada pieza que sale del taller ha pasado por las mismas manos que la moldearon. Nada se subcontrata, nada se produce en masa — por eso cada tirada es limitada, y algunas formas no vuelven una vez agotadas.",
+    "authorBody1": "Soy una artista contemporánea que crea vasijas y formas escultóricas que revelan la idea del renacimiento. Mi obra se dirige hacia el momento en que la pérdida deja de ser un final y se convierte en el comienzo de una nueva vida.\n\nEn el centro de mi práctica artística se encuentra mi propia técnica, Lacera, en la cual, durante el proceso de formación, la materia revela su propia lógica: las líneas de apertura surgen y se forman, a veces con independencia de la intención inicial, como si la propia forma encontrara su camino hacia el desgarro, la apertura y la posterior unión. Los desgarros, los bordes irregulares y las grietas se convierten en parte integral de la estructura y el significado, donde una nueva integridad nace no a pesar del cambio, sino gracias a él.\n\nTrabajo principalmente con materiales que ya han atravesado un ciclo de vida anterior, devolviéndolos al espacio artístico con una nueva condición. Mi arcilla compuesta de base de papel, que elimina por completo la etapa de cocción, ofrece la libertad de crear objetos con una superficie visualmente prístina y profundamente texturizada. El propio material se convierte en parte del discurso artístico: la idea del renacimiento se materializa no solo en la forma, sino también en la materia, que adquiere una nueva existencia.\n\nCada obra invita a un diálogo silencioso sobre la resiliencia humana, el estado interior y la empatía discreta, revelando la naturaleza emocional del ser humano. En algunas obras, la composición se complementa con elementos botánicos que simbolizan la continuidad de la vida, la capacidad de superación y de renovación.",
+    "authorBody2": "",
     "philosophyEyebrow": "Filosofía",
     "philosophyTitle": "Por qué hacemos lo que hacemos",
     "philosophyBody1": "Los interiores modernos están llenos de objetos que piden atención. Quisimos hacer lo contrario — objetos que se asientan en silencio en un espacio y recompensan una mirada larga en lugar de un primer vistazo.",
@@ -39,7 +39,7 @@
   },
   "catalog": {
     "title": "Catálogo",
-    "subtitle": "Todas las obras de arte que hay ahora mismo en el taller.",
+    "subtitle": "Todos los objetos que hay ahora mismo en el taller.",
     "empty": "Ningún objeto coincide todavía con este filtro.",
     "priceLabel": "Precio",
     "viewProduct": "Ver objeto",
@@ -57,7 +57,7 @@
     "added": "Añadido",
     "outOfStock": "No disponible por ahora",
     "quantityLabel": "Cantidad",
-    "shippingNote": " ",
+    "shippingNote": "Hecho por encargo en tiradas pequeñas. Se envía desde la UE en 5–10 días laborables.",
     "inStock": "En stock",
     "like": "Guardar",
     "liked": "Guardado",
@@ -178,8 +178,7 @@
     "title": "Libro de colección",
     "intro": "Un registro de piezas que ya han encontrado su hogar — conservado aquí como archivo y no para la venta.",
     "empty": "El libro de colección está vacío por ahora.",
-    "soldIn": "Vendido en",
-    "sold": "Vendido"
+    "soldIn": "Vendido en"
   },
   "cookies": {
     "message": "Este sitio usa un pequeño número de cookies esenciales para mantenerte conectado(a) y recordar tu carrito — nada se usa para publicidad o seguimiento.",

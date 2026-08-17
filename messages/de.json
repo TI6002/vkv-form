@@ -26,8 +26,8 @@
     "title": "Über uns",
     "authorEyebrow": "Die Macherin",
     "authorTitle": "Über die Autorin",
-    "authorBody1": "vkv.form begann als eine Reihe von Studien zum Gleichgewicht — kleine Tonformen, entstanden neben anderer Arbeit und auf einer Fensterbank aufbewahrt statt verkauft. Mit der Zeit wurden aus den Studien eine Praxis und aus der Praxis ein kleines Atelier, das Objekte in kurzen, durchdachten Serien fertigt.",
-    "authorBody2": "Jedes Stück, das das Atelier verlässt, ist durch dieselben Hände gegangen, die es geformt haben. Nichts wird ausgelagert, nichts wird massenproduziert — deshalb ist jede Serie begrenzt, und manche Formen kehren nach ihrem Verkauf nicht zurück.",
+    "authorBody1": "Ich bin eine zeitgenössische Künstlerin, die skulpturale Gefäße und Formen schafft, die die Idee der Wiedergeburt offenbaren. Mein Schaffen richtet sich auf den Moment, in dem Verlust aufhört, ein Ende zu sein, und zum Beginn eines neuen Lebens wird.\n\nIm Zentrum meiner künstlerischen Praxis steht meine eigene Technik, Lacera, bei der die Materie während des Formungsprozesses ihre eigene Logik offenbart: Öffnungslinien entstehen und formen sich, mitunter unabhängig von der ursprünglichen Absicht, als fände die Form selbst ihren Weg zum Riss, zur Öffnung und zur anschließenden Verbindung. Risse, ausgefranste Kanten und Sprünge werden zu einem festen Bestandteil von Struktur und Bedeutung, wo eine neue Ganzheit nicht trotz der Veränderung, sondern durch sie entsteht.\n\nIch arbeite vorwiegend mit Materialien, die bereits einen vorherigen Lebenszyklus durchlaufen haben, und führe sie in neuer Gestalt in den künstlerischen Raum zurück. Meine eigene papierbasierte Verbundmasse, die den Brennvorgang vollständig ausschließt, gibt die Freiheit, Objekte mit einer visuell ursprünglichen, tief strukturierten Oberfläche zu schaffen. Das Material selbst wird Teil der künstlerischen Aussage: Die Idee der Wiedergeburt verkörpert sich nicht nur in der Form, sondern auch in der Materie, die eine neue Existenz erlangt.\n\nJedes Werk lädt zu einem stillen Dialog über menschliche Widerstandskraft, innere Zustände und leises Mitgefühl ein und offenbart die emotionale Natur des Menschen. In manchen Arbeiten wird die Komposition durch botanische Elemente ergänzt, die die Kontinuität des Lebens, die Fähigkeit zur Überwindung und zur Erneuerung symbolisieren.",
+    "authorBody2": "",
     "philosophyEyebrow": "Philosophie",
     "philosophyTitle": "Warum wir tun, was wir tun",
     "philosophyBody1": "Moderne Räume sind voller Dinge, die Aufmerksamkeit verlangen. Wir wollten das Gegenteil schaffen — Objekte, die sich still in einen Raum einfügen und einen längeren Blick belohnen, nicht nur den ersten.",
@@ -39,7 +39,7 @@
   },
   "catalog": {
     "title": "Katalog",
-    "subtitle": "Alle Kunstwerke, die sich derzeit im Atelier befinden.",
+    "subtitle": "Alle Objekte, die derzeit im Atelier sind.",
     "empty": "Noch keine Form passt zu diesem Filter.",
     "priceLabel": "Preis",
     "viewProduct": "Objekt ansehen",
@@ -57,7 +57,7 @@
     "added": "Hinzugefügt",
     "outOfStock": "Derzeit nicht verfügbar",
     "quantityLabel": "Menge",
-    "shippingNote": " ",
+    "shippingNote": "Auf Bestellung in kleinen Serien gefertigt. Versand aus der EU innerhalb von 5–10 Werktagen.",
     "inStock": "Auf Lager",
     "like": "Merken",
     "liked": "Gemerkt",
@@ -178,8 +178,7 @@
     "title": "Sammlungsbuch",
     "intro": "Ein Verzeichnis von Stücken, die bereits ein neues Zuhause gefunden haben — hier als Archiv geführt, nicht zum erneuten Verkauf.",
     "empty": "Das Sammlungsbuch ist derzeit leer.",
-    "soldIn": "Verkauft im Jahr",
-    "sold": "Verkauft"
+    "soldIn": "Verkauft im Jahr"
   },
   "cookies": {
     "message": "Diese Website verwendet eine kleine Anzahl notwendiger Cookies, um Sie angemeldet zu halten und Ihren Warenkorb zu merken — nichts wird für Werbung oder Tracking verwendet.",

@@ -26,8 +26,8 @@
     "title": "About",
     "authorEyebrow": "The maker",
     "authorTitle": "About the author",
-    "authorBody1": "vkv.form began as a series of studies in balance — small clay forms made between other work, kept on a windowsill rather than sold. Over time the studies became a practice, and the practice became a small studio producing objects in short, considered runs.",
-    "authorBody2": "Every piece that leaves the studio has passed through the same hands that shaped it. Nothing is outsourced, nothing is mass-produced — which is also why each run is limited, and why some forms do not return once they are gone.",
+    "authorBody1": "I am a contemporary artist creating sculptural vessels and forms that reveal the idea of rebirth. My work is turned toward the moment when loss ceases to be an ending and becomes the beginning of a new life.\n\nAt the heart of my artistic practice lies my own technique, Lacera, in which, during the process of shaping, the material reveals its own logic: lines of opening arise and form, at times independently of the original intention, as if the form itself finds its way toward tearing, opening, and subsequent joining. Tears, ragged edges and cracks become an integral part of the structure and meaning, where a new wholeness is born not in spite of change, but because of it.\n\nI work primarily with materials that have already passed through a previous life cycle, returning them to the artistic realm in a new capacity. My own paper-based composite clay, which entirely eliminates the firing stage, gives the freedom to create objects with a visually pristine, deeply textured surface. The material itself becomes part of the artistic statement: the idea of rebirth is embodied not only in form, but in matter itself, which takes on a new existence.\n\nEach work invites a silent dialogue about human resilience, inner states, and quiet empathy, revealing the emotional nature of a person. In some works, the composition is complemented by botanical elements, symbolising the continuity of life, the capacity to overcome and to renew.",
+    "authorBody2": "",
     "philosophyEyebrow": "Philosophy",
     "philosophyTitle": "Why we make what we make",
     "philosophyBody1": "Modern rooms are full of things that ask for attention. We wanted to make the opposite — objects that settle into a space quietly and reward a longer look rather than a first glance.",
@@ -39,7 +39,7 @@
   },
   "catalog": {
     "title": "Catalogue",
-    "subtitle": "All the works of art currently in the studio.",
+    "subtitle": "Every object currently in the studio.",
     "empty": "No forms match this filter yet.",
     "priceLabel": "Price",
     "viewProduct": "View object",
@@ -57,7 +57,7 @@
     "added": "Added",
     "outOfStock": "Currently unavailable",
     "quantityLabel": "Quantity",
-    "shippingNote": " ",
+    "shippingNote": "Made to order in small batches. Ships from the EU within 5–10 working days.",
     "inStock": "In stock",
     "like": "Save",
     "liked": "Saved",
@@ -178,8 +178,7 @@
     "title": "Collection Book",
     "intro": "A record of pieces that have already found their homes — kept here as an archive rather than offered for sale again.",
     "empty": "The collection book is empty for now.",
-    "soldIn": "Sold in",
-    "sold": "Sold"
+    "soldIn": "Sold in"
   },
   "cookies": {
     "message": "This site uses a small number of essential cookies to keep you signed in and remember your cart — nothing is used for advertising or tracking.",

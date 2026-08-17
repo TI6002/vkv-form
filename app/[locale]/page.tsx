@@ -117,52 +117,54 @@ export default async function HomePage({
 
       {/*
         Gallery — group shots of pieces styled together (2-3 vases per
-        photo), between Philosophy and the catalogue. Classic editorial
-        layout: one tall photo on the left, two smaller ones stacked on
-        the right — feels like a page from a design magazine rather
-        than a product grid, which is the point here (the catalogue
-        section right below already does the "individual product"
-        job). Stacks to one column on mobile.
+        photo), between Philosophy and the catalogue. One wide "accent"
+        photo on top, two smaller ones below it side by side — clearer
+        visual hierarchy than three equal photos in a row, and the wide
+        aspect ratio suits rectangular/landscape photos far better than
+        forcing everything into a tall portrait crop. Stacks to one
+        column on mobile.
 
         Swap /images/gallery-1.jpg, gallery-2.jpg, gallery-3.jpg for
         the client's real photos — same folder as hero.png etc.
       */}
       <section className="bg-paper">
         <div className="mx-auto max-w-[1400px] px-6 py-20 md:px-10 md:py-28">
-          <div className="grid grid-cols-1 gap-6 md:h-[640px] md:grid-cols-2 md:grid-rows-2 md:gap-8">
+          <div className="flex flex-col gap-6 md:gap-8">
             <Reveal>
-              <div className="relative aspect-[4/5] overflow-hidden bg-sand md:aspect-auto md:h-full md:row-span-2">
+              <div className="relative aspect-[16/9] overflow-hidden bg-sand md:aspect-[21/9]">
                 <Image
                   src="/images/gallery-1.jpg"
                   alt=""
                   fill
-                  sizes="(min-width: 768px) 50vw, 100vw"
+                  sizes="100vw"
                   className="object-cover"
                 />
               </div>
             </Reveal>
-            <Reveal delay={0.08}>
-              <div className="relative aspect-[4/5] overflow-hidden bg-sand md:aspect-auto md:h-full">
-                <Image
-                  src="/images/gallery-2.jpg"
-                  alt=""
-                  fill
-                  sizes="(min-width: 768px) 50vw, 100vw"
-                  className="object-cover"
-                />
-              </div>
-            </Reveal>
-            <Reveal delay={0.16}>
-              <div className="relative aspect-[4/5] overflow-hidden bg-sand md:aspect-auto md:h-full">
-                <Image
-                  src="/images/gallery-3.jpg"
-                  alt=""
-                  fill
-                  sizes="(min-width: 768px) 50vw, 100vw"
-                  className="object-cover"
-                />
-              </div>
-            </Reveal>
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:gap-8">
+              <Reveal delay={0.08}>
+                <div className="relative aspect-[4/3] overflow-hidden bg-sand">
+                  <Image
+                    src="/images/gallery-2.jpg"
+                    alt=""
+                    fill
+                    sizes="(min-width: 640px) 50vw, 100vw"
+                    className="object-cover"
+                  />
+                </div>
+              </Reveal>
+              <Reveal delay={0.16}>
+                <div className="relative aspect-[4/3] overflow-hidden bg-sand">
+                  <Image
+                    src="/images/gallery-3.jpg"
+                    alt=""
+                    fill
+                    sizes="(min-width: 640px) 50vw, 100vw"
+                    className="object-cover"
+                  />
+                </div>
+              </Reveal>
+            </div>
           </div>
         </div>
       </section>

@@ -26,8 +26,8 @@
     "title": "À propos",
     "authorEyebrow": "La créatrice",
     "authorTitle": "À propos de l'auteure",
-    "authorBody1": "vkv.form a commencé comme une série d'études sur l'équilibre — de petites formes en argile faites entre deux travaux, gardées sur un rebord de fenêtre plutôt que vendues. Avec le temps, ces études sont devenues une pratique, et la pratique un petit atelier produisant des objets en séries courtes et réfléchies.",
-    "authorBody2": "Chaque pièce qui quitte l'atelier est passée entre les mêmes mains qui l'ont façonnée. Rien n'est sous-traité, rien n'est produit en série — c'est pourquoi chaque série est limitée, et certaines formes ne reviennent pas une fois épuisées.",
+    "authorBody1": "Je suis une artiste contemporaine créant des vases et formes sculpturales qui révèlent l'idée de renaissance. Mon travail se tourne vers ce moment où la perte cesse d'être une fin et devient le commencement d'une vie nouvelle.\n\nAu cœur de ma pratique artistique se trouve ma technique personnelle, Lacera, dans laquelle, au cours du processus de formation, la matière révèle sa propre logique : les lignes d'ouverture naissent et se forment, parfois indépendamment de l'intention initiale, comme si la forme elle-même trouvait son chemin vers la déchirure, l'ouverture, puis la réunion. Les déchirures, les bords irréguliers et les fissures deviennent une partie intégrante de la structure et du sens, où une nouvelle intégrité naît non pas malgré le changement, mais grâce à lui.\n\nJe travaille principalement avec des matériaux ayant déjà connu un cycle de vie antérieur, les faisant revenir dans l'espace artistique sous une nouvelle forme. Mon argile composite à base de papier, qui élimine entièrement l'étape de cuisson, offre la liberté de créer des objets à la surface visuellement brute et profondément texturée. La matière elle-même devient partie de la déclaration artistique : l'idée de renaissance s'incarne non seulement dans la forme, mais aussi dans la matière, qui acquiert une nouvelle existence.\n\nChaque œuvre invite à un dialogue silencieux sur la résilience humaine, l'état intérieur et l'empathie discrète, révélant la nature émotionnelle de l'être humain. Dans certaines œuvres, la composition est complétée par des éléments botaniques, symbolisant la continuité de la vie, la capacité à surmonter et à se renouveler.",
+    "authorBody2": "",
     "philosophyEyebrow": "Philosophie",
     "philosophyTitle": "Pourquoi nous faisons ce que nous faisons",
     "philosophyBody1": "Les intérieurs modernes regorgent d'objets qui réclament de l'attention. Nous avons voulu faire l'inverse — des objets qui s'installent tranquillement dans un espace et récompensent un regard prolongé plutôt qu'un premier coup d'œil.",
@@ -39,7 +39,7 @@
   },
   "catalog": {
     "title": "Catalogue",
-    "subtitle": "Toutes les œuvres d'art qui se trouvent actuellement dans l'atelier.",
+    "subtitle": "Tous les objets actuellement en atelier.",
     "empty": "Aucune forme ne correspond encore à ce filtre.",
     "priceLabel": "Prix",
     "viewProduct": "Voir l'objet",
@@ -57,7 +57,7 @@
     "added": "Ajouté",
     "outOfStock": "Actuellement indisponible",
     "quantityLabel": "Quantité",
-    "shippingNote": " ",
+    "shippingNote": "Fabriqué sur commande en petites séries. Expédié depuis l'UE sous 5 à 10 jours ouvrés.",
     "inStock": "En stock",
     "like": "Enregistrer",
     "liked": "Enregistré",
@@ -178,8 +178,7 @@
     "title": "Livre de collection",
     "intro": "Un registre des pièces qui ont déjà trouvé leur foyer — conservé ici comme archive plutôt que remis en vente.",
     "empty": "Le livre de collection est vide pour l'instant.",
-    "soldIn": "Vendu en",
-    "sold": "Vendu"
+    "soldIn": "Vendu en"
   },
   "cookies": {
     "message": "Ce site utilise un petit nombre de cookies essentiels pour vous garder connecté(e) et mémoriser votre panier — rien n'est utilisé pour la publicité ou le suivi.",

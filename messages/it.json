@@ -26,8 +26,8 @@
     "title": "Chi siamo",
     "authorEyebrow": "L'autrice",
     "authorTitle": "Chi è l'autrice",
-    "authorBody1": "vkv.form è nato come una serie di studi sull'equilibrio — piccole forme in argilla realizzate tra un lavoro e l'altro, tenute su un davanzale invece che vendute. Col tempo gli studi sono diventati una pratica, e la pratica un piccolo studio che produce oggetti in serie brevi e ponderate.",
-    "authorBody2": "Ogni pezzo che lascia lo studio è passato tra le stesse mani che lo hanno modellato. Nulla è esternalizzato, nulla è prodotto in serie — per questo ogni serie è limitata, e alcune forme non tornano una volta esaurite.",
+    "authorBody1": "Sono un'artista contemporanea che crea vasi e forme scultoree che rivelano l'idea di rinascita. Il mio lavoro si rivolge al momento in cui la perdita cessa di essere una fine e diventa l'inizio di una nuova vita.\n\nAl centro della mia pratica artistica vi è la mia tecnica personale, Lacera, in cui, durante il processo di formazione, la materia rivela una propria logica: le linee di apertura nascono e si formano, talvolta indipendentemente dall'intenzione iniziale, come se la forma stessa trovasse la propria via verso lo strappo, l'apertura e la successiva unione. Gli strappi, i bordi irregolari e le crepe diventano parte integrante della struttura e del significato, dove una nuova integrità nasce non nonostante il cambiamento, ma grazie ad esso.\n\nLavoro principalmente con materiali che hanno già attraversato un ciclo di vita precedente, restituendoli allo spazio artistico in una nuova veste. La mia argilla composita a base di carta, che elimina completamente la fase di cottura, offre la libertà di creare oggetti dalla superficie visivamente incontaminata e profondamente strutturata. Il materiale stesso diventa parte della dichiarazione artistica: l'idea di rinascita si incarna non solo nella forma, ma anche nella materia, che acquisisce una nuova esistenza.\n\nOgni opera invita a un dialogo silenzioso sulla resilienza umana, lo stato interiore e la silenziosa empatia, rivelando la natura emotiva dell'essere umano. In alcune opere, la composizione è arricchita da elementi botanici, che simboleggiano la continuità della vita, la capacità di superamento e di rinnovamento.",
+    "authorBody2": "",
     "philosophyEyebrow": "Filosofia",
     "philosophyTitle": "Perché facciamo ciò che facciamo",
     "philosophyBody1": "Gli interni moderni sono pieni di oggetti che chiedono attenzione. Abbiamo voluto fare l'opposto — oggetti che si posano in silenzio in uno spazio e premiano uno sguardo prolungato più di una prima occhiata.",
@@ -39,7 +39,7 @@
   },
   "catalog": {
     "title": "Catalogo",
-    "subtitle": "Tutte le opere d'arte attualmente presenti nell'atelier.",
+    "subtitle": "Tutti gli oggetti attualmente in studio.",
     "empty": "Nessuna forma corrisponde ancora a questo filtro.",
     "priceLabel": "Prezzo",
     "viewProduct": "Vedi l'oggetto",
@@ -57,7 +57,7 @@
     "added": "Aggiunto",
     "outOfStock": "Non disponibile al momento",
     "quantityLabel": "Quantità",
-    "shippingNote": " ",
+    "shippingNote": "Realizzato su ordinazione in piccole serie. Spedizione dall'UE in 5–10 giorni lavorativi.",
     "inStock": "Disponibile",
     "like": "Salva",
     "liked": "Salvato",
@@ -178,8 +178,7 @@
     "title": "Libro della collezione",
     "intro": "Un registro di pezzi che hanno già trovato casa — conservato qui come archivio, non in vendita.",
     "empty": "Il libro della collezione è vuoto per ora.",
-    "soldIn": "Venduto nel",
-    "sold": "Venduto"
+    "soldIn": "Venduto nel"
   },
   "cookies": {
     "message": "Questo sito utilizza un piccolo numero di cookie essenziali per mantenerti connesso(a) e ricordare il tuo carrello — nulla viene usato per pubblicità o tracciamento.",

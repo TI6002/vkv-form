@@ -26,8 +26,8 @@
     "title": "Par mums",
     "authorEyebrow": "Autore",
     "authorTitle": "Par autori",
-    "authorBody1": "vkv.form aizsākās kā virkne pētījumu par līdzsvaru — mazas māla formas, kas tapa starp citu darbu un tika glabātas uz palodzes, nevis pārdotas. Laika gaitā šie pētījumi kļuva par praksi, bet prakse — par nelielu darbnīcu, kas ražo priekšmetus īsās, pārdomātās sērijās.",
-    "authorBody2": "Katrs priekšmets, kas atstāj darbnīcu, ir gājis cauri tām pašām rokām, kas to veidoja. Nekas netiek nodots ārpakalpojumā, nekas netiek ražots masveidā — tāpēc katra sērija ir ierobežota, un dažas formas pēc izpārdošanas vairs neatgriežas.",
+    "authorBody1": "Es esmu mūsdienu māksliniece, kas rada skulpturālus traukus un formas, kas atklāj atdzimšanas ideju. Mans darbs ir vērsts uz brīdi, kad zaudējums vairs nav noslēgums, bet kļūst par jaunas dzīves sākumu.\n\nManas mākslinieciskās prakses centrā ir mana autortehnika Lacera, kurā formas veidošanas procesā matērija atklāj savu iekšējo loģiku: atvēršanās līnijas rodas un veidojas, dažkārt neatkarīgi no sākotnējā nodoma, it kā pati forma atrastu savu ceļu uz plīsumu, atvēršanos un turpmāku savienošanos. Plīsumi, nelīdzenas malas un plaisas kļūst par neatņemamu struktūras un jēgas daļu, kur jauns veselums piedzimst nevis par spīti izmaiņām, bet gan to dēļ.\n\nEs strādāju galvenokārt ar materiāliem, kas jau pieredzējuši iepriekšēju dzīves ciklu, atgriežot tos mākslas telpā jaunā kvalitātē. Mana autora kompozītmāla uz papīra bāzes, kas pilnībā izslēdz apdedzināšanas posmu, dod brīvību radīt objektus ar vizuāli neskartu, dziļi tekstūrētu virsmu. Pats materiāls kļūst par mākslinieciskā izteikuma daļu: atdzimšanas ideja iemiesojas ne tikai formā, bet arī matērijā, kas iegūst jaunu esamību.\n\nKatrs darbs aicina uz klusu dialogu par cilvēka izturību, iekšējo stāvokli un klusu līdzjūtību, atklājot cilvēka emocionālo dabu. Dažos darbos kompozīciju papildina botāniski elementi, kas simbolizē dzīves turpinājumu, spēju pārvarēt grūtības un atjaunoties.",
+    "authorBody2": "",
     "philosophyEyebrow": "Filozofija",
     "philosophyTitle": "Kāpēc mēs darām to, ko darām",
     "philosophyBody1": "Mūsdienu telpas ir pilnas ar lietām, kas prasa uzmanību. Mēs gribējām radīt pretējo — priekšmetus, kas telpā iekļaujas klusi un atalgo ilgāku skatienu, nevis pirmo ieskatu.",
@@ -39,7 +39,7 @@
   },
   "catalog": {
     "title": "Katalogs",
-    "subtitle": "Visi mākslas darbi, kas šobrīd atrodas darbnīcā.",
+    "subtitle": "Visi priekšmeti, kas šobrīd ir darbnīcā.",
     "empty": "Šim filtram pagaidām nekas neatbilst.",
     "priceLabel": "Cena",
     "viewProduct": "Skatīt priekšmetu",
@@ -57,7 +57,7 @@
     "added": "Pievienots",
     "outOfStock": "Šobrīd nav pieejams",
     "quantityLabel": "Daudzums",
-    "shippingNote": " ",
+    "shippingNote": "Izgatavots pēc pasūtījuma nelielās sērijās. Piegāde no ES 5–10 darba dienu laikā.",
     "inStock": "Ir noliktavā",
     "like": "Saglabāt",
     "liked": "Saglabāts",
@@ -178,8 +178,7 @@
     "title": "Kolekcijas grāmata",
     "intro": "Pieraksts par priekšmetiem, kas jau atraduši savas mājas — glabāts šeit kā arhīvs, nevis atkārtotai pārdošanai.",
     "empty": "Kolekcijas grāmata pagaidām ir tukša.",
-    "soldIn": "Pārdots",
-    "sold": "Pārdots"
+    "soldIn": "Pārdots"
   },
   "cookies": {
     "message": "Šī vietne izmanto nelielu skaitu nepieciešamo sīkdatņu, lai saglabātu jūsu pieslēgšanos un grozu — nekas netiek izmantots reklāmai vai izsekošanai.",
