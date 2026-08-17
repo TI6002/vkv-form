@@ -1,3 +1,65 @@
+#!/usr/bin/env bash
+set -e
+
+if [ ! -f package.json ]; then
+  echo "ERROR: no package.json here. cd into the project root first."
+  exit 1
+fi
+
+echo "Applying vkv.form updates — hide sold products from catalog and homepage listings..."
+
+mkdir -p "app/[locale]/catalog"
+cat > "app/[locale]/catalog/page.tsx" << '__VKV_PATCH_EOF__'
+import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
+import { Reveal } from '@/components/Reveal';
+import { ProductCard } from '@/components/ProductCard';
+import { getProducts } from '@/lib/products';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+export default async function CatalogPage({
+  params: { locale },
+}: {
+  params: { locale: string };
+}) {
+  unstable_setRequestLocale(locale);
+  const t = await getTranslations('catalog');
+
+  // Sold pieces are archived into the Collection Book (see the Stripe
+  // webhook) and shouldn't linger in the regular catalogue — filtered
+  // out here rather than in getProducts() itself, since other places
+  // (like /admin) still need to see every product, sold or not.
+  const products = (await getProducts()).filter((p) => p.available);
+
+  return (
+    <div className="mx-auto max-w-[1400px] px-6 py-20 md:px-10 md:py-28">
+      <Reveal>
+        <p className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
+          {t('title')}
+        </p>
+        <h1 className="mt-4 font-display text-4xl text-ink md:text-5xl">{t('subtitle')}</h1>
+      </Reveal>
+
+      {products.length === 0 ? (
+        <p className="mt-20 font-body text-stone">{t('empty')}</p>
+      ) : (
+        <div className="mt-16 grid grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 md:grid-cols-3">
+          {products.map((p, i) => (
+            <Reveal key={p.id} delay={(i % 3) * 0.06}>
+              <ProductCard product={p} index={i} />
+            </Reveal>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+__VKV_PATCH_EOF__
+echo "  updated: app/[locale]/catalog/page.tsx"
+
+mkdir -p "app/[locale]"
+cat > "app/[locale]/page.tsx" << '__VKV_PATCH_EOF__'
 import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
 import Image from 'next/image';
 import { Link } from '@/lib/navigation';
@@ -157,3 +219,7 @@ export default async function HomePage({
     </div>
   );
 }
+__VKV_PATCH_EOF__
+echo "  updated: app/[locale]/page.tsx"
+
+echo "Done. git add -A && git commit -m \"Hide sold products from catalog and homepage listings\" && git push"

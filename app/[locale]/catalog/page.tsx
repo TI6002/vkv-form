@@ -13,7 +13,12 @@ export default async function CatalogPage({
 }) {
   unstable_setRequestLocale(locale);
   const t = await getTranslations('catalog');
-  const products = await getProducts();
+
+  // Sold pieces are archived into the Collection Book (see the Stripe
+  // webhook) and shouldn't linger in the regular catalogue — filtered
+  // out here rather than in getProducts() itself, since other places
+  // (like /admin) still need to see every product, sold or not.
+  const products = (await getProducts()).filter((p) => p.available);
 
   return (
     <div className="mx-auto max-w-[1400px] px-6 py-20 md:px-10 md:py-28">
