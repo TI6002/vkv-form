@@ -6,7 +6,7 @@ if [ ! -f package.json ]; then
   exit 1
 fi
 
-echo "Applying vkv.form updates — fix cart drawer overflowing narrow phone screens..."
+echo "Applying vkv.form updates — fix CartDrawer field names (lines, not items)..."
 
 mkdir -p "components"
 cat > "components/CartDrawer.tsx" << '__VKV_PATCH_EOF__'
@@ -33,10 +33,15 @@ import { formatPrice } from '@/lib/format';
  * off the edge" report on product pages, since the drawer is mounted
  * everywhere, not just on a dedicated cart page. `w-[min(100vw,28rem)]`
  * caps it at whichever is smaller: the screen width, or 448px.
+ *
+ * Field names matched exactly against context/CartContext.tsx: the cart
+ * array is called `lines` (not `items`), and there's no separate
+ * `currency` field on the context — every price on the site is EUR, so
+ * that's passed straight to formatPrice instead of being read off cart.
  */
 export function CartDrawer() {
   const t = useTranslations('cart');
-  const { items, isOpen, closeCart, removeItem, subtotalCents, currency } = useCart();
+  const { lines, isOpen, closeCart, removeItem, subtotalCents } = useCart();
   const router = useRouter();
 
   function goToCheckout() {
@@ -72,16 +77,16 @@ export function CartDrawer() {
         </div>
 
         <div className="flex-1 overflow-y-auto px-6 py-6">
-          {items.length === 0 ? (
+          {lines.length === 0 ? (
             <p className="font-body text-sm text-stone">{t('empty')}</p>
           ) : (
             <ul className="flex flex-col gap-6">
-              {items.map((item) => (
-                <li key={item.productId} className="flex gap-4">
+              {lines.map((line) => (
+                <li key={line.productId} className="flex gap-4">
                   <div className="h-24 w-20 shrink-0 bg-sand">
-                    {item.image && (
+                    {line.image && (
                       <Image
-                        src={item.image}
+                        src={line.image}
                         alt=""
                         width={80}
                         height={96}
@@ -91,14 +96,14 @@ export function CartDrawer() {
                   </div>
                   <div className="flex flex-1 flex-col justify-between">
                     <div className="flex items-start justify-between gap-2">
-                      <p className="break-words font-display text-base text-ink">{item.name}</p>
+                      <p className="break-words font-display text-base text-ink">{line.name}</p>
                       <p className="shrink-0 font-mono text-sm text-stone">
-                        {formatPrice(item.priceCents, currency)}
+                        {formatPrice(line.priceCents * line.quantity, 'EUR')}
                       </p>
                     </div>
                     <div className="flex items-center justify-end">
                       <button
-                        onClick={() => removeItem(item.productId)}
+                        onClick={() => removeItem(line.productId)}
                         className="font-mono text-[11px] uppercase tracking-widest2 text-stone underline underline-offset-4 hover:text-ink"
                       >
                         {t('remove')}
@@ -111,14 +116,14 @@ export function CartDrawer() {
           )}
         </div>
 
-        {items.length > 0 && (
+        {lines.length > 0 && (
           <div className="border-t border-line px-6 py-6">
             <div className="flex items-baseline justify-between">
               <span className="font-mono text-[11px] uppercase tracking-widest2 text-stone">
                 {t('subtotal')}
               </span>
               <span className="font-display text-xl text-ink">
-                {formatPrice(subtotalCents, currency)}
+                {formatPrice(subtotalCents, 'EUR')}
               </span>
             </div>
             <p className="mt-2 font-body text-xs text-stone">{t('taxNote')}</p>
@@ -137,4 +142,4 @@ export function CartDrawer() {
 __VKV_PATCH_EOF__
 echo "  updated: components/CartDrawer.tsx"
 
-echo "Done. git add -A && git commit -m \"Fix cart drawer width overflowing narrow phones\" && git push"
+echo "Done. git add -A && git commit -m \"Fix CartDrawer field names to match CartContext\" && git push"
