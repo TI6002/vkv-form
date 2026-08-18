@@ -6,7 +6,7 @@ if [ ! -f package.json ]; then
   exit 1
 fi
 
-echo "Applying vkv.form updates — gallery section is now a sliding carousel like the top banner..."
+echo "Applying vkv.form updates — gallery slider photos show fully without cropping..."
 
 mkdir -p "app/[locale]"
 cat > "app/[locale]/page.tsx" << '__VKV_PATCH_EOF__'
@@ -146,7 +146,7 @@ export default async function HomePage({
               alt=""
               fill
               sizes="100vw"
-              className="object-cover"
+              className="object-contain"
             />
           </div>,
           <div key="gallery-2" className="relative h-full w-full bg-sand">
@@ -155,7 +155,7 @@ export default async function HomePage({
               alt=""
               fill
               sizes="100vw"
-              className="object-cover"
+              className="object-contain"
             />
           </div>,
           <div key="gallery-3" className="relative h-full w-full bg-sand">
@@ -164,7 +164,7 @@ export default async function HomePage({
               alt=""
               fill
               sizes="100vw"
-              className="object-cover"
+              className="object-contain"
             />
           </div>,
         ]}
@@ -215,4 +215,4 @@ export default async function HomePage({
 __VKV_PATCH_EOF__
 echo "  updated: app/[locale]/page.tsx"
 
-echo "Done. git add -A && git commit -m \"Gallery section is now a sliding carousel\" && git push"
+echo "Done. git add -A && git commit -m \"Gallery slider: show full photos without cropping\" && git push"
