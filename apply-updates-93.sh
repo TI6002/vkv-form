@@ -1,3 +1,15 @@
+#!/usr/bin/env bash
+set -e
+
+if [ ! -f package.json ]; then
+  echo "ERROR: no package.json here. cd into the project root first."
+  exit 1
+fi
+
+echo "Applying vkv.form updates — remove shipping note from product page..."
+
+mkdir -p "app/[locale]/catalog/[slug]"
+cat > "app/[locale]/catalog/[slug]/page.tsx" << '__VKV_PATCH_EOF__'
 import { notFound } from 'next/navigation';
 import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
 import { AddToCartForm } from '@/components/AddToCartForm';
@@ -133,3 +145,7 @@ export default async function ProductPage({
     </div>
   );
 }
+__VKV_PATCH_EOF__
+echo "  updated: app/[locale]/catalog/[slug]/page.tsx"
+
+echo "Done. git add -A && git commit -m \"Remove shipping note from product page\" && git push"
