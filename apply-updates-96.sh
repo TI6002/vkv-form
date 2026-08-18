@@ -1,3 +1,15 @@
+#!/usr/bin/env bash
+set -e
+
+if [ ! -f package.json ]; then
+  echo "ERROR: no package.json here. cd into the project root first."
+  exit 1
+fi
+
+echo "Applying vkv.form updates — remove debug logging, fix confirmed working..."
+
+mkdir -p "components"
+cat > "components/ClearCartOnSuccess.tsx" << '__VKV_PATCH_EOF__'
 'use client';
 
 import { Suspense, useEffect } from 'react';
@@ -39,3 +51,7 @@ export function ClearCartOnSuccess() {
     </Suspense>
   );
 }
+__VKV_PATCH_EOF__
+echo "  updated: components/ClearCartOnSuccess.tsx"
+
+echo "Done. git add -A && git commit -m \"Remove debug logging from ClearCartOnSuccess\" && git push"
