@@ -1,3 +1,15 @@
+#!/usr/bin/env bash
+set -e
+
+if [ ! -f package.json ]; then
+  echo "ERROR: no package.json here. cd into the project root first."
+  exit 1
+fi
+
+echo "Applying vkv.form updates — clear cart at redirect time for a more reliable clear..."
+
+mkdir -p "app/[locale]/checkout"
+cat > "app/[locale]/checkout/page.tsx" << '__VKV_PATCH_EOF__'
 'use client';
 
 import { useState } from 'react';
@@ -119,3 +131,7 @@ export default function CheckoutPage() {
     </div>
   );
 }
+__VKV_PATCH_EOF__
+echo "  updated: app/[locale]/checkout/page.tsx"
+
+echo "Done. git add -A && git commit -m \"Clear cart at checkout redirect time\" && git push"
