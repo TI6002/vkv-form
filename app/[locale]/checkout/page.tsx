@@ -19,7 +19,7 @@ import { Reveal } from '@/components/Reveal';
 export default function CheckoutPage() {
   const t = useTranslations('cart');
   const tc = useTranslations('checkout');
-  const { lines, removeItem, subtotalCents, clearCart } = useCart();
+  const { lines, removeItem, subtotalCents } = useCart();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
@@ -34,13 +34,13 @@ export default function CheckoutPage() {
       });
       const data = await res.json();
       if (data.url) {
-        // Clear the cart right here, the moment we know Stripe has
-        // actually created a checkout session — not just after
-        // returning to /account?order=success. That success-page clear
-        // still runs too (harmless if the cart's already empty), but
-        // relying on it alone meant a failed/odd redirect back from
-        // Stripe could leave a just-bought piece sitting in the cart.
-        clearCart();
+        // Cart is NOT cleared here on purpose. Clearing it the moment
+        // we redirect to Stripe would empty it even if the person
+        // cancels on Stripe's page without paying. It's only cleared
+        // once payment is actually confirmed — see
+        // components/ClearCartOnSuccess.tsx, which runs on
+        // /account?order=success, the URL Stripe only redirects to
+        // after a real successful payment.
         window.location.href = data.url;
       } else {
         throw new Error('No checkout URL returned');

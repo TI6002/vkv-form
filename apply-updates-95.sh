@@ -6,7 +6,7 @@ if [ ! -f package.json ]; then
   exit 1
 fi
 
-echo "Applying vkv.form updates — clear cart at redirect time for a more reliable clear..."
+echo "Applying vkv.form updates — only clear cart after confirmed payment, with Suspense fix..."
 
 mkdir -p "app/[locale]/checkout"
 cat > "app/[locale]/checkout/page.tsx" << '__VKV_PATCH_EOF__'
@@ -31,7 +31,7 @@ import { Reveal } from '@/components/Reveal';
 export default function CheckoutPage() {
   const t = useTranslations('cart');
   const tc = useTranslations('checkout');
-  const { lines, removeItem, subtotalCents, clearCart } = useCart();
+  const { lines, removeItem, subtotalCents } = useCart();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
@@ -46,13 +46,13 @@ export default function CheckoutPage() {
       });
       const data = await res.json();
       if (data.url) {
-        // Clear the cart right here, the moment we know Stripe has
-        // actually created a checkout session — not just after
-        // returning to /account?order=success. That success-page clear
-        // still runs too (harmless if the cart's already empty), but
-        // relying on it alone meant a failed/odd redirect back from
-        // Stripe could leave a just-bought piece sitting in the cart.
-        clearCart();
+        // Cart is NOT cleared here on purpose. Clearing it the moment
+        // we redirect to Stripe would empty it even if the person
+        // cancels on Stripe's page without paying. It's only cleared
+        // once payment is actually confirmed — see
+        // components/ClearCartOnSuccess.tsx, which runs on
+        // /account?order=success, the URL Stripe only redirects to
+        // after a real successful payment.
         window.location.href = data.url;
       } else {
         throw new Error('No checkout URL returned');
@@ -134,4 +134,51 @@ export default function CheckoutPage() {
 __VKV_PATCH_EOF__
 echo "  updated: app/[locale]/checkout/page.tsx"
 
-echo "Done. git add -A && git commit -m \"Clear cart at checkout redirect time\" && git push"
+mkdir -p "components"
+cat > "components/ClearCartOnSuccess.tsx" << '__VKV_PATCH_EOF__'
+'use client';
+
+import { Suspense, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { useCart } from '@/context/CartContext';
+
+/**
+ * Renders nothing — just watches for ?order=success (set by the
+ * Stripe success_url after a completed payment) and clears the cart
+ * once. Without this, a bought item could sit in the browser's
+ * localStorage cart and look purchasable again later, even though the
+ * webhook already marked it sold.
+ *
+ * useSearchParams() needs a <Suspense> boundary around it in the App
+ * Router — without one it can silently fail to pick up the query
+ * string on some renders. Wrapping it here, self-contained, so nothing
+ * else needs to remember to do that.
+ */
+function ClearCartOnSuccessInner() {
+  const searchParams = useSearchParams();
+  const { clearCart } = useCart();
+
+  useEffect(() => {
+    const order = searchParams.get('order');
+    console.log('ClearCartOnSuccess: order param is', JSON.stringify(order));
+    if (order === 'success') {
+      clearCart();
+      console.log('ClearCartOnSuccess: cart cleared.');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return null;
+}
+
+export function ClearCartOnSuccess() {
+  return (
+    <Suspense fallback={null}>
+      <ClearCartOnSuccessInner />
+    </Suspense>
+  );
+}
+__VKV_PATCH_EOF__
+echo "  updated: components/ClearCartOnSuccess.tsx"
+
+echo "Done. git add -A && git commit -m \"Only clear cart after confirmed payment (Suspense fix)\" && git push"
