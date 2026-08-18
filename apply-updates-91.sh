@@ -6,7 +6,7 @@ if [ ! -f package.json ]; then
   exit 1
 fi
 
-echo "Applying vkv.form updates — show full top gallery photo without cropping..."
+echo "Applying vkv.form updates — gallery section is now a sliding carousel like the top banner..."
 
 mkdir -p "app/[locale]"
 cat > "app/[locale]/page.tsx" << '__VKV_PATCH_EOF__'
@@ -128,58 +128,47 @@ export default async function HomePage({
       </section>
 
       {/*
-        Gallery — group shots of pieces styled together (2-3 vases per
-        photo), between Philosophy and the catalogue. One wide "accent"
-        photo on top, two smaller ones below it side by side — clearer
-        visual hierarchy than three equal photos in a row, and the wide
-        aspect ratio suits rectangular/landscape photos far better than
-        forcing everything into a tall portrait crop. Stacks to one
-        column on mobile.
+        Gallery — same HeroSlider component as the top banner, just with
+        a different set of slides: group shots of pieces styled together
+        (2-3 vases per photo), between Philosophy and the catalogue.
+        Auto-advances and can be swiped/clicked through exactly like the
+        banner at the top of the page.
 
-        Swap /images/gallery-1.jpg, gallery-2.jpg, gallery-3.jpg for
-        the client's real photos — same folder as hero.png etc.
+        Swap /images/gallery-1.jpg, gallery-2.jpg, gallery-3.jpg for the
+        client's real photos — same folder as hero.png etc. Add more
+        slides here the same way if there end up being more than 3.
       */}
-      <section className="bg-paper">
-        <div className="mx-auto max-w-[1400px] px-6 py-20 md:px-10 md:py-28">
-          <div className="flex flex-col gap-6 md:gap-8">
-            <Reveal>
-              <div className="relative aspect-[4/3] overflow-hidden bg-sand md:aspect-[16/9]">
-                <Image
-                  src="/images/gallery-1.jpg"
-                  alt=""
-                  fill
-                  sizes="100vw"
-                  className="object-contain"
-                />
-              </div>
-            </Reveal>
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:gap-8">
-              <Reveal delay={0.08}>
-                <div className="relative aspect-square overflow-hidden bg-sand">
-                  <Image
-                    src="/images/gallery-2.jpg"
-                    alt=""
-                    fill
-                    sizes="(min-width: 640px) 50vw, 100vw"
-                    className="object-cover"
-                  />
-                </div>
-              </Reveal>
-              <Reveal delay={0.16}>
-                <div className="relative aspect-square overflow-hidden bg-sand">
-                  <Image
-                    src="/images/gallery-3.jpg"
-                    alt=""
-                    fill
-                    sizes="(min-width: 640px) 50vw, 100vw"
-                    className="object-cover"
-                  />
-                </div>
-              </Reveal>
-            </div>
-          </div>
-        </div>
-      </section>
+      <HeroSlider
+        slides={[
+          <div key="gallery-1" className="relative h-full w-full bg-sand">
+            <Image
+              src="/images/gallery-1.jpg"
+              alt=""
+              fill
+              sizes="100vw"
+              className="object-cover"
+            />
+          </div>,
+          <div key="gallery-2" className="relative h-full w-full bg-sand">
+            <Image
+              src="/images/gallery-2.jpg"
+              alt=""
+              fill
+              sizes="100vw"
+              className="object-cover"
+            />
+          </div>,
+          <div key="gallery-3" className="relative h-full w-full bg-sand">
+            <Image
+              src="/images/gallery-3.jpg"
+              alt=""
+              fill
+              sizes="100vw"
+              className="object-cover"
+            />
+          </div>,
+        ]}
+      />
 
       {/* Featured catalogue — beige panel, alternating with the white one above */}
       <section className="bg-cream">
@@ -226,4 +215,4 @@ export default async function HomePage({
 __VKV_PATCH_EOF__
 echo "  updated: app/[locale]/page.tsx"
 
-echo "Done. git add -A && git commit -m \"Show full top gallery photo without cropping\" && git push"
+echo "Done. git add -A && git commit -m \"Gallery section is now a sliding carousel\" && git push"
