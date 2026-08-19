@@ -1,3 +1,15 @@
+#!/usr/bin/env bash
+set -e
+
+if [ ! -f package.json ]; then
+  echo "ERROR: no package.json here. cd into the project root first."
+  exit 1
+fi
+
+echo "Applying vkv.form updates — Orders is now a permanent top-level admin tab..."
+
+mkdir -p "components"
+cat > "components/AdminDashboard.tsx" << '__VKV_PATCH_EOF__'
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -714,3 +726,7 @@ export function AdminDashboard() {
     </div>
   );
 }
+__VKV_PATCH_EOF__
+echo "  updated: components/AdminDashboard.tsx"
+
+echo "Done. git add -A && git commit -m \"Orders is now a permanent admin tab\" && git push"
