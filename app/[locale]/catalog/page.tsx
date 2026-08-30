@@ -14,11 +14,10 @@ export default async function CatalogPage({
   unstable_setRequestLocale(locale);
   const t = await getTranslations('catalog');
 
-  // Sold pieces are archived into the Collection Book (see the Stripe
-  // webhook) and shouldn't linger in the regular catalogue — filtered
-  // out here rather than in getProducts() itself, since other places
-  // (like /admin) still need to see every product, sold or not.
-  const products = (await getProducts()).filter((p) => p.available);
+  // Keep every product visible in the public catalogue. The admin
+  // "Available for order" toggle controls price/orderability on the
+  // product page, but it must not remove the object from this grid.
+  const products = await getProducts();
 
   return (
     <div className="mx-auto max-w-[1400px] px-6 py-20 md:px-10 md:py-28">

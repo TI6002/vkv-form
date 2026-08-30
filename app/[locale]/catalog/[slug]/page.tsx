@@ -61,9 +61,11 @@ export default async function ProductPage({
 
           <div className="min-w-0">
             <h1 className="break-words [overflow-wrap:anywhere] font-display text-3xl text-ink md:text-4xl">{name}</h1>
-            <p className="mt-3 font-mono text-xl text-ink">
-              {formatPrice(product.price_cents, product.currency)}
-            </p>
+            {available && (
+              <p className="mt-3 font-mono text-xl text-ink">
+                {formatPrice(product.price_cents, product.currency)}
+              </p>
+            )}
 
             <AvailabilityBadge productId={product.id} initialAvailable={available} />
 
